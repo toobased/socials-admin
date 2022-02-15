@@ -15,6 +15,9 @@ export class UserStore {
 	setAuthToken(newToken: string) {
 		this.authToken = newToken;
 	}
+  saveUserCredentials(authToken: string) {
+    localStorage.setItem("access_token", authToken)
+  }
 	setUser(user: User) {
 		this.user = user;
 	}
@@ -46,9 +49,27 @@ export class UserStore {
 			const user: User = await userApi.getUserMe()
 			this.setUser(user)
 		} catch (error) {
+      this.setUserAuthorized(false)
+      this.cleanUserInfo()
 			throw console.error('get user me error', error)
 		}
 	}
+
+  async loginUser(username: string, password: string) {
+    try {
+      const data = await userApi.loginGetAccessToken(
+        username, 
+        password
+      )
+      const accessToken = data.access_token
+      this.saveUserCredentials(accessToken)
+      await this.getUserMe()
+      return true
+    } catch (error) {
+      return false
+      // throw console.error('login user error', error)
+    }
+  }
 
 }
 
