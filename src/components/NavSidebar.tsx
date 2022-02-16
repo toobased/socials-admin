@@ -1,6 +1,7 @@
 import { Menu } from "antd";
 import Sider from "antd/lib/layout/Sider";
 import SubMenu from "antd/lib/menu/SubMenu";
+import Link from "next/link";
 
 const MenuItems: Array<any> = [
   {
@@ -29,12 +30,16 @@ const MenuItems: Array<any> = [
     children: [
     ]
   },
+  {
+   key: "4",
+    name: "Bots",
+    path: "/bots",
+    children: []
+  },
 ]
 
 const getCurrentMenuBlock = (item: any) => {
-  console.log('item is', item)
   if (item.children && item.children.length > 0) {
-    console.log('is greater')
     return (
       <SubMenu key={item.key} title={item.name}>
         <Menu.ItemGroup title={item.name}>
@@ -45,10 +50,11 @@ const getCurrentMenuBlock = (item: any) => {
       </SubMenu>
     )
   } else {
-    console.log('is less')
     return (
       <Menu.Item key={item.key}>
+        <Link href={item.path}>
         { item.name }
+        </Link>
       </ Menu.Item>
     )
   }
