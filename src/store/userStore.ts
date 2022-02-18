@@ -64,6 +64,12 @@ export class UserStore {
       const accessToken = data.access_token
       this.saveUserCredentials(accessToken)
       await this.getUserMe()
+      if (this.user) {
+        this.setUserAuthorized(true)
+      } else {
+        this.cleanUserInfo()
+        return false
+      }
       return true
     } catch (error) {
       return false

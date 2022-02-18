@@ -17,8 +17,12 @@ const BotsTable = observer(() => {
   const router = useRouter()
 
   console.log('bots are', botStore.bots)
+  const total = botStore?.botSearch?.total
+  const bots = botStore?.botSearch?.bots
+
   return (
     <>
+      { total }
       <Table
         onRow={(item,rowIndex) => {
           return {
@@ -27,7 +31,7 @@ const BotsTable = observer(() => {
             }
           }
         }}
-        dataSource={botStore.bots}
+        dataSource={bots}
       >
         {/* USERNAME */}
         <Column
@@ -136,7 +140,7 @@ const Bots: NextPage = observer(() => {
 
   const loadInitialBots = async (replace: boolean = false) => {
     console.log('run load initial bots func')
-    if (botStore.bots && (!replace)) {
+    if (botStore?.botSearch?.bots && (!replace)) {
       return
     }
     if (!botStore.botsLoading) {
@@ -154,7 +158,7 @@ const Bots: NextPage = observer(() => {
       >
         reload
       </Button>
-      {botStore.bots && !botStore.botsLoading &&
+      {botStore?.botSearch?.bots && !botStore.botsLoading &&
         <div className="">
           <BotsTable />
         </div>

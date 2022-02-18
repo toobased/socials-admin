@@ -14,7 +14,7 @@ const Login: NextPage = () => {
   // router
   const router = useRouter()
 	// stores
-	const userStore = useContext(UserContext)
+  const userStore = useContext(UserContext)
   // states
   const [isLoading, setIsLoading] = useState(false);
   // const [password, setPassword] = useState("");
@@ -23,10 +23,12 @@ const Login: NextPage = () => {
     console.log('call user login', username, password)
     setIsLoading(true)
     const isSuccess: boolean = await userStore.loginUser(username, password)
+    console.log('success', isSuccess)
     if (isSuccess) {
+      console.log('is success cond fired')
+      setIsLoading(false)
       router.push("/")
     }
-    setIsLoading(false)
   }
 
   return (

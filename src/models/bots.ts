@@ -13,3 +13,10 @@ export interface Bot {
   comment_count: number;
 }
 
+export interface BotSearch {
+    total: number;
+    bots: Bot[];
+}
+
+export interface BotQueryParams {
+}
