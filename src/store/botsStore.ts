@@ -3,11 +3,20 @@ import { BotCreate, BotInterface, BotSearch, BotSearchQuery } from "@/models/bot
 import { makeAutoObservable, observable } from "mobx";
 import { createContext } from "react";
 
+export class BotStoreLoaders {
+  botCreationLoading: boolean = false
+
+  constructor () {
+    makeAutoObservable(this)
+  }
+}
+
 export class BotStore {
  newBot: BotCreate = new BotCreate();
  bots?: BotInterface[];
  botSearch?: BotSearch;
  botSearchQuery: BotSearchQuery = new BotSearchQuery();
+ loaders: BotStoreLoaders = new BotStoreLoaders();
  currentPage: number = 1;
  botsLoading: boolean = false;
  botsLoadingError: boolean = false;
@@ -35,6 +44,12 @@ export class BotStore {
  }
  setBotsLoading (isLoading: boolean) {
    this.botsLoading = isLoading
+ }
+
+ async createBotApi () {
+   console.log('run create bot', this.newBot)
+   // this.loaders.botCreationLoading = true
+   this.loaders.botCreationLoading = !this.loaders.botCreationLoading
  }
 
  async getBotsApi (replace: boolean = false) {

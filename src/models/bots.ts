@@ -24,12 +24,24 @@ export class BotCreate {
   is_active: boolean = false;
   is_in_use: boolean = false;
   platform: PlatformEnum = PlatformEnum.vk;
-  gender?: GenderEnum;
-  test: string = "";
+  gender?: GenderEnum | null = null;
 
   constructor() {
     makeAutoObservable(this)
   }
+
+  canBeCreated () {
+    if (
+      (this.username.trim().length != 11)  ||
+      (this.password.trim().length < 6) ||
+      (!this.platform) ||
+      (!this.gender)
+    ) {
+      return false
+    }
+    return true
+  }
+
 }
 
 export interface BotSearch {
@@ -49,8 +61,8 @@ export class BotSearchQuery {
   offset: number = 0;
   is_active?: number | null = null;
   is_in_use?: number | null = null;
-  platform?: PlatformEnum = undefined;
-  gender?: GenderEnum = undefined;
+  platform?: PlatformEnum | null = null;
+  gender?: GenderEnum | null = null;
 
   constructor(params: BotSearchQueryInterface = {}) {
     Object.assign(this, params);
@@ -75,19 +87,18 @@ export enum PlatformEnum {
 }
 
 export enum GenderEnum {
-  all = "all",
   male = "male",
   female = "female"
 }
 
 export const platformFilters: IFilterValue[] = [
-  { label: "All", query_value: undefined},
+  { label: "All", query_value: null},
   { label: "vk", query_value: PlatformEnum.vk},
   { label: "instagram", query_value: PlatformEnum.instagram},
 ]
 
 export const genderFilters: IFilterValue[] = [
-  { label: "All", query_value: undefined},
+  { label: "All", query_value: null},
   { label: "male", query_value: GenderEnum.male},
   { label: "female", query_value: GenderEnum.female},
 ]
