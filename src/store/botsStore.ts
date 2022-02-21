@@ -1,5 +1,5 @@
 import botsApi from "@/api/bots";
-import { BotCreate, BotInterface, BotSearch, BotSearchQuery } from "@/models/bots";
+import { BotCreate, BotInterface, BotSearch, BotSearchQuery, GenderEnum } from "@/models/bots";
 import { makeAutoObservable, observable } from "mobx";
 import { createContext } from "react";
 
@@ -11,8 +11,14 @@ export class BotStoreLoaders {
   }
 }
 
+const testBot = new BotCreate()
+testBot.username = "79782215509"
+testBot.password = "sometestpassword"
+testBot.gender = GenderEnum.male
+
 export class BotStore {
- newBot: BotCreate = new BotCreate();
+ newBot: BotCreate = testBot;
+ // newBot: BotCreate = new BotCreate();
  bots?: BotInterface[];
  botSearch?: BotSearch;
  botSearchQuery: BotSearchQuery = new BotSearchQuery();
