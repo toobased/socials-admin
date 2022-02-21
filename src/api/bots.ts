@@ -1,14 +1,14 @@
-import { Bot, BotSearch } from "@/models/bots";
+import { Bot, BotSearch, BotSearchQuery } from "@/models/bots";
 import HttpClient from "./client";
 
 class BotsApi extends HttpClient{
-  public getBots = async (): Promise<BotSearch> => {
+  public getBots = async (
+    query: BotSearchQuery = new BotSearchQuery()
+  ): Promise<BotSearch> => {
     const { data } = await this.client.get<BotSearch>(
       '/bots/',
       {
-        params: {
-          limit: 5
-        }
+        params: query
       }
     );
     return data

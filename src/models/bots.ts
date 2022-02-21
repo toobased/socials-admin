@@ -1,4 +1,6 @@
-export interface Bot {
+import { makeAutoObservable } from "mobx";
+
+export interface BotInterface {
   id: string;
   username: string;
   password: string;
@@ -11,12 +13,93 @@ export interface Bot {
   like_count: number;
   reply_count: number;
   comment_count: number;
+  platform?: PlatformEnum;
+  gender?: GenderEnum;
+}
+
+export class BotCreate {
+  username: string = "";
+  password: string = "";
+  access_token: string = "";
+  is_active: boolean = false;
+  is_in_use: boolean = false;
+  platform: PlatformEnum = PlatformEnum.vk;
+  gender?: GenderEnum;
+  test: string = "";
+
+  constructor() {
+    makeAutoObservable(this)
+  }
 }
 
 export interface BotSearch {
     total: number;
-    bots: Bot[];
+    bots: BotInterface[];
 }
 
-export interface BotQueryParams {
+
+export class BotSearchQueryInterface {
+  limit?: number;
+  offset?: number;
+  is_active?: number;
 }
+
+export class BotSearchQuery {
+  limit: number = 10;
+  offset: number = 0;
+  is_active?: number | null = null;
+  is_in_use?: number | null = null;
+  platform?: PlatformEnum = undefined;
+  gender?: GenderEnum = undefined;
+
+  constructor(params: BotSearchQueryInterface = {}) {
+    Object.assign(this, params);
+    makeAutoObservable(this)
+  }
+
+  resetDefaults () {
+    Object.assign(this, new BotSearchQuery())
+  }
+}
+
+export interface IFilterValue {
+  label: string;
+  // if null remove from query value
+  query_value?: any;
+  // defautl, exclusive, is_text,
+}
+
+export enum PlatformEnum {
+  vk = "vk",
+  instagram = "instagram"
+}
+
+export enum GenderEnum {
+  all = "all",
+  male = "male",
+  female = "female"
+}
+
+export const platformFilters: IFilterValue[] = [
+  { label: "All", query_value: undefined},
+  { label: "vk", query_value: PlatformEnum.vk},
+  { label: "instagram", query_value: PlatformEnum.instagram},
+]
+
+export const genderFilters: IFilterValue[] = [
+  { label: "All", query_value: undefined},
+  { label: "male", query_value: GenderEnum.male},
+  { label: "female", query_value: GenderEnum.female},
+]
+
+export const activeFilters: IFilterValue[] = [
+  { label: "All", query_value: null},
+  { label: "Only active", query_value: 1},
+  { label: "Only not active", query_value: 0},
+]
+
+export const inUseFilters: IFilterValue[] = [
+  { label: "All", query_value: null},
+  { label: "Only in use", query_value: 1},
+  { label: "Only not in use", query_value: 0},
+]
