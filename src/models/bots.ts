@@ -17,17 +17,41 @@ export interface BotInterface {
   gender?: GenderEnum;
 }
 
+/*
+export class Bot implements BotInterface {
+  id: string = "";
+  username: string = "";
+  password: string = "";
+  access_token: string = "";
+  created_time: string | Date = "";
+  created_source: string = "";
+  last_used: string | Date = "";
+  is_active: boolean = false;
+  is_in_use: boolean = false;
+  like_count: number = 0;
+  reply_count: number = 0;
+  comment_count: number = 0;
+  platform?: PlatformEnum;
+  gender?: GenderEnum;
+  constructor(props: Record<string,any>) {
+    Object.assign(this, props)
+  }
+}
+*/
+
 export class BotCreate {
+  id: string = "";
   username: string = "";
   password: string = "";
   access_token: string = "";
   is_active: boolean = false;
   is_in_use: boolean = false;
   platform: PlatformEnum = PlatformEnum.vk;
-  gender?: GenderEnum | null = null;
+  gender: GenderEnum = GenderEnum.male;
 
-  constructor() {
+  constructor(params: any = {}) {
     makeAutoObservable(this)
+    Object.assign(this, params)
   }
 
   canBeCreated () {
@@ -53,7 +77,10 @@ export interface BotSearch {
 export class BotSearchQueryInterface {
   limit?: number;
   offset?: number;
-  is_active?: number;
+  is_active?: number | null;
+  is_in_use?: number | null;
+  platform?: PlatformEnum | null;
+  gender?: GenderEnum | null;
 }
 
 export class BotSearchQuery {

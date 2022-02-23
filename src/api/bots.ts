@@ -1,4 +1,5 @@
-import { Bot, BotSearch, BotSearchQuery } from "@/models/bots";
+import { BotInterface, BotCreate, BotSearch, BotSearchQuery } from "@/models/bots";
+import { AxiosResponse } from "axios";
 import HttpClient from "./client";
 
 class BotsApi extends HttpClient{
@@ -13,11 +14,35 @@ class BotsApi extends HttpClient{
     );
     return data
   }
-  public getBot = async (id: string): Promise<Bot> => {
-    const { data } = await this.client.get<Bot>(
+
+  public getBot = async (id: string): Promise<AxiosResponse> => {
+    const resp = await this.client.get(
       `/bots/${id}`
     );
-    return data
+    return resp
+  }
+
+  public deleteBot = async (id: string): Promise<AxiosResponse> => {
+    const resp: AxiosResponse = await this.client.delete<AxiosResponse>(
+      `/bots/${id}`
+    );
+    return resp
+  }
+
+  public createBot = async (bot: BotCreate): Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.post(
+      `/bots/`,
+      bot
+    );
+    return response
+  }
+
+  public updateBot = async (bot: BotCreate): Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.patch(
+      `/bots/${bot.id}`,
+      bot
+    );
+    return response
   }
 }
 

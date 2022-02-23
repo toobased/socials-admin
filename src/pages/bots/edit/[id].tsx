@@ -1,4 +1,5 @@
 import CreateForm from "@/components/bots/CreateForm";
+import { BotCreate } from "@/models/bots";
 import { BotContext } from "@/store/botsStore";
 import { errorMessage, successMessage } from "@/utils";
 import { Button } from "antd";
@@ -8,27 +9,36 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 
-const NewBot: NextPage = observer(() => {
+const EditBot: NextPage = observer(() => {
   //context
   const botStore = useContext(BotContext);
   //
   const router = useRouter();
+  const { id } = router.query
   const { newBot } = botStore;
+  const { currentBot } = botStore;
 
-  //
   useEffect(() => {
-    botStore.resetNewBot()
+    if (!(typeof id == 'string')) {
+      return
+    }
+    botStore.getBotApi(id).then(() => {
+      if (botStore.currentBot) {
+        botStore.setNewBot(
+          new BotCreate(botStore.currentBot)
+        )
+      }
+    })
   }, [])
 
-  const createBot = async () => {
-    const [isCreated, msg] = await botStore.createBotApi()
-    console.log(isCreated, msg)
-    if (isCreated){
-      successMessage('bot created')
-      await botStore.getBotsApi(true)
-      router.push('/bots')
+  const saveBot = async () => {
+    const [isSaved, msg] = await botStore.updateBotApi()
+    console.log(isSaved, msg)
+    if (isSaved){
+      successMessage(msg)
+      botStore.getBotsApi(true)
+      router.push(`/bots/${newBot.id}`)
     } else {
-      console.log('errro occurred', msg)
       errorMessage(msg)
     }
   }
@@ -41,9 +51,9 @@ const NewBot: NextPage = observer(() => {
           disabled={!newBot.canBeCreated()}
           type="primary"
           loading={loading}
-          onClick={() => createBot()}
+          onClick={() => saveBot()}
         >
-          { loading ? "Loading..." : "Create"}
+          { loading ? "Loading..." : "Save bot"}
         </Button>
       </div>
     )
@@ -52,7 +62,7 @@ const NewBot: NextPage = observer(() => {
   return (
     <main className="mx-11 my-7">
       <Title>
-        Create new Bot
+        Edit bot
       </Title>
 
       {/* BOT FORM */}
@@ -67,4 +77,4 @@ const NewBot: NextPage = observer(() => {
   )
 })
 
-export default NewBot
+export default EditBot
