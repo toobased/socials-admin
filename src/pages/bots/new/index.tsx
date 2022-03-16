@@ -1,7 +1,7 @@
 import CreateForm from "@/components/bots/CreateForm";
 import { BotContext } from "@/store/botsStore";
 import { errorMessage, successMessage } from "@/utils";
-import { Button } from "antd";
+import { Button } from "@chakra-ui/react";
 import Title from "antd/lib/typography/Title";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -39,8 +39,8 @@ const NewBot: NextPage = observer(() => {
       <div>
         <Button
           disabled={!newBot.canBeCreated()}
-          type="primary"
-          loading={loading}
+          variant="solid"
+          isLoading={loading}
           onClick={() => createBot()}
         >
           { loading ? "Loading..." : "Create"}

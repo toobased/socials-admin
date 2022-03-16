@@ -79,21 +79,30 @@ export class BotSearchQueryInterface {
   offset?: number;
   is_active?: number | null;
   is_in_use?: number | null;
-  platform?: PlatformEnum | null;
-  gender?: GenderEnum | null;
+  platform?: PlatformEnum | string;
+  gender?: GenderEnum | string;
 }
 
 export class BotSearchQuery {
   limit: number = 10;
   offset: number = 0;
-  is_active?: number | null = null;
-  is_in_use?: number | null = null;
-  platform?: PlatformEnum | null = null;
-  gender?: GenderEnum | null = null;
+  is_active?: number | string = '';
+  is_in_use?: number | string = '';
+  platform?: PlatformEnum | string = '';
+  gender?: GenderEnum | string = '';
 
   constructor(params: BotSearchQueryInterface = {}) {
     Object.assign(this, params);
     makeAutoObservable(this)
+  }
+
+  getQuery(): BotSearchQueryInterface {
+    return Object.fromEntries(
+    Object.entries(this).filter(
+      (([_, v]) => 
+        v != ''
+      )) 
+    ) as BotSearchQueryInterface
   }
 
   resetDefaults () {
@@ -119,25 +128,25 @@ export enum GenderEnum {
 }
 
 export const platformFilters: IFilterValue[] = [
-  { label: "All", query_value: null},
+  { label: "All", query_value: ''},
   { label: "vk", query_value: PlatformEnum.vk},
   { label: "instagram", query_value: PlatformEnum.instagram},
 ]
 
 export const genderFilters: IFilterValue[] = [
-  { label: "All", query_value: null},
+  { label: "All", query_value: ''},
   { label: "male", query_value: GenderEnum.male},
   { label: "female", query_value: GenderEnum.female},
 ]
 
 export const activeFilters: IFilterValue[] = [
-  { label: "All", query_value: null},
+  { label: "All", query_value: ''},
   { label: "Only active", query_value: 1},
   { label: "Only not active", query_value: 0},
 ]
 
 export const inUseFilters: IFilterValue[] = [
-  { label: "All", query_value: null},
+  { label: "All", query_value: ''},
   { label: "Only in use", query_value: 1},
   { label: "Only not in use", query_value: 0},
 ]

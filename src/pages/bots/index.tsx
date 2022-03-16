@@ -1,18 +1,18 @@
 import { observer } from 'mobx-react'
 import type { NextPage } from 'next'
 import React, { useContext, useEffect, useState } from 'react'
-import styles from '../styles/Home.module.css'
-import { AppContext } from '@/store/appStore'
+// import { AppContext } from '@/store/appStore'
 import { BotContext } from '@/store/botsStore'
-import { Button, Radio, Select, Table, Tooltip } from 'antd'
+import { Select, Table } from 'antd'
 import Column from 'antd/lib/table/Column'
-import { Icon } from '@iconify/react'
+// import { Icon } from '@iconify/react'
 import CopyClipboardButton from '@/components/buttons/CopyClipboardButton'
 import BooleanIcon from '@/components/common/BooleanIcon'
 import { useRouter } from 'next/router'
 import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, inUseFilters, PlatformEnum, platformFilters } from '@/models/bots'
 import Link from 'next/link'
 import { SizeType } from 'antd/lib/config-provider/SizeContext'
+import { Button, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Radio, RadioGroup } from '@chakra-ui/react'
 
 const { Option } = Select
 
@@ -29,7 +29,7 @@ const tableSizes = [
 const BotsTable = observer(({onLoadBots}: BotsTableProps) => {
   const botStore = useContext(BotContext);
 
-  const router = useRouter()
+  // const router = useRouter()
 
   console.log('bots are', botStore.bots)
   const botQuery = botStore?.botSearchQuery
@@ -62,48 +62,43 @@ const BotsTable = observer(({onLoadBots}: BotsTableProps) => {
         {/* PLATFORM FILTER */}
         <div>
           <div>Platform filter</div>
-          <Radio.Group
+          <RadioGroup
             value={botQuery.platform}
-            optionType="button"
-            buttonStyle="solid"
-            onChange={(e) => {
-              console.log(`value is ${e.target.value}`)
-              botQuery.platform = e.target.value
+            onChange={(value: string) => {
+              botQuery.platform = value
               console.log(`bot query platform is ${botQuery.platform}`)
               onLoadBots(true)
             }}
           >
             {platformFilters.map((item,index) =>
-              <Radio.Button 
+              <Radio
                 key={index}
                 value={item.query_value}
               >
                 { item.label }
-              </Radio.Button>
+              </Radio>
             )}
-          </Radio.Group>
+          </RadioGroup>
         </div>
         {/* GENDER FILTER */}
         <div>
           <div>Gender filter</div>
-          <Radio.Group
+          <RadioGroup
             value={botQuery.gender}
-            optionType="button"
-            buttonStyle="solid"
-            onChange={(e) => {
-              botQuery.gender = e.target.value
+            onChange={(value: any) => {
+              botQuery.gender = value
               onLoadBots(true)
             }}
           >
               {genderFilters.map((item,index) =>
-                <Radio.Button 
+                <Radio
                   key={index}
                   value={item.query_value}
                 >
                   { item.label }
-                </Radio.Button>
+                </Radio>
               )}
-          </Radio.Group>
+          </RadioGroup>
         </div>
       </div>
 
@@ -111,8 +106,42 @@ const BotsTable = observer(({onLoadBots}: BotsTableProps) => {
         {/* ACTIVE FILTER */}
         <div>
           <div>Active filter</div>
+          {/*
+          <Popover 
+            matchWidth={true}
+            orientation="vertical"
+          >
+            {({ isOpen, onClose }) => (
+              <>
+              <PopoverTrigger>
+                  <Button>
+                    { botQuery.is_active }
+                  </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverBody>
+                  {activeFilters.map((filter,index) =>
+                      <Button 
+                        value={filter.query_value} 
+                        key={index}
+                        onClick={() => {
+                          onClose()
+                          botQuery.is_active = filter.query_value
+                          onLoadBots(true)
+                        }}
+                      >
+                        { filter.label }
+                      </Button>
+                  )}
+                </PopoverBody>
+              </PopoverContent>
+              </>
+            )}
+          </Popover>
+          */}
+
           <Select
-            className="w-32"
+            // className="w-32"
             value={botQuery.is_active}
             onChange={(value: any, option) => {
               botQuery.is_active = value
@@ -125,6 +154,7 @@ const BotsTable = observer(({onLoadBots}: BotsTableProps) => {
               </Option>
             )}
           </Select>
+
         </div>
 
         {/* IS IN USE FILTER */}
@@ -153,15 +183,21 @@ const BotsTable = observer(({onLoadBots}: BotsTableProps) => {
       {/* TABLE SIZE */}
       <div className="mt-2">
         <div>Table size</div>
-        <Radio.Group
-          options={tableSizes}
+        <RadioGroup
           value={tableSize}
-          optionType="button"
-          buttonStyle="solid"
-          onChange={(e) => {
-            setTableSize(e.target.value)
+          onChange={(value) => {
+            setTableSize(value)
           }}
-        />
+        >
+          {tableSizes.map((item, index) =>
+            <Radio
+              key={index}
+              value={item.value}
+            >
+              { item.label }
+            </Radio>
+          )}
+        </RadioGroup>
       </div>
 
       <Table
@@ -354,8 +390,7 @@ const Bots: NextPage = observer(() => {
     <main className="mx-11 my-7">
       {/* RELOAD BUTTON */}
       <Button
-        type="primary"
-        shape="round"
+        variant="solid"
         onClick={() => router.push('bots/new')}
       >
         Add new bot

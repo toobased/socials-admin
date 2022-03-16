@@ -36,6 +36,12 @@ const MenuItems: Array<any> = [
     path: "/bots",
     children: []
   },
+  {
+   key: "5",
+    name: "Bot tasks",
+    path: "/bot_tasks",
+    children: []
+  },
 ]
 
 const getCurrentMenuBlock = (item: any) => {

@@ -9,7 +9,7 @@ class BotsApi extends HttpClient{
     const { data } = await this.client.get<BotSearch>(
       '/bots/',
       {
-        params: query
+        params: query.getQuery()
       }
     );
     return data

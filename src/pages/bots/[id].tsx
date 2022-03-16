@@ -2,7 +2,7 @@ import { BotInterface } from "@/models/bots";
 import { BotContext } from "@/store/botsStore";
 import { errorMessage, successMessage } from "@/utils";
 import { observer } from 'mobx-react'
-import { Button } from "antd";
+import { Button, Popconfirm } from "antd";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -68,11 +68,17 @@ const BotPage: NextPage = observer(() => {
 
   const DeleteBotButton = () => (
     <>
-      <Button
-        onClick={() => deleteBot()}
+      <Popconfirm
+        placement="topLeft"
+        title="Delete bot"
+        okText="Yeap, delete"
+        cancelText="Nope"
+        onConfirm={() => deleteBot()}
       >
-        Delete bot
-      </Button>
+        <Button danger>
+          Delete bot
+        </Button>
+      </Popconfirm>
     </>
   )
 
@@ -135,8 +141,9 @@ const BotPage: NextPage = observer(() => {
     <>
       <main>
       <div className="px-10 py-4">
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-end gap-3">
           <EditBotButton />
+          <DeleteBotButton />
         </div>
         <BotCommonInfo />
       </div>
