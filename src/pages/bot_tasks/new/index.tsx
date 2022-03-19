@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
-import router from "next/router";
+import router, { useRouter } from "next/router";
 import { Button, Heading, Input, NumberInput, NumberInputField, Select } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext } from "@/store/botsTasksStore";
@@ -8,6 +8,7 @@ import { PlatformEnum } from "@/models/bots";
 import { TaskTypeEnum, WorkLagEnum } from "@/models/enums/bot_tasks";
 import { LikePostTargetData } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
+import { errorMessageChakra, successMessageChakra } from "@/utils";
 
 interface TaskDateEndPickerProps {
   onDateChange: Function
@@ -85,6 +86,9 @@ const LikePostDataBlock = observer(() => {
         <Select
           value={`${data.work_lag}`}
           onChange={(e) => {
+            const value = e.target.value
+            value != WorkLagEnum.custom_date &&
+              (data.date_finish.date = '')
             data.work_lag = e.target.value as WorkLagEnum
           }}
         >
@@ -104,8 +108,7 @@ const LikePostDataBlock = observer(() => {
         <div className="mt-3">
           <TaskDateEndPicker
             onDateChange={(dateString: string) => {
-              console.log('date string is', dateString)
-              data.date_finish = dateString
+              data.date_finish && (data.date_finish.date = dateString)
             }}
           />
         </div>
@@ -118,14 +121,53 @@ const LikePostDataBlock = observer(() => {
 })
 
 const BotTaskAddButton = observer(() => {
+  const router = useRouter()
+  const botTasksStore = useContext(BotTasksContext)
+  const task = botTasksStore.newTask
+  const currentBotTaskLoading = botTasksStore.loaders.currentBotTaskLoading
+
+  const createBotTask = async () => {
+    if (!task.isValid() ) {
+      errorMessageChakra('Task is not valid')
+      return null
+    }
+    const [isValid, msg] = await botTasksStore.createBotTaskApi()
+    if (isValid) {
+      successMessageChakra(msg)
+      router.push('/bot_tasks')
+      return
+    }
+    errorMessageChakra(msg)
+  }
   return (
     <div className="mt-4">
       <Button
-        disabled={true}
+        disabled={!task.isValid()}
+        isLoading={currentBotTaskLoading}
+        loadingText="Creating"
+        onClick={e => createBotTask() }
       >
         Create task
       </Button>
     </div>
+  )
+})
+
+const BotTaskErrorContainer = observer(() => {
+  const botTasksStore = useContext(BotTasksContext)
+  const taskCreationError = botTasksStore.errors.taskCreationError
+
+  if (taskCreationError) {
+    return (
+      <div className="mt-2">
+        error is { taskCreationError }
+      </div>
+    )
+  }
+
+  return (
+    <>
+    </>
   )
 })
 
@@ -230,6 +272,7 @@ const NewBotTask: NextPage = observer(() => {
         {task.task_type == TaskTypeEnum.like_post && 
           <LikePostDataBlock />
         }
+        <BotTaskErrorContainer />
         <BotTaskAddButton />
       </main>
     </>

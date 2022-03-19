@@ -17,38 +17,65 @@ export interface ILikePostTargetData {
     date_finish: ITaskDateFinish
 }
 
-export class LikePostTargetData {
-  post_link: string = ''
-  like_count?: number = 0
-  work_lag?: WorkLagEnum = WorkLagEnum.five_minutes
-  // TODO: change to Date?
-  date_finish?: string = ''
-
-  constructor(params: any = {}) {
-    makeAutoObservable(this)
-    Object.assign(this, params)
-  }
-}
-
-export interface ITaskTargetData {
-  like_post?: LikePostTargetData 
-}
-
-export class TaskTargetData implements ITaskTargetData {
-  like_post: LikePostTargetData = new LikePostTargetData()
-
-  initLikePost () {
-    this.like_post = new LikePostTargetData()
-  }
-
+export class TaskDateFinish {
+  date: string = ''
   constructor () {
     makeAutoObservable(this)
   }
+}
+
+export class LikePostTargetData {
+    post_link: string = ''
+    like_count?: number = 0
+    work_lag?: WorkLagEnum = WorkLagEnum.five_minutes
+    // TODO: change to Date?
+    date_finish: TaskDateFinish = new TaskDateFinish()
+
+    isValid (): boolean {
+      if (
+        (this.post_link == '') ||
+        !(this.like_count) ||
+        (this.like_count < 1) ||
+        !(this.work_lag) ||
+        !(Object.values(WorkLagEnum).includes(this.work_lag))
+      ) {
+        return false
+      }
+      if (
+        (this.work_lag === WorkLagEnum.custom_date) &&
+        (!(this.date_finish) ||
+        (this.date_finish.date === ''))
+      ) {
+        return false
+      }
+      return true
+    }
+
+    constructor(params: any = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, params)
+    }
+}
+
+export interface ITaskTargetData {
+    like_post?: LikePostTargetData
+}
+
+export class TaskTargetData implements ITaskTargetData {
+    like_post: LikePostTargetData = new LikePostTargetData()
+
+    initLikePost() {
+        this.like_post = new LikePostTargetData()
+    }
+
+    constructor() {
+        makeAutoObservable(this)
+    }
 
 }
 
 export interface ITaskResultMetrics {
-    like_post?: ILikePostResultMetrics 
+    like_post?: ILikePostResultMetrics
 }
 /** Bot task error class */
 export interface IBotTaskError {
@@ -89,13 +116,30 @@ export interface IBotTask {
  * it is auto observed
 * */
 export class CreateBotTask {
-  title: string = '';  
-  platform: PlatformEnum = PlatformEnum.vk;
-  task_type?: TaskTypeEnum = undefined;
-  task_target_data: TaskTargetData = new TaskTargetData();
+    title: string = '';
+    platform: PlatformEnum = PlatformEnum.vk;
+    task_type?: TaskTypeEnum = undefined;
+    task_target_data: TaskTargetData = new TaskTargetData();
 
-  constructor(params: any = {}) {
-    makeAutoObservable(this)
-    Object.assign(this, params)
-  }
+    constructor(params: any = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, params)
+    }
+
+    isValid (): boolean {
+      let v = false
+      if (
+        !(Object.values(PlatformEnum).includes(this.platform)) ||
+        !(this.task_type) ||
+        !(Object.values(TaskTypeEnum).includes(this.task_type))
+      ) {
+        return false
+      }
+      // validation check for like_post
+      (this.task_type == TaskTypeEnum.like_post) &&
+        (v = this.task_target_data.like_post.isValid())
+      // TODO: add validations for other types
+      console.log('v is', v)
+      return v
+    }
 }

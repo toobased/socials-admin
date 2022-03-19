@@ -1,5 +1,8 @@
+import { createStandaloneToast, UseToastOptions } from "@chakra-ui/react"
 import { message } from "antd"
 import { AxiosResponse } from "axios"
+
+const chakraToast = createStandaloneToast()
 
 /**
  * copy @param {string} text to clipboard
@@ -7,11 +10,17 @@ import { AxiosResponse } from "axios"
 **/
 export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text)
+  successMessageChakra(
+    "Copied to clipboard!",
+  )
+  /*
   message.success(
     "Copied to clipboard!",
   )
+  */
 }
 
+// antd messages
 export function successMessage(text: string) {
   message.success(
     `${text}`
@@ -24,6 +33,29 @@ export function errorMessage(text: string) {
   )
 }
 
+// chakra messages
+export function successMessageChakra(desc: string) {
+  chakraToast({
+    title: 'Success',
+    description: desc,
+    status: 'success',
+    duration: 2000,
+    isClosable: true,
+    position: "top"
+  } as UseToastOptions)
+}
+// chakra messages
+export function errorMessageChakra(desc: string) {
+  chakraToast({
+    title: 'Error',
+    description: desc,
+    status: 'error',
+    duration: 3000,
+    isClosable: true,
+    position: "top"
+  } as UseToastOptions)
+}
+
 export function simpleProcessResponse(
   resp: AxiosResponse,
   successMsg: string = "its okey",
@@ -33,5 +65,5 @@ export function simpleProcessResponse(
     return [true, successMsg]
   }
   const msg = resp.data?.detail || errorMsg
-  return [false, msg]
+  return [false, JSON.stringify(msg)]
 }
