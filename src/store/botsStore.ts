@@ -124,7 +124,6 @@ export class BotStore {
    this.setBotsLoading(true)
    this.botsLoadingError = false
    try {
-     console.log('bots search query is', this.botSearchQuery)
      const botSearch: BotSearch = await botsApi.getBots(
        this.botSearchQuery
      )

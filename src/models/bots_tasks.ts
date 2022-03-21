@@ -143,3 +143,31 @@ export class CreateBotTask {
       return v
     }
 }
+
+export interface IBotTaskSearch {
+  bot_tasks: IBotTask[]
+  total: number
+}
+
+export class BotTasksSearch implements IBotTaskSearch {
+  bot_tasks: IBotTask[] = []
+  total: number = 0
+
+  constructor() {
+    makeAutoObservable(this)
+  }
+}
+
+export class BotTasksSearchQuery {
+  skip: number = 0;
+  limit: number = 10;
+  platform?: PlatformEnum = undefined;
+  task_type?: TaskTypeEnum = undefined;
+  is_active?: boolean = undefined;
+  status?: BotTaskStatusEnum = undefined;
+
+  constructor(params: any = {}) {
+      makeAutoObservable(this)
+      Object.assign(this, params)
+  }
+}
