@@ -11,6 +11,7 @@ import { Layout } from 'antd';
 import { ChakraProvider, Theme } from '@chakra-ui/react';
 import { extendTheme } from '@chakra-ui/react';
 import { ButtonTheme } from '@/styles/chakraButtonTheme';
+import { BotTasksContext } from '@/store/botsTasksStore';
 
 const colors = {
   error: 'red.500',
@@ -32,6 +33,7 @@ const { Content } = Layout
 function MyApp({ Component, pageProps }: AppProps) {
   const appStore = useContext(AppContext)
   const userStore = useContext(UserContext) 
+  const tasksStore = useContext(BotTasksContext)
 
   const [initialDataLoading, setInitialDataLoading] = useState(true);
 
@@ -39,6 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     const loadInitialData = async () => {
       await appStore.getCommonInfo();
       await userStore.checkUserAuthorized();
+      await tasksStore.getTasksTypes();
       setInitialDataLoading(false)
     }
     loadInitialData();

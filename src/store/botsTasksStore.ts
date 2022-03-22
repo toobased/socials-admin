@@ -1,5 +1,5 @@
 import botsTasksApi from "@/api/botsTasks";
-import { BotTasksSearch, BotTasksSearchQuery, CreateBotTask, IBotTask, IBotTaskSearch } from "@/models/bots_tasks";
+import { BotTasksSearch, BotTasksSearchQuery, CreateBotTask, IBotTask, IBotTaskSearch, ITaskType } from "@/models/bots_tasks";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
 import { makeAutoObservable } from "mobx";
@@ -12,6 +12,7 @@ export class BotTaskStoreLoaders {
   deleteBotTaskLoading: boolean = false;
   updateBotTaskLoading: boolean = false;
   botTaskLoading: boolean = false;
+  botTaskTypesLoading: boolean = false;
 
   setCurrentBotTaskLoading(l: boolean) {
     this.currentBotTaskLoading = l
@@ -37,6 +38,10 @@ export class BotTaskStoreLoaders {
     this.botTaskLoading = l
   }
 
+  setBotTaskTypesLoading (l: boolean) {
+      this.botTaskTypesLoading = l
+  }
+
   constructor() {
     makeAutoObservable(this)
   }
@@ -47,6 +52,7 @@ export class BotTasksStoreErrors {
   tasksLoadingError?: string
   taskLoadingError?: string
   taskUpdateError?: string
+  taskTypesLoadingError?: string
 
   setTaskCreationError(error: any) {
     const e = JSON.stringify(error)
@@ -67,6 +73,11 @@ export class BotTasksStoreErrors {
     this.taskUpdateError = e 
   }
 
+  setTaskTypesLoadingError(error: any) {
+    const e = JSON.stringify(error)
+    this.taskTypesLoadingError = e 
+  }
+
   removeTaskCreationError() {
     this.taskCreationError = undefined
   }
@@ -83,12 +94,17 @@ export class BotTasksStoreErrors {
     this.taskLoadingError = undefined
   }
 
+  removeTaskTypesLoadingError() {
+    this.taskTypesLoadingError = undefined
+  }
+
   constructor () {
     makeAutoObservable(this)
   }
 }
 
 export class BotTasksStore {
+  taskTypes?: ITaskType[];
   currentTask?: IBotTask;
   newTask: CreateBotTask = new CreateBotTask();
   loaders: BotTaskStoreLoaders = new BotTaskStoreLoaders();
@@ -115,8 +131,35 @@ export class BotTasksStore {
     console.log('run set current task', this.currentTask)
   }
 
+  setTaskTypes(types: ITaskType[]) {
+    this.taskTypes  = types
+  }
+
   removeCurrentTask() {
     this.currentTask = undefined
+  }
+
+  async getTasksTypes () {
+    if (this.loaders.botTaskTypesLoading) {
+      return
+    }
+    this.loaders.setBotTaskTypesLoading(true)
+    this.errors.removeTaskTypesLoadingError()
+    try {
+      const resp = await botsTasksApi.getTaskTypes()
+      const [isSuccess, msg] = simpleProcessResponse(
+        resp, '', 'error while getting tasks types'
+      )
+      if (isSuccess) {
+        this.setTaskTypes(resp.data)
+      } else {
+        this.errors.setTaskTypesLoadingError(msg)
+      }
+    } catch(error) {
+        this.errors.setTaskTypesLoadingError(error)
+    } finally {
+      this.loaders.setBotTaskTypesLoading(false)
+    }
   }
 
   async getBotTasksApi (replace: boolean = false) {

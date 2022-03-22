@@ -8,6 +8,7 @@ export enum BotTaskStatusEnum {
 export enum TaskTypeEnum {
     like_post = 'like_post',
     repost_post = 'repost_post',
+    regular_like_group = 'regular_like_group',
     dummy = 'dummy'
 }
 
@@ -26,4 +27,9 @@ export enum WorkLagEnum {
   one_month = 'one month',
   custom_date = 'Custom date'
 
+}
+
+export enum TaskDurationTypeEnum {
+    finite = "finite",
+    regular = "regular"
 }

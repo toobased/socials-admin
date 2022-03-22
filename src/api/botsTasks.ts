@@ -6,6 +6,14 @@ const prefixUrl = '/bots_tasks'
 
 class BotsTasksApi extends HttpClient{
 
+  public getTaskTypes = async ():
+    Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.get(
+      `${prefixUrl}/tasks_types`,
+    )
+    return response
+  }
+
   public getBotTasks = async (query: BotTasksSearchQuery):
     Promise<AxiosResponse> => {
     const response: AxiosResponse = await this.client.get(

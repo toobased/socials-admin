@@ -9,6 +9,7 @@ import { TaskTypeEnum, WorkLagEnum } from "@/models/enums/bot_tasks";
 import { CreateBotTask, LikePostTargetData } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
 import { errorMessageChakra, successMessageChakra } from "@/utils";
+import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group";
 
 interface TaskDateEndPickerProps {
   onDateChange: Function
@@ -65,7 +66,7 @@ export const LikePostDataBlock = observer(() => {
         <div className="font-semibold text-md">Like count</div>
         <NumberInput
           className="mt-1"
-          placeholder="Enter post link"
+          placeholder="Enter like count"
           defaultValue={1}
           value={data.like_count}
           onChange={(s:string, n: number) => {
@@ -217,6 +218,17 @@ export const BotTaskCreationForm = observer(() => {
   })
 
   const SelectTaskType = observer(() => {
+    const taskTypes = botTasksStore.taskTypes
+    if (taskTypes == undefined) {
+      return (<></>)
+    }
+
+    const currentTaskTypes = () => {
+      return taskTypes.filter((item) =>
+        item.platforms.includes(task.platform)
+      )
+    }
+
     return (
       <div>
         <div className="font-semibold text-md mb-1">
@@ -229,6 +241,16 @@ export const BotTaskCreationForm = observer(() => {
             task.task_type = e.target.value as TaskTypeEnum
           }}
         >
+          { currentTaskTypes().map((item, index) =>
+              <option
+                value={item.id}
+                key={index}
+                disabled={!item.is_active}
+              >
+                {item.name}
+              </option>
+          )}
+          {/* 
           { Object.values(TaskTypeEnum).map((item, index) =>
             <option
               value={item}
@@ -237,7 +259,8 @@ export const BotTaskCreationForm = observer(() => {
               {item}
             </option>
           )}
-        </Select>
+          */}
+</Select>
       </div>
     )
   })
@@ -295,6 +318,9 @@ const NewBotTask: NextPage = observer(() => {
         <BotTaskCreationForm />
         {task.task_type == TaskTypeEnum.like_post && 
           <LikePostDataBlock />
+        }
+        {task.task_type == TaskTypeEnum.regular_like_group && 
+          <RegularLikeGroupCreateBlock />
         }
         <BotTaskErrorContainer />
         <BotTaskAddButton />

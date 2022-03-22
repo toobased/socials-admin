@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { PlatformEnum } from "./enums/bots";
-import { BotTaskStatusEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
+import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
+import { RegularLikeGroupTargetData } from "./tasks_regular_like";
 
 export interface ITaskDateFinish {
     date: string
@@ -15,6 +16,15 @@ export interface ILikePostTargetData {
     like_count: number
     work_lag?: WorkLagEnum
     date_finish: ITaskDateFinish
+}
+
+export interface ITaskType {
+    id: string
+    name: string
+    description: string
+    platforms: PlatformEnum[]
+    duration_type: TaskDurationTypeEnum
+    is_active: boolean
 }
 
 export class TaskDateFinish {
@@ -34,10 +44,6 @@ export class LikePostTargetData {
     constructor(params: any = {}) {
         makeAutoObservable(this)
         Object.assign(this, params)
-    }
-
-    someMethod () {
-      return ''
     }
 
     isValid(): boolean {
@@ -63,19 +69,26 @@ export class LikePostTargetData {
 
 export interface ITaskTargetData {
     like_post?: LikePostTargetData
+    regular_like_group?: RegularLikeGroupTargetData
 }
 
 export class TaskTargetData implements ITaskTargetData {
     like_post?: LikePostTargetData = new LikePostTargetData()
+    regular_like_group?: RegularLikeGroupTargetData = new RegularLikeGroupTargetData()
 
     initLikePost() {
         this.like_post = new LikePostTargetData()
     }
+    initRegularLikeGroup () {
+      this.regular_like_group = new RegularLikeGroupTargetData()
+    }
 
     constructor(params: any = {}) {
       const { like_post } = params
+      const { regular_like_group } = params
       Object.assign(this, params)
       this.like_post = new LikePostTargetData(like_post)
+      this.regular_like_group = new RegularLikeGroupTargetData(regular_like_group)
       makeAutoObservable(this)
     }
 
