@@ -3,7 +3,7 @@ import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
 
 export interface ITaskDateFinish {
-    date: Date
+    date: string
 }
 
 export interface ILikePostResultMetrics {
@@ -31,7 +31,16 @@ export class LikePostTargetData {
     // TODO: change to Date?
     date_finish: TaskDateFinish = new TaskDateFinish()
 
-    isValid (): boolean {
+    constructor(params: any = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, params)
+    }
+
+    someMethod () {
+      return ''
+    }
+
+    isValid(): boolean {
       if (
         (this.post_link == '') ||
         !(this.like_count) ||
@@ -50,11 +59,6 @@ export class LikePostTargetData {
       }
       return true
     }
-
-    constructor(params: any = {}) {
-        makeAutoObservable(this)
-        Object.assign(this, params)
-    }
 }
 
 export interface ITaskTargetData {
@@ -62,14 +66,17 @@ export interface ITaskTargetData {
 }
 
 export class TaskTargetData implements ITaskTargetData {
-    like_post: LikePostTargetData = new LikePostTargetData()
+    like_post?: LikePostTargetData = new LikePostTargetData()
 
     initLikePost() {
         this.like_post = new LikePostTargetData()
     }
 
-    constructor() {
-        makeAutoObservable(this)
+    constructor(params: any = {}) {
+      const { like_post } = params
+      Object.assign(this, params)
+      this.like_post = new LikePostTargetData(like_post)
+      makeAutoObservable(this)
     }
 
 }
@@ -88,15 +95,15 @@ export interface IBotTask {
     id: string;
     is_active: boolean;
     status: BotTaskStatusEnum;
-    created_date: Date;
-    updated_date: Date;
+    created_date: string;
+    updated_date: string;
     next_run_timestamp?: number;
     title: string;
     platform?: PlatformEnum;
     task_type: TaskTypeEnum;
     error?: IBotTaskError;
     task_result_metrics: ITaskResultMetrics
-    task_target_data: ITaskTargetData
+    task_target_data: TaskTargetData 
     // bots_used?: string[]
 
     /*
@@ -120,10 +127,13 @@ export class CreateBotTask {
     platform: PlatformEnum = PlatformEnum.vk;
     task_type?: TaskTypeEnum = undefined;
     task_target_data: TaskTargetData = new TaskTargetData();
+    is_active: boolean = true;
 
     constructor(params: any = {}) {
+        const { task_target_data } = params
         makeAutoObservable(this)
         Object.assign(this, params)
+        this.task_target_data = new TaskTargetData(task_target_data)
     }
 
     isValid (): boolean {
@@ -137,10 +147,24 @@ export class CreateBotTask {
       }
       // validation check for like_post
       (this.task_type == TaskTypeEnum.like_post) &&
-        (v = this.task_target_data.like_post.isValid())
+        (this.task_target_data.like_post != undefined) &&
+          (v = this.task_target_data.like_post.isValid())
       // TODO: add validations for other types
       console.log('v is', v)
       return v
+    }
+
+    assign (t: IBotTask) {
+      Object.assign(this, t)
+    }
+
+    reset () {
+      Object.assign(this, {
+        title: '',
+        platform: PlatformEnum.vk,
+        task_type: '',
+        task_target_data: new TaskTargetData()
+      })
     }
 }
 
@@ -170,4 +194,7 @@ export class BotTasksSearchQuery {
       makeAutoObservable(this)
       Object.assign(this, params)
   }
+}
+
+export interface CountableMetrics {
 }

@@ -67,3 +67,16 @@ export function simpleProcessResponse(
   const msg = resp.data?.detail || errorMsg
   return [false, JSON.stringify(msg)]
 }
+
+
+export function stringToDate(
+    s: string
+) {
+    return new Date(s)
+}
+
+export function sweetyDate(
+    s: string
+) {
+    return stringToDate(s).toUTCString()
+}

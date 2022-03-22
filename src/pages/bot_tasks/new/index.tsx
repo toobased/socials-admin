@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
 import router, { useRouter } from "next/router";
-import { Button, Heading, Input, NumberInput, NumberInputField, Select } from "@chakra-ui/react";
+import { Button, Heading, Input, NumberInput, NumberInputField, Select, Switch } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext } from "@/store/botsTasksStore";
 import { PlatformEnum } from "@/models/bots";
 import { TaskTypeEnum, WorkLagEnum } from "@/models/enums/bot_tasks";
-import { LikePostTargetData } from "@/models/bots_tasks";
+import { CreateBotTask, LikePostTargetData } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
 import { errorMessageChakra, successMessageChakra } from "@/utils";
 
@@ -28,7 +28,7 @@ const TaskDateEndPicker = (props: TaskDateEndPickerProps) => {
 }
 
 
-const LikePostDataBlock = observer(() => {
+export const LikePostDataBlock = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
   const taskData = botTasksStore.newTask.task_target_data
   const data = taskData.like_post
@@ -120,7 +120,7 @@ const LikePostDataBlock = observer(() => {
 
 })
 
-const BotTaskAddButton = observer(() => {
+export const BotTaskAddButton = observer(() => {
   const router = useRouter()
   const botTasksStore = useContext(BotTasksContext)
   const task = botTasksStore.newTask
@@ -135,6 +135,7 @@ const BotTaskAddButton = observer(() => {
     if (isValid) {
       successMessageChakra(msg)
       router.push('/bot_tasks')
+      await botTasksStore.getBotTasksApi(true)
       return
     }
     errorMessageChakra(msg)
@@ -153,7 +154,7 @@ const BotTaskAddButton = observer(() => {
   )
 })
 
-const BotTaskErrorContainer = observer(() => {
+export const BotTaskErrorContainer = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
   const taskCreationError = botTasksStore.errors.taskCreationError
 
@@ -171,7 +172,7 @@ const BotTaskErrorContainer = observer(() => {
   )
 })
 
-const BotTaskCreationForm = observer(() => {
+export const BotTaskCreationForm = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
   const task = botTasksStore.newTask
 
@@ -223,7 +224,7 @@ const BotTaskCreationForm = observer(() => {
         </div>
         <Select
           placeholder='Choose task type'
-          value={task.task_type}
+          value={`${task.task_type}`}
           onChange={(e) => {
             task.task_type = e.target.value as TaskTypeEnum
           }}
@@ -241,6 +242,23 @@ const BotTaskCreationForm = observer(() => {
     )
   })
 
+  const SelectTaskActive = observer(() => {
+    return (
+      <div>
+        <div className="font-semibold text-md mb-1">
+          Is task active
+        </div>
+        <Switch
+          size="md"
+          isChecked={task.is_active}
+          onInput={() => {
+            task.is_active = !task.is_active
+          }}
+        /> 
+      </div>
+    )
+  })
+
   return (
     <div className="bg-white rounded-lg px-4 py-6">
       <Heading size="md" className="mb-2">
@@ -253,15 +271,21 @@ const BotTaskCreationForm = observer(() => {
         <SelectPlatform />
         <SelectTaskType />
       </div>
+      <div className="mt-2">
+        <SelectTaskActive />
+      </div>
 
     </div>
   )
-
 })
 
 const NewBotTask: NextPage = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
   const task = botTasksStore.newTask
+
+  useEffect(() => {
+    botTasksStore.newTask.reset()
+  }, [])
   return (
     <>
       <main className="mx-11 my-7">

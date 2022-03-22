@@ -1,4 +1,4 @@
-import { BotTasksSearchQuery, CreateBotTask } from "@/models/bots_tasks";
+import { BotTasksSearchQuery, CreateBotTask, IBotTask } from "@/models/bots_tasks";
 import { AxiosResponse } from "axios";
 import HttpClient from "./client";
 
@@ -22,6 +22,31 @@ class BotsTasksApi extends HttpClient{
     const response: AxiosResponse = await this.client.post(
       `${prefixUrl}/`,
       botTask
+    )
+    return response
+  }
+
+  public deleteBotTask = async (id: string): 
+    Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.delete(
+      `${prefixUrl}/${id}`,
+    )
+    return response
+  }
+
+  public updateBotTask = async (task: IBotTask): 
+    Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.patch(
+      `${prefixUrl}/${task.id}`,
+      task
+    )
+    return response
+  }
+
+  public getBotTaskById = async (id: string): 
+    Promise<AxiosResponse> => {
+    const response: AxiosResponse = await this.client.get(
+      `${prefixUrl}/${id}`,
     )
     return response
   }
