@@ -1,3 +1,4 @@
+import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group"
 import { CreateBotTask } from "@/models/bots_tasks"
 import { TaskTypeEnum } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
@@ -100,6 +101,10 @@ const EditBotTask: NextPage = observer(() => {
         {newTask.task_type == TaskTypeEnum.like_post && 
           newTask.task_target_data.like_post &&
           <LikePostDataBlock />
+        }
+        {newTask.task_type == TaskTypeEnum.regular_like_group && 
+          newTask.task_target_data.regular_like_group &&
+          <RegularLikeGroupCreateBlock />
         }
         <BotTaskErrorContainer />
         <BotTaskUpdateButton />

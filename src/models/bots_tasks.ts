@@ -158,11 +158,17 @@ export class CreateBotTask {
       ) {
         return false
       }
+
       // validation check for like_post
-      (this.task_type == TaskTypeEnum.like_post) &&
+      if(this.task_type == TaskTypeEnum.like_post) {
         (this.task_target_data.like_post != undefined) &&
           (v = this.task_target_data.like_post.isValid())
-      // TODO: add validations for other types
+      }
+      // validation check for regular_like_group
+      if(this.task_type == TaskTypeEnum.regular_like_group) {
+        (this.task_target_data.regular_like_group != undefined) &&
+          (v = this.task_target_data.regular_like_group.isValid())
+      }
       console.log('v is', v)
       return v
     }
