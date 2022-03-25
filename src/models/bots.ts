@@ -15,6 +15,7 @@ export interface BotInterface {
   comment_count: number;
   platform?: PlatformEnum;
   gender?: GenderEnum;
+  rest_until?: string;
 }
 
 /*
@@ -48,6 +49,7 @@ export class BotCreate {
   is_in_use: boolean = false;
   platform: PlatformEnum = PlatformEnum.vk;
   gender: GenderEnum = GenderEnum.male;
+  rest_until?: string = undefined;
 
   constructor(params: any = {}) {
     makeAutoObservable(this)

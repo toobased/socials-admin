@@ -1,8 +1,9 @@
 import { GenderEnum, PlatformEnum } from "@/models/bots";
 import { BotContext } from "@/store/botsStore";
-import { Button, Input, Radio, Switch } from "antd"
+import { Button, DatePicker, Input, Radio, Switch } from "antd"
 import { observer } from "mobx-react"
 import { useContext } from "react";
+import InfoTooltip from "../common/InfoTooltip";
 
 const CreateForm = () => {
 
@@ -140,6 +141,33 @@ const CreateForm = () => {
     </>
   ))
 
+  const SetBotResting = observer(() => {
+    return (
+      <>
+      {/* bot resting */} 
+      <div>
+        <div className="font-semibold text-md flex gap-2 items-center">
+          <span>Take a rest until</span>
+          <InfoTooltip 
+            text={
+              "If u set bot not active and specify resting date, it will we waked up in this date and start to be active 🔥"
+            }
+          />
+        </div>
+        <div>
+          <DatePicker
+            showTime
+            onChange={(value: any, dateString: string) => {
+              newBot.rest_until = dateString
+            }}
+          />
+        </div>
+      </div>
+      {/* eof bot resting */}
+      </>
+    )
+  })
+
   return (
     <>
       {/* BOT FORM */}
@@ -157,6 +185,7 @@ const CreateForm = () => {
       <div className="mt-3 flex flex-col gap-2">
         <SetActive />
         <SetInUse />
+        <SetBotResting />
       </div>
       {/* EOF BOT FORM */}
     </>
