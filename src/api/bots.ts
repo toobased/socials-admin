@@ -22,6 +22,14 @@ class BotsApi extends HttpClient{
     return resp
   }
 
+  public checkBotBanned = async (id: string): 
+    Promise<AxiosResponse> => {
+      const resp = await this.client.get(
+        `bots/${id}/check_banned` 
+      );
+      return resp
+  }
+
   public deleteBot = async (id: string): Promise<AxiosResponse> => {
     const resp: AxiosResponse = await this.client.delete<AxiosResponse>(
       `/bots/${id}`

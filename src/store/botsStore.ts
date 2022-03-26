@@ -8,6 +8,7 @@ import { createContext } from "react";
 export class BotStoreLoaders {
   botCreationLoading: boolean = false
   currentBotLoading: boolean = false
+  checkBannedLoading: boolean = false
 
   setBotCreationLoading(isLoading: boolean) {
       this.botCreationLoading = isLoading
@@ -15,6 +16,10 @@ export class BotStoreLoaders {
 
   setCurrentBotLoading(isLoading: boolean) {
       this.currentBotLoading = isLoading
+  }
+
+  setCheckBannedLoading(isLoading: boolean) {
+      this.checkBannedLoading = isLoading
   }
 
   constructor () {
@@ -185,6 +190,26 @@ export class BotStore {
    } catch (error) {
      return [false, `${error}`]
    } finally {
+   }
+ }
+
+ async checkBannedApi (id: string): Promise<[boolean, string]> {
+   if (this.loaders.checkBannedLoading) {
+     return [false, 'already requesting']
+   }
+   this.loaders.setCheckBannedLoading(true)
+   try {
+     const resp: AxiosResponse = 
+      await botsApi.checkBotBanned(id)
+     return simpleProcessResponse(
+       resp,
+       "checked",
+       "error while checking"
+     )
+   } catch (error) {
+     return [false, `${error}`]
+   } finally {
+       this.loaders.setCheckBannedLoading(false)
    }
  }
 

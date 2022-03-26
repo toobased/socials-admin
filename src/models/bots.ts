@@ -10,6 +10,8 @@ export interface BotInterface {
   last_used: string | Date;
   is_active: boolean;
   is_in_use: boolean;
+  is_banned: boolean;
+  is_resting: boolean;
   like_count: number;
   reply_count: number;
   comment_count: number;

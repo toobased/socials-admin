@@ -3,7 +3,9 @@ import { Icon } from "@iconify/react"
 interface BooleanComponentProps { 
   value?: boolean,
   applyText?: boolean,
-  reverseEffect?: boolean
+  reverseEffect?: boolean,
+  posColor?: string,
+  negColor?: string
 }
 
 
@@ -33,7 +35,9 @@ const FalseIcon = () => {
 const BooleanComponent = ({
   value = false,
   applyText = true,
-  reverseEffect = false
+  reverseEffect = false,
+  posColor = "#4ADE80",
+  negColor = "#F87171"
 }: BooleanComponentProps) => {
   const currentText =
     value && "Yes" || "No"
@@ -42,9 +46,9 @@ const BooleanComponent = ({
       (value && !reverseEffect) ||
       (!value && reverseEffect)
     ) {
-      return "#4ADE80"
+      return posColor
     }
-    return "#F87171"
+    return negColor
   }
   if (applyText) {
     return (
