@@ -1,4 +1,4 @@
-import { User } from '@/store/userStore'
+// import { User } from '@/store/userStore'
 import { observer } from 'mobx-react'
 import type { NextPage } from 'next'
 import Head from 'next/head'

@@ -4,6 +4,7 @@ import { Button, DatePicker, Input, Radio, Switch } from "antd"
 import { observer } from "mobx-react"
 import { useContext } from "react";
 import InfoTooltip from "../common/InfoTooltip";
+import AccessTokenVkHelper from "./AccessTokenVkHelper";
 
 const CreateForm = () => {
 
@@ -15,6 +16,16 @@ const CreateForm = () => {
 
   const generatePassword = () =>
     Math.random().toString(36).slice(-12);
+
+  const AccessTokenHelper = observer(() => {
+    return (
+      <div>
+        {newBot.platform == PlatformEnum.vk &&
+          <AccessTokenVkHelper />
+        }
+      </div>
+    )
+  })
 
   const SelectPlatform = observer(() => (
       <>
@@ -56,7 +67,14 @@ const CreateForm = () => {
     <>
     {/* USERNAME */}
     <div>
-      <div>Provide username</div>
+      <div className="font-semibold text-md flex gap-2 items-center">
+        <span>Provide username</span>
+        <InfoTooltip 
+          text={
+            "Mostly it should be phone number 📱 u use when register"
+          }
+        />
+      </div>
       <Input
         placeholder="Username"
         value={newBot.username}
@@ -178,6 +196,9 @@ const CreateForm = () => {
       <div className="mt-2 flex flex-wrap gap-4">
         <InputUsername />
         <InputPassword />
+      </div>
+      <div className="max-w-md mt-2">
+        <AccessTokenHelper />
       </div>
       <div className="max-w-md mt-2">
         <InputToken />
