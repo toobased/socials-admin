@@ -307,6 +307,7 @@ const NewBotTask: NextPage = observer(() => {
   const task = botTasksStore.newTask
 
   useEffect(() => {
+    botTasksStore.getTasksTypes()
     botTasksStore.newTask.reset()
   }, [])
   return (

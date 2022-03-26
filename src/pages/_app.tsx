@@ -33,7 +33,6 @@ const { Content } = Layout
 function MyApp({ Component, pageProps }: AppProps) {
   const appStore = useContext(AppContext)
   const userStore = useContext(UserContext) 
-  const tasksStore = useContext(BotTasksContext)
 
   const [initialDataLoading, setInitialDataLoading] = useState(true);
 
@@ -41,7 +40,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     const loadInitialData = async () => {
       await appStore.getCommonInfo();
       await userStore.checkUserAuthorized();
-      await tasksStore.getTasksTypes();
       setInitialDataLoading(false)
     }
     loadInitialData();

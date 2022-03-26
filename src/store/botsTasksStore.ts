@@ -104,7 +104,7 @@ export class BotTasksStoreErrors {
 }
 
 export class BotTasksStore {
-  taskTypes?: ITaskType[];
+  taskTypes: ITaskType[] = [];
   currentTask?: IBotTask;
   newTask: CreateBotTask = new CreateBotTask();
   loaders: BotTaskStoreLoaders = new BotTaskStoreLoaders();
@@ -132,14 +132,21 @@ export class BotTasksStore {
   }
 
   setTaskTypes(types: ITaskType[]) {
-    this.taskTypes  = types
+    this.taskTypes = types
   }
 
   removeCurrentTask() {
     this.currentTask = undefined
   }
 
-  async getTasksTypes () {
+  async getTasksTypes (replace: boolean = false) {
+    if (
+      (!replace) &&
+      (this.taskTypes) &&
+      (this.taskTypes.length > 0)
+    ) {
+      return
+    }
     if (this.loaders.botTaskTypesLoading) {
       return
     }
