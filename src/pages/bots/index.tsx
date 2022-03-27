@@ -9,15 +9,16 @@ import Column from 'antd/lib/table/Column'
 import CopyClipboardButton from '@/components/buttons/CopyClipboardButton'
 import BooleanIcon from '@/components/common/BooleanIcon'
 import { useRouter } from 'next/router'
-import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, inUseFilters, PlatformEnum, platformFilters } from '@/models/bots'
+import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, IFilterValue, inUseFilters, PlatformEnum, platformFilters } from '@/models/bots'
 import Link from 'next/link'
 import { SizeType } from 'antd/lib/config-provider/SizeContext'
-import { Button, Menu, MenuButton, MenuItem, MenuList, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Radio, RadioGroup } from '@chakra-ui/react'
+import { Button, Menu, MenuButton, MenuItem, MenuItemOption, MenuList, MenuOptionGroup, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Radio, RadioGroup } from '@chakra-ui/react'
 import BooleanComponent from '@/components/common/BooleanComponent'
 import { Icon } from '@iconify/react'
 import ServerCallLabel from '@/components/common/ServerCallLabel'
 import botsApi from '@/api/bots'
 import { errorMessageChakra } from '@/utils'
+import SelectMenuButton from '@/components/common/SelectMenuButton'
 
 const { Option } = Select
 
@@ -42,6 +43,9 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
   const currentPage = botStore?.currentPage
   const total = botStore?.botSearch?.total
   const bots = botStore?.botSearch?.bots
+
+  // current filters
+  const currentPlatformFilter: IFilterValue | undefined = platformFilters.filter((f) => f.query_value === botQuery.platform)[0] || undefined
 
   const [tableSize, setTableSize] = useState(tableSizes[0].value)
 
@@ -153,6 +157,55 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
         {/* PLATFORM FILTER */}
         <div>
           <div>Platform filter</div>
+          <Menu>
+            <SelectMenuButton 
+              inner={
+                <>
+                  <div className="flex gap-2 items-center">
+                    <Icon 
+                      icon={currentPlatformFilter?.icon ?? ''} 
+                      color={currentPlatformFilter?.iconColor ?? ''}
+                    />
+                    <div> 
+                      {currentPlatformFilter?.label}
+                    </div>
+                  </div>
+                </>
+              }
+            />
+            <MenuList>
+              <MenuOptionGroup
+                type="radio"
+                onChange={(value) => {
+                  if (typeof value == 'string') {
+                    botQuery.platform = value
+                    onLoadBots(true)
+                  }
+                }}
+              >
+                {platformFilters.map((item,index) =>
+                  <MenuItemOption
+                    key={index}
+                    value={`${item.query_value}`}
+                    isChecked={(item.query_value == botQuery.platform)}
+                    type="radio"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon 
+                        icon={item.icon ?? ''} 
+                        color={item.iconColor ?? ''}
+                        width="20"
+                      />
+                      <div className="font-semibold text-md">
+                        { item.label }
+                      </div>
+                    </div>
+                  </MenuItemOption>
+                )}
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
+          {/* )
           <RadioGroup
             value={botQuery.platform}
             onChange={(value: string) => {
@@ -170,7 +223,9 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
               </Radio>
             )}
           </RadioGroup>
+          */}
         </div>
+        {/* EOF PLATFORM FILTER */}
         {/* GENDER FILTER */}
         <div>
           <div>Gender filter</div>

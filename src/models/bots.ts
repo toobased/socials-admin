@@ -117,8 +117,10 @@ export class BotSearchQuery {
 export interface IFilterValue {
   label: string;
   // if null remove from query value
-  query_value?: any;
+  query_value: string | number;
   // defautl, exclusive, is_text,
+  icon?: string;
+  iconColor?: string;
 }
 
 export enum PlatformEnum {
@@ -132,9 +134,9 @@ export enum GenderEnum {
 }
 
 export const platformFilters: IFilterValue[] = [
-  { label: "All", query_value: ''},
-  { label: "vk", query_value: PlatformEnum.vk},
-  { label: "instagram", query_value: PlatformEnum.instagram},
+  { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
+  { label: "vk", query_value: PlatformEnum.vk, icon: 'cib:vk', iconColor: '#4C75A3' },
+  { label: "instagram", query_value: PlatformEnum.instagram, icon: 'bxl:instagram-alt', iconColor: '#8a3ab9'},
 ]
 
 export const genderFilters: IFilterValue[] = [
