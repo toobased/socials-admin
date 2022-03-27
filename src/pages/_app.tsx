@@ -37,6 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
 
   useEffect(() => {
+    console.log('process env is', process.env)
     const loadInitialData = async () => {
       await appStore.getCommonInfo();
       await userStore.checkUserAuthorized();
