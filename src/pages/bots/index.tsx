@@ -19,6 +19,8 @@ import ServerCallLabel from '@/components/common/ServerCallLabel'
 import botsApi from '@/api/bots'
 import { errorMessageChakra } from '@/utils'
 import SelectMenuButton from '@/components/common/SelectMenuButton'
+import SimpleLabel from '@/components/common/SimpleLabel'
+import OptionDropdownFilter from '@/components/common/OptionDropdownFilter'
 
 const { Option } = Select
 
@@ -45,7 +47,13 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
   const bots = botStore?.botSearch?.bots
 
   // current filters
-  const currentPlatformFilter: IFilterValue | undefined = platformFilters.filter((f) => f.query_value === botQuery.platform)[0] || undefined
+  const currentPlatformFilter: IFilterValue | undefined = platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined
+
+  const currentGenderFilter: IFilterValue | undefined = genderFilters.filter((f) => f.query_value == botQuery.gender)[0] || undefined
+
+  const currentActiveFilter: IFilterValue | undefined = activeFilters.filter((f) => f.query_value == botQuery.is_active)[0] || undefined
+
+  const currentInUseFilter: IFilterValue | undefined = inUseFilters.filter((f) => f.query_value == botQuery.is_in_use)[0] || undefined
 
   const [tableSize, setTableSize] = useState(tableSizes[0].value)
 
@@ -156,173 +164,68 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
       <div className="flex gap-5 mt-2">
         {/* PLATFORM FILTER */}
         <div>
-          <div>Platform filter</div>
-          <Menu>
-            <SelectMenuButton 
-              inner={
-                <>
-                  <div className="flex gap-2 items-center">
-                    <Icon 
-                      icon={currentPlatformFilter?.icon ?? ''} 
-                      color={currentPlatformFilter?.iconColor ?? ''}
-                    />
-                    <div> 
-                      {currentPlatformFilter?.label}
-                    </div>
-                  </div>
-                </>
+          <OptionDropdownFilter
+            filterLabel="Platform filter"
+            currentRaw={botQuery.platform}
+            currentFilter={currentPlatformFilter}
+            onValueSelect={(value: any) => {
+              if (typeof value == 'string') {
+                botQuery.platform = value
+                onLoadBots(true)
               }
-            />
-            <MenuList>
-              <MenuOptionGroup
-                type="radio"
-                onChange={(value) => {
-                  if (typeof value == 'string') {
-                    botQuery.platform = value
-                    onLoadBots(true)
-                  }
-                }}
-              >
-                {platformFilters.map((item,index) =>
-                  <MenuItemOption
-                    key={index}
-                    value={`${item.query_value}`}
-                    isChecked={(item.query_value == botQuery.platform)}
-                    type="radio"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon 
-                        icon={item.icon ?? ''} 
-                        color={item.iconColor ?? ''}
-                        width="20"
-                      />
-                      <div className="font-semibold text-md">
-                        { item.label }
-                      </div>
-                    </div>
-                  </MenuItemOption>
-                )}
-              </MenuOptionGroup>
-            </MenuList>
-          </Menu>
-          {/* )
-          <RadioGroup
-            value={botQuery.platform}
-            onChange={(value: string) => {
-              botQuery.platform = value
-              console.log(`bot query platform is ${botQuery.platform}`)
-              onLoadBots(true)
             }}
-          >
-            {platformFilters.map((item, index) =>
-              <Radio
-                key={index}
-                value={item.query_value}
-              >
-                {item.label}
-              </Radio>
-            )}
-          </RadioGroup>
-          */}
+            filterValues={platformFilters}
+          />
         </div>
         {/* EOF PLATFORM FILTER */}
         {/* GENDER FILTER */}
         <div>
-          <div>Gender filter</div>
-          <RadioGroup
-            value={botQuery.gender}
-            onChange={(value: any) => {
-              botQuery.gender = value
-              onLoadBots(true)
+          <OptionDropdownFilter
+            filterLabel="Gender filter"
+            currentRaw={botQuery.gender}
+            currentFilter={currentGenderFilter}
+            onValueSelect={(value: any) => {
+              if (typeof value == 'string') {
+                botQuery.gender = value
+                onLoadBots(true)
+              }
             }}
-          >
-            {genderFilters.map((item, index) =>
-              <Radio
-                key={index}
-                value={item.query_value}
-              >
-                {item.label}
-              </Radio>
-            )}
-          </RadioGroup>
+            filterValues={genderFilters}
+          />
         </div>
       </div>
 
       <div className="flex gap-5 mt-3">
         {/* ACTIVE FILTER */}
         <div>
-          <div>Active filter</div>
-          {/*
-          <Popover 
-            matchWidth={true}
-            orientation="vertical"
-          >
-            {({ isOpen, onClose }) => (
-              <>
-              <PopoverTrigger>
-                  <Button>
-                    { botQuery.is_active }
-                  </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <PopoverBody>
-                  {activeFilters.map((filter,index) =>
-                      <Button 
-                        value={filter.query_value} 
-                        key={index}
-                        onClick={() => {
-                          onClose()
-                          botQuery.is_active = filter.query_value
-                          onLoadBots(true)
-                        }}
-                      >
-                        { filter.label }
-                      </Button>
-                  )}
-                </PopoverBody>
-              </PopoverContent>
-              </>
-            )}
-          </Popover>
-          */}
-
-          <Select
-            // className="w-32"
-            value={botQuery.is_active}
-            onChange={(value: any, option) => {
-              botQuery.is_active = value
-              onLoadBots(true)
+          <OptionDropdownFilter
+            filterLabel="Active filter"
+            currentRaw={botQuery.is_active}
+            currentFilter={currentActiveFilter}
+            onValueSelect={(value: any) => {
+              if (typeof value == 'string') {
+                botQuery.is_active = value
+                onLoadBots(true)
+              }
             }}
-          >
-            {activeFilters.map((filter, index) =>
-              <Option value={filter.query_value} key={index}>
-                {filter.label}
-              </Option>
-            )}
-          </Select>
-
+            filterValues={activeFilters}
+          />
         </div>
 
         {/* IS IN USE FILTER */}
         <div>
-          <div>In use filter</div>
-          <Select
-            className="w-32"
-            value={botQuery.is_in_use}
-            onChange={(value: any, option) => {
-              console.log('value is', value)
-              console.log('value is und', value == undefined)
-              console.log('option is', option)
-              botQuery.is_in_use = value
-              onLoadBots(true)
+          <OptionDropdownFilter
+            filterLabel="In use filter"
+            currentRaw={botQuery.is_active}
+            currentFilter={currentInUseFilter}
+            onValueSelect={(value: any) => {
+              if (typeof value == 'string') {
+                botQuery.is_in_use = value
+                onLoadBots(true)
+              }
             }}
-          >
-            {inUseFilters.map((filter, index) =>
-              <Option value={filter.query_value} key={index}>
-                {filter.label}
-              </Option>
-            )}
-          </Select>
+            filterValues={inUseFilters}
+          />
         </div>
       </div>
 

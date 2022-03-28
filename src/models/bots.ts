@@ -121,6 +121,7 @@ export interface IFilterValue {
   // defautl, exclusive, is_text,
   icon?: string;
   iconColor?: string;
+  isIconText?: boolean;
 }
 
 export enum PlatformEnum {
@@ -140,9 +141,14 @@ export const platformFilters: IFilterValue[] = [
 ]
 
 export const genderFilters: IFilterValue[] = [
-  { label: "All", query_value: ''},
-  { label: "male", query_value: GenderEnum.male},
-  { label: "female", query_value: GenderEnum.female},
+  { label: "All", query_value: '',
+  icon: 'bxs:select-multiple'},
+  { label: "male", query_value: GenderEnum.male,
+    icon: 'noto:boy-light-skin-tone'
+  },
+  { label: "female", query_value: GenderEnum.female, 
+    icon: 'noto-v1:girl-light-skin-tone'
+  },
 ]
 
 export const activeFilters: IFilterValue[] = [
