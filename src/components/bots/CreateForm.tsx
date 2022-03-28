@@ -1,9 +1,11 @@
-import { GenderEnum, PlatformEnum } from "@/models/bots";
+import { countryFiltes, GenderEnum, IFilterValue, PlatformEnum } from "@/models/bots";
+import { CountryEnum } from "@/models/enums/bots";
 import { BotContext } from "@/store/botsStore";
 import { Button, DatePicker, Input, Radio, Switch } from "antd"
 import { observer } from "mobx-react"
 import { useContext } from "react";
 import InfoTooltip from "../common/InfoTooltip";
+import OptionDropdownFilter from "../common/OptionDropdownFilter";
 import AccessTokenVkHelper from "./AccessTokenVkHelper";
 
 const CreateForm = () => {
@@ -13,6 +15,10 @@ const CreateForm = () => {
 
   const botStore = useContext(BotContext);
   const { newBot } = botStore;
+
+  const currentCountryFilter = (): IFilterValue | undefined => countryFiltes.filter(
+    (f) => f.query_value == newBot.country
+  )[0] || undefined
 
   const generatePassword = () =>
     Math.random().toString(36).slice(-12);
@@ -58,6 +64,24 @@ const CreateForm = () => {
         onChange={(e) =>
           newBot.gender = e.target.value
         }
+      />
+    </div>
+    </>
+  ))
+
+  const SelectCountry = observer(() => (
+    <>
+    {/* GENDER SELECT */}
+    <div>
+      <OptionDropdownFilter
+        filterLabel="Select country"
+        showServerLabel={false}
+        currentFilter={currentCountryFilter()}
+        currentRaw={newBot.country}
+        filterValues={countryFiltes}
+        onValueSelect={(value: any) => {
+          newBot.country = value as CountryEnum
+        }}
       />
     </div>
     </>
@@ -192,6 +216,7 @@ const CreateForm = () => {
       <div className="flex flex-wrap gap-4">
         <SelectPlatform />
         <SelectGender />
+        <SelectCountry />
       </div>
       <div className="mt-2 flex flex-wrap gap-4">
         <InputUsername />

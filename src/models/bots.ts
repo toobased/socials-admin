@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { CountryEnum } from "./enums/bots";
 
 export interface BotInterface {
   id: string;
@@ -15,6 +16,7 @@ export interface BotInterface {
   like_count: number;
   reply_count: number;
   comment_count: number;
+  country?: CountryEnum;
   platform?: PlatformEnum;
   gender?: GenderEnum;
   rest_until?: string;
@@ -51,6 +53,7 @@ export class BotCreate {
   is_in_use: boolean = false;
   platform: PlatformEnum = PlatformEnum.vk;
   gender: GenderEnum = GenderEnum.male;
+  country: CountryEnum = CountryEnum.russia;
   rest_until?: string = undefined;
 
   constructor(params: any = {}) {
@@ -136,6 +139,12 @@ export enum GenderEnum {
 
 const fIcons = {
     all: 'bxs:select-multiple',
+    country: {
+      russia: 'emojione-v1:flag-for-russia',
+      belarus: 'emojione-v1:flag-for-belarus',
+      china: 'emojione-v1:flag-for-china',
+      usa: 'emojione-v1:flag-for-united-states'
+    }
 }
 
 export const platformFilters: IFilterValue[] = [
@@ -173,4 +182,15 @@ export const inUseFilters: IFilterValue[] = [
   { label: "Only not in use", query_value: 0,
     icon: 'twemoji:red-circle'
   },
+]
+
+export const countryFiltes: IFilterValue[] = [
+  {label: 'Russia', query_value: CountryEnum.russia,
+  icon: fIcons.country.russia},
+  {label: 'Belarus', query_value: CountryEnum.belarus,
+  icon: fIcons.country.belarus},
+  {label: 'China', query_value: CountryEnum.china,
+  icon: fIcons.country.china},
+  {label: 'USA', query_value: CountryEnum.usa,
+  icon: fIcons.country.usa},
 ]

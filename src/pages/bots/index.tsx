@@ -47,13 +47,13 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
   const bots = botStore?.botSearch?.bots
 
   // current filters
-  const currentPlatformFilter: IFilterValue | undefined = platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined
+  const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined
 
-  const currentGenderFilter: IFilterValue | undefined = genderFilters.filter((f) => f.query_value == botQuery.gender)[0] || undefined
+  const currentGenderFilter = (): IFilterValue | undefined => genderFilters.filter((f) => f.query_value == botQuery.gender)[0] || undefined
 
-  const currentActiveFilter: IFilterValue | undefined = activeFilters.filter((f) => f.query_value == botQuery.is_active)[0] || undefined
+  const currentActiveFilter = (): IFilterValue | undefined => activeFilters.filter((f) => f.query_value == botQuery.is_active)[0] || undefined
 
-  const currentInUseFilter: IFilterValue | undefined = inUseFilters.filter((f) => f.query_value == botQuery.is_in_use)[0] || undefined
+  const currentInUseFilter = (): IFilterValue | undefined => inUseFilters.filter((f) => f.query_value == botQuery.is_in_use)[0] || undefined
 
   const [tableSize, setTableSize] = useState(tableSizes[0].value)
 
@@ -167,7 +167,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
           <OptionDropdownFilter
             filterLabel="Platform filter"
             currentRaw={botQuery.platform}
-            currentFilter={currentPlatformFilter}
+            currentFilter={currentPlatformFilter()}
             onValueSelect={(value: any) => {
               if (typeof value == 'string') {
                 botQuery.platform = value
@@ -183,7 +183,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
           <OptionDropdownFilter
             filterLabel="Gender filter"
             currentRaw={botQuery.gender}
-            currentFilter={currentGenderFilter}
+            currentFilter={currentGenderFilter()}
             onValueSelect={(value: any) => {
               if (typeof value == 'string') {
                 botQuery.gender = value
@@ -201,7 +201,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
           <OptionDropdownFilter
             filterLabel="Active filter"
             currentRaw={botQuery.is_active}
-            currentFilter={currentActiveFilter}
+            currentFilter={currentActiveFilter()}
             onValueSelect={(value: any) => {
               if (typeof value == 'string') {
                 botQuery.is_active = value
@@ -217,7 +217,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
           <OptionDropdownFilter
             filterLabel="In use filter"
             currentRaw={botQuery.is_active}
-            currentFilter={currentInUseFilter}
+            currentFilter={currentInUseFilter()}
             onValueSelect={(value: any) => {
               if (typeof value == 'string') {
                 botQuery.is_in_use = value

@@ -8,6 +8,7 @@ import SimpleLabel from "./SimpleLabel"
 
 interface OptionDropdownFilderProps {
   filterLabel: string
+  showServerLabel?: boolean
   currentRaw?: any | undefined
   currentFilter: IFilterValue | undefined
   onValueSelect: Function
@@ -16,6 +17,7 @@ interface OptionDropdownFilderProps {
 
 const OptionDropdownFilter = observer(({
   filterLabel = 'filter label',
+  showServerLabel = true,
   currentRaw = undefined,
   currentFilter,
   onValueSelect,
@@ -39,9 +41,11 @@ const OptionDropdownFilter = observer(({
                   {currentFilter?.label}
                 </div>
               </div>
-              <div>
-                <ServerCallLabel />
-              </div>
+              {showServerLabel &&
+                <div>
+                  <ServerCallLabel />
+                </div>
+              }
             </div>
           </>
         }
