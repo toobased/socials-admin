@@ -134,10 +134,14 @@ export enum GenderEnum {
   female = "female"
 }
 
+const fIcons = {
+    all: 'bxs:select-multiple',
+}
+
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
   { label: "vk", query_value: PlatformEnum.vk, icon: 'cib:vk', iconColor: '#4C75A3' },
-  { label: "instagram", query_value: PlatformEnum.instagram, icon: 'bxl:instagram-alt', iconColor: '#8a3ab9'},
+  { label: "instagram", query_value: PlatformEnum.instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
 ]
 
 export const genderFilters: IFilterValue[] = [
@@ -152,13 +156,21 @@ export const genderFilters: IFilterValue[] = [
 ]
 
 export const activeFilters: IFilterValue[] = [
-  { label: "All", query_value: ''},
-  { label: "Only active", query_value: 1},
-  { label: "Only not active", query_value: 0},
+  { label: "All", query_value: '', icon: fIcons.all},
+  { label: "Only active", query_value: 1,
+      icon: 'twemoji:green-circle'
+  },
+  { label: "Only not active", query_value: 0,
+      icon: 'twemoji:red-circle'
+  },
 ]
 
 export const inUseFilters: IFilterValue[] = [
-  { label: "All", query_value: ''},
-  { label: "Only in use", query_value: 1},
-  { label: "Only not in use", query_value: 0},
+  { label: "All", query_value: '', icon: fIcons.all},
+  { label: "Only in use", query_value: 1, 
+    icon: 'twemoji:green-circle'
+  },
+  { label: "Only not in use", query_value: 0,
+    icon: 'twemoji:red-circle'
+  },
 ]
