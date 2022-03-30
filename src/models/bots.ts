@@ -129,6 +129,7 @@ export interface IFilterValue {
 
 export enum PlatformEnum {
   vk = "vk",
+  ok = "ok",
   instagram = "instagram"
 }
 
@@ -150,6 +151,8 @@ const fIcons = {
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
   { label: "vk", query_value: PlatformEnum.vk, icon: 'cib:vk', iconColor: '#4C75A3' },
+  { label: "ok", query_value: PlatformEnum.ok, icon: 'fa:odnoklassniki-square', 
+      iconColor: '#ed812b' },
   { label: "instagram", query_value: PlatformEnum.instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
 ]
 

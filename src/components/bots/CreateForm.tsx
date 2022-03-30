@@ -1,4 +1,4 @@
-import { countryFiltes, GenderEnum, IFilterValue, PlatformEnum } from "@/models/bots";
+import { countryFiltes, GenderEnum, IFilterValue, PlatformEnum, platformFilters } from "@/models/bots";
 import { CountryEnum } from "@/models/enums/bots";
 import { BotContext } from "@/store/botsStore";
 import { Button, DatePicker, Input, Radio, Switch } from "antd"
@@ -20,6 +20,10 @@ const CreateForm = () => {
     (f) => f.query_value == newBot.country
   )[0] || undefined
 
+  const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter(
+    (f) => f.query_value == newBot.platform
+  )[0] || undefined
+
   const generatePassword = () =>
     Math.random().toString(36).slice(-12);
 
@@ -37,15 +41,15 @@ const CreateForm = () => {
       <>
       {/* PLATFORM SELECT */}
       <div>
-        <div>Select platform</div>
-        <Radio.Group
-          options={platformOptions}
-          value={newBot.platform}
-          optionType="button"
-          buttonStyle="solid"
-          onChange={(e) =>
-            newBot.platform = e.target.value
-          }
+        <OptionDropdownFilter
+          filterLabel="Select platform"
+          showServerLabel={false}
+          currentFilter={currentPlatformFilter()}
+          currentRaw={newBot.platform}
+          filterValues={platformFilters}
+          onValueSelect={(value: any) => {
+            newBot.platform = value as PlatformEnum
+          }}
         />
       </div>
       </>

@@ -1,5 +1,6 @@
 export enum PlatformEnum {
     vk = 'vk',
+    ok = 'ok',
     instagram = 'instagram'
 }
 
