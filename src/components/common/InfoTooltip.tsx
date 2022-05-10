@@ -1,8 +1,9 @@
 import { Button, Tooltip } from "@chakra-ui/react"
 import { Icon } from "@iconify/react"
+import { ReactNode } from "react"
 
 interface InfoTooltipProps {
-  text?: string
+  text?: ReactNode
   size?: string
 }
 

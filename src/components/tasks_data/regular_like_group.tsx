@@ -23,15 +23,15 @@ export const RegularLikeGroupCreateBlock = observer(() => {
   return (
     <div className="bg-white rounded-lg px-4 py-6 mt-4">
       <Heading size="md" className="mb-2">
-        Regular like group data 
+        Постоянный лайк постов
       </Heading>
       {/* group id */}
       <div className="max-w-md">
         <div className="font-semibold text-md flex gap-2">
-          <span>Group id</span>
+          <span>ID группы</span>
           <InfoTooltip 
             text={
-              "For vk its group id number"
+              "Для вк это ID или сокращенное имя группы"
             }
           />
         </div>
@@ -49,10 +49,16 @@ export const RegularLikeGroupCreateBlock = observer(() => {
       {/* last posts check count */}
       <div className="">
         <div className="font-semibold text-md flex gap-2">
-          Last posts check count
+          Кол-во постов для проверки
           <InfoTooltip 
             text={
-              "Specifies how much posts will be loaded to check for fresh one each time, when script is called. If u specify new posts check frequency around 10 minutes, normal value here is - 4-5 ✨"
+              `С указанной частотой интервала для проверки будет проверяться
+              указанное здесь кол-во постов в группе/аккаунте. Для каждого поста,
+              который ранее не был добавлен в задачу для лайка, будет создана 
+              задача. Параметр нужно указывать исходя из того, как часто в группе/аккаунте
+              размещаются посты. Для размещения < 10 постов в день нормальное значение
+              в этом поле - 4, а частота проверки - 10 или 30 минут
+              `
             }
           />
         </div>
@@ -76,10 +82,10 @@ export const RegularLikeGroupCreateBlock = observer(() => {
       {/* like count */}
       <div className="">
         <div className="font-semibold text-md flex gap-2">
-          Like count
+          Кол-во лайков
           <InfoTooltip 
             text={
-              "How much ❤️ need to set for each post"
+              "Как много ❤️ нужно поставить для каждого поста"
             }
           />
         </div>
@@ -98,15 +104,46 @@ export const RegularLikeGroupCreateBlock = observer(() => {
         </NumberInput>
       </div>
       {/* eof like count */}
+      {/* like random threshold */}
+      <div className="">
+        <div className="font-semibold text-md flex gap-2">
+          Отклонение для кол-ва лайков
+          <InfoTooltip 
+            text={
+              `Пример: Если значение лайков = 10, а отклонение = 5, тогда кол-во
+              лайков поставится в рандомном интервале между
+              (5;10).
+              Для каждого поста будет рассчитываться свое рандомное значение
+              `
+            }
+          />
+        </div>
+        <NumberInput
+          className="mt-1"
+          placeholder="5"
+          defaultValue={5}
+          value={data.like_random_threshold}
+          onChange={(s:string, n: number) => {
+            !n && (data.like_random_threshold = undefined)
+            n && (data.like_random_threshold = n)
+          }}
+        >
+          <NumberInputField>
+          </NumberInputField>
+        </NumberInput>
+      </div>
+      {/* eof like random threshold */}
       </div>
       <div className="flex flex-wrap gap-3 items-center mt-3">
         {/* check frequency select */}
         <div className="">
           <div className="font-semibold text-md mb-1 flex gap-2">
-            New posts check frequency
+            Частота проверки постов
             <InfoTooltip 
               text={
-                "⌛How often script will load posts from group to check, is it smth fresh that needs to be liked"
+                `⌛Как часто система будет проверять группу/аккаунт на наличие
+                новых постов, которые нужно добавить в задачу для лайка
+                `
               }
             />
           </div>
@@ -131,10 +168,14 @@ export const RegularLikeGroupCreateBlock = observer(() => {
         {/* work lag select */}
         <div className="">
           <div className="font-semibold text-md mb-1 flex gap-2">
-            How long to proces for each post
+            Как долго ставить лайки на пост
             <InfoTooltip 
               text={
-                "You can specify the time that needs to achieve like_count on each post 😎"
+                `Указывается как долго будет выполнятся задача по лайку поста
+                для каждого поста, для которого создана такая задача. Указывая
+                этот параметр обращай внимание на кол-во лайков, что тебе нужно
+                поставить. Чем больше нужно лайков - тем дольше задавай интервал
+                `
               }
             />
           </div>

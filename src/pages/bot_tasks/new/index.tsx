@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
 import router, { useRouter } from "next/router";
-import { Button, Heading, Input, NumberInput, NumberInputField, Select, Switch } from "@chakra-ui/react";
+import { Button, Checkbox, Heading, Input, NumberInput, NumberInputField, Select, Switch } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext } from "@/store/botsTasksStore";
 import { PlatformEnum } from "@/models/bots";
@@ -149,7 +149,7 @@ export const BotTaskAddButton = observer(() => {
         loadingText="Creating"
         onClick={e => createBotTask() }
       >
-        Create task
+        Создать таск
       </Button>
     </div>
   )
@@ -175,16 +175,33 @@ export const BotTaskErrorContainer = observer(() => {
 
 export const BotTaskCreationForm = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
-  const task = botTasksStore.newTask
+  const task: CreateBotTask = botTasksStore.newTask
+
+  const SetTaskTest = observer(() => {
+    return (
+      <div className="max-w-md">
+        <div className="font-semibold text-md flex gap-2">
+          <span>Таск тестовый</span>
+        </div>
+        <Switch
+          className="mt-1"
+          isChecked={task.is_testing}
+          onInput={() =>
+            task.is_testing = !task.is_testing
+          }
+        />
+      </div>
+    )
+  })
 
   const InputTaskTitle = observer(() => {
     return (
       <div className="max-w-md">
         <div className="font-semibold text-md mb-1">
-          Task title (Optional)
+          Название для таска (не обязательно)
         </div>
         <Input
-          placeholder="Enter task title"
+          placeholder="Введи название таска"
           value={task.title}
           onChange={(e) => {
             task.title = e.target.value
@@ -198,14 +215,14 @@ export const BotTaskCreationForm = observer(() => {
     return (
       <div>
         <div className="font-semibold text-md mb-1">
-          Choose platform
+          Выбери платформу
         </div>
         <Select
           value={`${task.platform as string}`}
           onChange={(e) => {
             task.platform = e.target.value as PlatformEnum
           }}
-          placeholder='Choose platform'
+          placeholder='Выбери платформу'
         >
           { Object.values(PlatformEnum).map((item, index) =>
             <option key={index} value={item}>
@@ -232,10 +249,10 @@ export const BotTaskCreationForm = observer(() => {
     return (
       <div>
         <div className="font-semibold text-md mb-1">
-          Choose task type
+          Выбери тип таска
         </div>
         <Select
-          placeholder='Choose task type'
+          placeholder='Выбери тип таска'
           value={`${task.task_type}`}
           onChange={(e) => {
             task.task_type = e.target.value as TaskTypeEnum
@@ -269,7 +286,7 @@ export const BotTaskCreationForm = observer(() => {
     return (
       <div>
         <div className="font-semibold text-md mb-1">
-          Is task active
+          Таск активный
         </div>
         <Switch
           size="md"
@@ -285,7 +302,7 @@ export const BotTaskCreationForm = observer(() => {
   return (
     <div className="bg-white rounded-lg px-4 py-6">
       <Heading size="md" className="mb-2">
-        Task general settings
+        Общие настройки для таска
       </Heading>
       <div className="mt-2">
       <InputTaskTitle />
@@ -294,8 +311,9 @@ export const BotTaskCreationForm = observer(() => {
         <SelectPlatform />
         <SelectTaskType />
       </div>
-      <div className="mt-2">
+      <div className="mt-2 flex gap-3 items-center">
         <SelectTaskActive />
+        <SetTaskTest />
       </div>
 
     </div>
@@ -314,7 +332,7 @@ const NewBotTask: NextPage = observer(() => {
     <>
       <main className="mx-11 my-7">
         <Heading className="mb-4">
-          Add new task
+          Новый таск
         </Heading>
         <BotTaskCreationForm />
         {task.task_type == TaskTypeEnum.like_post && 

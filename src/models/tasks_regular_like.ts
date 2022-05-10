@@ -11,8 +11,12 @@ export class RegularLikeGroupTargetData {
   check_frequency?: WorkLagEnum = WorkLagEnum.ten_minutes
   // how much like for each post
   like_count?: number = 0
+  // like random threshold
+  like_random_threshold?: number = 0
   // work lag for each post like
   work_lag?: WorkLagEnum = WorkLagEnum.five_minutes
+  // is test task
+  is_testing?: boolean = false
 
   constructor(params: any = {}) {
     Object.assign(this, params)

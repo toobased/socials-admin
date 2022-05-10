@@ -141,6 +141,7 @@ export class CreateBotTask {
     task_type?: TaskTypeEnum = undefined;
     task_target_data: TaskTargetData = new TaskTargetData();
     is_active: boolean = true;
+    is_testing: boolean = false;
 
     constructor(params: any = {}) {
         const { task_target_data } = params
