@@ -10,6 +10,7 @@ const MenuItems: Array<any> = [
     path: "/",
     children: []
   },
+    /*
   {
     key: "2",
     name: "Vk",
@@ -30,6 +31,7 @@ const MenuItems: Array<any> = [
     children: [
     ]
   },
+  */
   {
    key: "4",
     name: "Bots",
