@@ -13,6 +13,7 @@ import { extendTheme } from '@chakra-ui/react';
 import { ButtonTheme } from '@/styles/chakraButtonTheme';
 import { BotTasksContext } from '@/store/botsTasksStore';
 import HeadingNav from '@/components/common/HeadingNav';
+import LoadingContainer from '@/components/common/LoadingContainer';
 
 /*
 const colors = {
@@ -45,32 +46,34 @@ function MyApp({ Component, pageProps }: AppProps) {
     const loadInitialData = async () => {
       await appStore.getCommonInfo();
       await userStore.checkUserAuthorized();
-      setInitialDataLoading(false)
+      setTimeout(() => {
+        setInitialDataLoading(false)
+      }, 1500)
     }
     loadInitialData();
   }, [])
 
-  if (!initialDataLoading) {
-    return(
-      <>
-        <ChakraProvider theme={chakraTheme}>
-        { userStore.isUserAuthorized &&
-            <Layout>
-                <HeadingNav />
-                <Content style={{minHeight: '100vh'}}>
-                  <Component {...pageProps} />
-                </Content>
-            </Layout>
-        }
-        { !userStore.isUserAuthorized &&
-          <Login {...pageProps}/>
-        }
-        </ChakraProvider>
-      </>
-    )
-  } else {
-    return <div>Loading...</div>
+  if (initialDataLoading) {
+    return <LoadingContainer />
   }
+
+  return(
+    <>
+      <ChakraProvider theme={chakraTheme}>
+      { userStore.isUserAuthorized &&
+          <Layout>
+              <HeadingNav />
+              <Content style={{minHeight: '100vh'}}>
+                <Component {...pageProps} />
+              </Content>
+          </Layout>
+      }
+      { !userStore.isUserAuthorized &&
+        <Login {...pageProps}/>
+      }
+      </ChakraProvider>
+    </>
+  )
 
 }
 

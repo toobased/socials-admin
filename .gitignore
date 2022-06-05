@@ -40,3 +40,5 @@ yarn-error.log*
 static
 # ansible
 ansible
+# public
+public
