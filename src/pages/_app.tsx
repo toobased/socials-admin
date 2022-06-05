@@ -12,7 +12,9 @@ import { ChakraProvider, Theme } from '@chakra-ui/react';
 import { extendTheme } from '@chakra-ui/react';
 import { ButtonTheme } from '@/styles/chakraButtonTheme';
 import { BotTasksContext } from '@/store/botsTasksStore';
+import HeadingNav from '@/components/common/HeadingNav';
 
+/*
 const colors = {
   error: 'red.500',
   success: 'green.500',
@@ -21,6 +23,8 @@ const colors = {
     _dark: 'red.500'
   },
 }
+*/
+
 const chakraTheme = extendTheme({
   // colors: colors,
   components: {
@@ -51,15 +55,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       <>
         <ChakraProvider theme={chakraTheme}>
         { userStore.isUserAuthorized &&
-            <Layout
-              hasSider={true}
-            >
-              <NavSidebar />
-              <Layout>
-                <Content>
+            <Layout>
+                <HeadingNav />
+                <Content style={{minHeight: '100vh'}}>
                   <Component {...pageProps} />
                 </Content>
-              </Layout>
             </Layout>
         }
         { !userStore.isUserAuthorized &&

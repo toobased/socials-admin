@@ -2,12 +2,27 @@ import { Menu } from "antd";
 import Sider from "antd/lib/layout/Sider";
 import SubMenu from "antd/lib/menu/SubMenu";
 import Link from "next/link";
+import { NextRouter } from "next/router";
 
-const MenuItems: Array<any> = [
+export interface MenuItem {
+    key: string;
+    name: string;
+    path: string;
+    icon?: string;
+    children: MenuItem[];
+}
+
+export function isCurrentPage(
+    page: MenuItem,
+    router: NextRouter 
+): boolean { return page.path === router.route }
+
+export const menuItems: MenuItem[] = [
   {
     key: "1",
-    name: "Home",
+    name: "Главная",
     path: "/",
+    icon: "ant-design:home-filled",
     children: []
   },
     /*
@@ -34,14 +49,16 @@ const MenuItems: Array<any> = [
   */
   {
    key: "4",
-    name: "Bots",
+    name: "Боты",
     path: "/bots",
+    icon: "bxs:bot",
     children: []
   },
   {
    key: "5",
-    name: "Bot tasks",
+    name: "Таски ботов",
     path: "/bot_tasks",
+    icon: "fluent:clipboard-task-list-ltr-24-filled",
     children: []
   },
 ]
@@ -90,7 +107,7 @@ const NavSidebar = () => {
           theme="dark"
           mode="vertical"
         >
-          { getMenuItems(MenuItems) }
+          { getMenuItems(menuItems) }
         </Menu>
       </Sider>
     </>
