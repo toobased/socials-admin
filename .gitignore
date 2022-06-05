@@ -36,5 +36,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# staticfiles
+static
 # ansible
 ansible
