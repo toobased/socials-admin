@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
 import { RegularLikeGroupTargetData } from "./tasks_regular_like";
+import { WatchVideoTargetData } from "./tasks_watch_video";
 
 export interface ITaskDateFinish {
     date: string
@@ -9,13 +10,6 @@ export interface ITaskDateFinish {
 
 export interface ILikePostResultMetrics {
     like_count: number
-}
-
-export interface ILikePostTargetData {
-    post_link: string
-    like_count: number
-    work_lag?: WorkLagEnum
-    date_finish: ITaskDateFinish
 }
 
 export interface ITaskType {
@@ -29,6 +23,7 @@ export interface ITaskType {
 
 export class TaskDateFinish {
   date: string = ''
+    // TODO: change to normal Date / parsing ?
   constructor () {
     makeAutoObservable(this)
   }
@@ -38,7 +33,6 @@ export class LikePostTargetData {
     post_link: string = ''
     like_count?: number = 0
     work_lag?: WorkLagEnum = WorkLagEnum.five_minutes
-    // TODO: change to Date?
     date_finish: TaskDateFinish = new TaskDateFinish()
 
     constructor(params: any = {}) {
@@ -70,18 +64,13 @@ export class LikePostTargetData {
 export interface ITaskTargetData {
     like_post?: LikePostTargetData
     regular_like_group?: RegularLikeGroupTargetData
+    watch_video?: WatchVideoTargetData
 }
 
 export class TaskTargetData implements ITaskTargetData {
     like_post?: LikePostTargetData = new LikePostTargetData()
     regular_like_group?: RegularLikeGroupTargetData = new RegularLikeGroupTargetData()
-
-    initLikePost() {
-        this.like_post = new LikePostTargetData()
-    }
-    initRegularLikeGroup () {
-      this.regular_like_group = new RegularLikeGroupTargetData()
-    }
+    watch_video?: WatchVideoTargetData = new  WatchVideoTargetData()
 
     constructor(params: any = {}) {
       const { like_post } = params
@@ -96,6 +85,7 @@ export class TaskTargetData implements ITaskTargetData {
 
 export interface ITaskResultMetrics {
     like_post?: ILikePostResultMetrics
+    // TODO
 }
 /** Bot task error class */
 export interface IBotTaskError {
@@ -169,6 +159,11 @@ export class CreateBotTask {
       if(this.task_type == TaskTypeEnum.regular_like_group) {
         (this.task_target_data.regular_like_group != undefined) &&
           (v = this.task_target_data.regular_like_group.isValid())
+      }
+      // validation check for watch_video
+      if(this.task_type == TaskTypeEnum.watch_video) {
+        (this.task_target_data.watch_video != undefined) &&
+          (v = this.task_target_data.watch_video.isValid())
       }
       console.log('v is', v)
       return v

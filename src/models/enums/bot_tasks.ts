@@ -9,6 +9,7 @@ export enum TaskTypeEnum {
     like_post = 'like_post',
     repost_post = 'repost_post',
     regular_like_group = 'regular_like_group',
+    watch_video = 'watch_video',
     dummy = 'dummy'
 }
 

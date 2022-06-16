@@ -10,12 +10,13 @@ import { CreateBotTask, LikePostTargetData } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
 import { errorMessageChakra, successMessageChakra } from "@/utils";
 import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group";
+import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video";
 
-interface TaskDateEndPickerProps {
+export interface TaskDateEndPickerProps {
   onDateChange: Function
 }
 
-const TaskDateEndPicker = (props: TaskDateEndPickerProps) => {
+export const TaskDateEndPicker = (props: TaskDateEndPickerProps) => {
   return (
     <>
       <DatePicker
@@ -340,6 +341,9 @@ const NewBotTask: NextPage = observer(() => {
         }
         {task.task_type == TaskTypeEnum.regular_like_group && 
           <RegularLikeGroupCreateBlock />
+        }
+        {task.task_type == TaskTypeEnum.watch_video &&
+          <WatchVideoCreateBlock />
         }
         <BotTaskErrorContainer />
         <BotTaskAddButton />

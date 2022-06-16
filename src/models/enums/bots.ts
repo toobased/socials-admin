@@ -1,7 +1,8 @@
 export enum PlatformEnum {
     vk = 'vk',
     ok = 'ok',
-    instagram = 'instagram'
+    instagram = 'instagram',
+    yt = 'youtube'
 }
 
 export enum CountryEnum {

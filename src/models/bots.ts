@@ -130,7 +130,8 @@ export interface IFilterValue {
 export enum PlatformEnum {
   vk = "vk",
   ok = "ok",
-  instagram = "instagram"
+  instagram = "instagram",
+  yt = "youtube"
 }
 
 export enum GenderEnum {
@@ -154,6 +155,7 @@ export const platformFilters: IFilterValue[] = [
   { label: "ok", query_value: PlatformEnum.ok, icon: 'fa:odnoklassniki-square', 
       iconColor: '#ed812b' },
   { label: "instagram", query_value: PlatformEnum.instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
+  { label: "youtube", query_value: PlatformEnum.yt, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
 ]
 
 export const genderFilters: IFilterValue[] = [

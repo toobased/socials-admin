@@ -46,9 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     const loadInitialData = async () => {
       await appStore.getCommonInfo();
       await userStore.checkUserAuthorized();
-      setTimeout(() => {
-        setInitialDataLoading(false)
-      }, 1500)
+      setInitialDataLoading(false)
     }
     loadInitialData();
   }, [])
