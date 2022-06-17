@@ -1,4 +1,5 @@
 import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group"
+import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video"
 import { CreateBotTask } from "@/models/bots_tasks"
 import { TaskTypeEnum } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
@@ -54,6 +55,7 @@ const EditBotTask: NextPage = observer(() => {
   const { id } = router.query
 
   useEffect(() => {
+    botTasksStore.getTasksTypes()
     if (
         !(id) ||
         !(typeof id == 'string') ||
@@ -105,6 +107,9 @@ const EditBotTask: NextPage = observer(() => {
         {newTask.task_type == TaskTypeEnum.regular_like_group && 
           newTask.task_target_data.regular_like_group &&
           <RegularLikeGroupCreateBlock />
+        }
+        {newTask.task_type == TaskTypeEnum.watch_video &&
+          <WatchVideoCreateBlock />
         }
         <BotTaskErrorContainer />
         <BotTaskUpdateButton />

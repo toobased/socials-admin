@@ -20,7 +20,6 @@ export class WatchVideoTargetData {
   }
 
     isValid(): boolean {
-      // TODO fix validation
       if (
         (this.video_link.trim().length == 0) ||
         (this.watch_count < 4) ||

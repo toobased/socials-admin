@@ -1,3 +1,4 @@
+import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video";
 import { makeAutoObservable } from "mobx";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
@@ -75,9 +76,11 @@ export class TaskTargetData implements ITaskTargetData {
     constructor(params: any = {}) {
       const { like_post } = params
       const { regular_like_group } = params
+      const { watch_video } = params
       Object.assign(this, params)
       this.like_post = new LikePostTargetData(like_post)
       this.regular_like_group = new RegularLikeGroupTargetData(regular_like_group)
+      this.watch_video = new WatchVideoTargetData(watch_video)
       makeAutoObservable(this)
     }
 
@@ -165,7 +168,6 @@ export class CreateBotTask {
         (this.task_target_data.watch_video != undefined) &&
           (v = this.task_target_data.watch_video.isValid())
       }
-      console.log('v is', v)
       return v
     }
 

@@ -152,7 +152,6 @@ if (isNaN(v)) {
       <Heading size="md" className="mb-2">
         Просмотры на видео
       </Heading>
-      { JSON.stringify(data) }
         <div className="max-w-2xl">
           <InputVideoLink />
         </div>
