@@ -1,4 +1,5 @@
 import { WorkLagEnum } from "@/models/enums/bot_tasks"
+import { RegularLikeGroupTargetData } from "@/models/tasks_regular_like"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { sweetyDate } from "@/utils"
 import { Heading, Input, NumberInput, NumberInputField, Select } from "@chakra-ui/react"
@@ -7,19 +8,10 @@ import { useContext } from "react"
 import InfoTooltip from "../common/InfoTooltip"
 import TaskDataTile from "../common/TaskDataTile"
 
-export const RegularLikeGroupCreateBlock = observer(() => {
-  const taskStore = useContext(BotTasksContext)
-  const taskData = taskStore.newTask.task_target_data
-  const data = taskData.regular_like_group
-
-  if (!data) {
-    return (
-      <div>
-        no regular like group data
-      </div>
-    )
-  }
-
+export const RegularLikeGroupDataContent = observer((
+  {data, isEditable = true } : {data: RegularLikeGroupTargetData, isEditable?: boolean }
+) => {
+  const disabled = !isEditable
   return (
     <div className="bg-white rounded-lg px-4 py-6 mt-4">
       <Heading size="md" className="mb-2">
@@ -39,6 +31,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
           className="mt-1"
           placeholder="Enter group id"
           value={data.group_id}
+          disabled={disabled}
           onChange={(e) => {
             data.group_id = e.target.value
           }}
@@ -69,6 +62,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
           max={50}
           min={1}
           value={data.last_posts_check_count}
+          isDisabled={disabled}
           onChange={(s:string, n: number) => {
             !n && (data.last_posts_check_count = undefined)
             n && (data.last_posts_check_count = n)
@@ -94,6 +88,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
           placeholder="Enter line count"
           defaultValue={1}
           value={data.like_count}
+          isDisabled={disabled}
           onChange={(s:string, n: number) => {
             !n && (data.like_count = undefined)
             n && (data.like_count = n)
@@ -123,6 +118,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
           placeholder="5"
           defaultValue={5}
           value={data.like_random_threshold}
+          isDisabled={disabled}
           onChange={(s:string, n: number) => {
             !n && (data.like_random_threshold = undefined)
             n && (data.like_random_threshold = n)
@@ -148,6 +144,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
             />
           </div>
           <Select
+            isDisabled={disabled}
             value={`${data.check_frequency}`}
             onChange={(e) => {
               data.check_frequency = e.target.value as WorkLagEnum
@@ -156,7 +153,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
             {Object.values(WorkLagEnum).map((item, index) =>
               <option 
                 key={index} 
-                value={`${item}`}
+                value={item}
                 disabled={item == WorkLagEnum.custom_date}
               >
                 { item }
@@ -180,6 +177,7 @@ export const RegularLikeGroupCreateBlock = observer(() => {
             />
           </div>
           <Select
+            isDisabled={true}
             value={`${data.work_lag}`}
             onChange={(e) => {
               data.work_lag = e.target.value as WorkLagEnum
@@ -200,4 +198,33 @@ export const RegularLikeGroupCreateBlock = observer(() => {
       </div>
     </div>
   )
+})
+
+export const RegularLikeGroupCreateBlock = observer(() => {
+  const taskStore = useContext(BotTasksContext)
+  const taskData = taskStore.newTask.task_target_data
+  const data = taskData.regular_like_group
+
+  if (!data) {
+    return (
+      <div>
+        no regular like group data
+      </div>
+    )
+  }
+  return <RegularLikeGroupDataContent data={data} />
+})
+
+export const RegularLikeGroupInfoBlock = observer(() => {
+  const taskStore = useContext(BotTasksContext)
+  const data = taskStore.currentTask?.task_target_data.regular_like_group
+
+  if (!data) {
+    return (
+      <div>
+        no regular like group data
+      </div>
+    )
+  }
+  return <RegularLikeGroupDataContent data={data} isEditable={false} />
 })
