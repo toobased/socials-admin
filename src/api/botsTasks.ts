@@ -1,4 +1,4 @@
-import { BotTasksSearchQuery, CreateBotTask, IBotTask } from "@/models/bots_tasks";
+import { BotTasksSearchQuery, CreateBotTask, BotTask } from "@/models/bots_tasks";
 import { AxiosResponse } from "axios";
 import HttpClient from "./client";
 
@@ -42,7 +42,7 @@ class BotsTasksApi extends HttpClient{
     return response
   }
 
-  public updateBotTask = async (task: IBotTask): 
+  public updateBotTask = async (task: BotTask): 
     Promise<AxiosResponse> => {
     const response: AxiosResponse = await this.client.patch(
       `${prefixUrl}/${task.id}`,

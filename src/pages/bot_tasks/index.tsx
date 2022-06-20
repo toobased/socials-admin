@@ -1,13 +1,16 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
 import router, { useRouter } from "next/router";
-import { Button, Menu, MenuButton, MenuItem, MenuList, Skeleton, Stack, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Button, Menu, MenuButton, MenuItem, MenuList, Skeleton, Stack, Switch, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
-import { BotTasksContext } from "@/store/botsTasksStore";
+import { BotTasksContext, BotTasksStore } from "@/store/botsTasksStore";
 import BooleanComponent from "@/components/common/BooleanComponent";
-import { errorMessageChakra, stringToDate, successMessageChakra, sweetyDate } from "@/utils";
+import { errorMessageChakra, getFilterByLabel, stringToDate, successMessageChakra, sweetyDate } from "@/utils";
 import { Pagination } from "antd";
 import { Icon } from "@iconify/react";
+import OptionDropdownFilter from "@/components/common/OptionDropdownFilter";
+import { platformFilters } from "@/models/bots";
+import { PlatformEnum } from "@/models/enums/bots";
 
 const TasksTablePagination = observer(() => {
   const tasksStore = useContext(BotTasksContext)
@@ -65,9 +68,9 @@ const TasksTable = observer(() => {
   const router = useRouter()
 
   const tableHeaderItems = [
-    "Title", "Status", "Is active",
-    "Has error", "Platform", "Task type",
-    "Created date", "Next time run", "Actions"
+    "Название", "Статус", "Активный",
+    "Есть ошибка", "Платформа", "Тип таска", "Метрика",
+    "Дата создания", "Следующая итерация", "Действия"
   ]
 
   const handleDeleteTask = async (id: string) => {
@@ -165,6 +168,11 @@ const TasksTable = observer(() => {
                   { task.task_type }
                 </Td>
                 {/* eof task type */}
+                {/* task type */}      
+                <Td>
+                  { task.metricsLabel }
+                </Td>
+                {/* eof task type */}
                 {/* task created_date */}      
                 <Td>
                   { sweetyDate(task.created_date) }
@@ -205,7 +213,7 @@ const TasksTable = observer(() => {
                               width="25"
                               className="block"
                             />
-                            Edit
+                            Редактировать
                           </div>
                         </MenuItem>
                         <MenuItem
@@ -218,7 +226,7 @@ const TasksTable = observer(() => {
                               width="25"
                               className="block text-red-500"
                             />
-                            Delete
+                            Удалить
                           </div>
                         </MenuItem>
                     </MenuList>
@@ -240,7 +248,7 @@ const AddNewTaskButton = () => {
     <Button
       onClick={() => router.push('bot_tasks/new')}
     >
-      Add new task
+      Добавить таск
     </Button>
   )
 }
@@ -254,15 +262,77 @@ const ReloadTasksButton = () => {
         tasksStore.getBotTasksApi(true)
       }
     >
-      Reload tasks
+      <Icon icon="iconoir:refresh-double" />
     </Button>
   )
 }
+
+const ResetTasksButton = () => {
+  const tasksStore = useContext(BotTasksContext)
+  Comment
+  return (
+    <Button
+      colorScheme="red"
+      onClick={() => {
+        tasksStore.tasksSearchQuery.resetDefaults()
+        tasksStore.getBotTasksApi(true)
+      }}
+    >
+      <Icon icon="carbon:filter-reset" />
+    </Button>
+  )
+}
+
+const BotTaskFilters = observer((
+  { onLoadTasks } : {onLoadTasks: Function}
+) => {
+  const tasksStore = useContext(BotTasksContext);
+  const filters = tasksStore.tasksSearchQuery;
+
+  return (
+    <div className="flex flex-col gap-3 mt-3">
+      <div className="flex gap-3">
+        {/* Platform filter */}
+        <div>
+          <OptionDropdownFilter
+            filterLabel="Platform filter"
+            currentRaw={filters.platform}
+            currentFilter={getFilterByLabel(filters.platform, platformFilters)}
+            onValueSelect={(value: any) => {
+              if (typeof value == 'string') {
+                filters.platform = value as PlatformEnum
+                onLoadTasks(true)
+              }
+            }}
+            filterValues={platformFilters}
+          />
+        </div>
+        {/* eof Platform filter */}
+      </div>
+      {/* Include hidden */}
+      <div className="flex gap-2 items-center">
+        <Icon icon="bx:hide" width="22" />
+        <Switch
+          isChecked={filters.include_hidden}
+          onChange={e => {
+            filters.include_hidden = !filters.include_hidden
+            onLoadTasks(true)
+          }}
+        />
+      </div>
+      {/* eof Include hidden */}
+    </div>
+  )
+})
+
 
 const BotTasks: NextPage = observer(() => {
   const tasksStore = useContext(BotTasksContext)
   const tasksLoading = tasksStore.loaders.botTasksLoading
   const tasksLoadingError = tasksStore.errors.tasksLoadingError
+
+  const loadTasks = () =>
+    tasksStore.getBotTasksApi(true)
 
   useEffect(() => {
     tasksStore.getBotTasksApi()
@@ -275,7 +345,9 @@ const BotTasks: NextPage = observer(() => {
         <div className="flex flex-wrap gap-3">
           <AddNewTaskButton />
           <ReloadTasksButton />
+          <ResetTasksButton />
         </div>
+        <BotTaskFilters onLoadTasks={loadTasks} />
         {/* tasks table */}
         <TasksTable/>
         <TasksTablePagination />

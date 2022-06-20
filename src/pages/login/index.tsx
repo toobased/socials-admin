@@ -9,7 +9,44 @@ import { useRouter } from 'next/router'
 import { Button, Heading, Input } from '@chakra-ui/react'
 //
 
+const LoginForm: React.FC<{
+  isLoading: boolean, 
+  onUserLogin: Function
+}> = 
+  ({isLoading, onUserLogin}) => {
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  return(
+    <div>
+      <div className="flex flex-col max-w-max gap-1">
+        <Input
+          className="max-w-xs"
+          // prefix={<Icon icon="ri:lock-password-line" />}
+          placeholder="Логин"
+          disabled={isLoading}
+          onChange={e => setUsername(e.target.value)}
+        />
+        <Input
+          className="max-w-xs"
+          // prefix={<Icon icon="ri:lock-password-line" />}
+          placeholder="Пароль"
+          disabled={isLoading}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <Button
+          className="mt-1"
+          disabled={isLoading}
+          // type="primary"
+          onClick={() => onUserLogin(username, password)}
+        >
+          Войти
+        </Button>
+      </div>
+    </div>
+  )
+}
 
 const Login: NextPage = () => {
   // router
@@ -33,61 +70,27 @@ const Login: NextPage = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center border-2 border-black h-full text-center">
       <Head>
-        <title>login page is here</title>
+        <title>Вход</title>
       </Head>
 
       <main>
         <Heading>
-          login page content
+          Вход
         </Heading>
+
+        <div className="mt-6">
+          <LoginForm 
+            isLoading={isLoading}
+            onUserLogin={loginUser}
+          />
+        </div>
       </main>
-
-      <LoginForm 
-        isLoading={isLoading}
-        onUserLogin={loginUser}
-      />
-
-      <footer>
-        footer is there
-      </footer>
     </div>
   )
 }
 
-const LoginForm: React.FC<{
-  isLoading: boolean, 
-  onUserLogin: Function
-}> = 
-  ({isLoading, onUserLogin}) => {
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  return (
-    <div>
-      <Input
-        // prefix={<Icon icon="ri:lock-password-line" />}
-        placeholder="Username"
-        disabled={isLoading}
-        onChange={e => setUsername(e.target.value)}
-      />
-      <Input
-        // prefix={<Icon icon="ri:lock-password-line" />}
-        placeholder="Password"
-        disabled={isLoading}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <Button
-        disabled={isLoading}
-        // type="primary"
-        onClick={() => onUserLogin(username, password)}
-      >
-        Log in
-      </Button>
-    </div>
-  )
-}
 
 export default Login

@@ -9,8 +9,16 @@ export interface ITaskDateFinish {
     date: string
 }
 
-export interface ILikePostResultMetrics {
-    like_count: number
+export class LikePostResultMetrics {
+    like_count: number = 0
+
+    constructor(params?: any) {
+        Object.assign(this, params)
+    }
+
+    get metricsLabel (): string {
+        return `${this.like_count}`
+    }
 }
 
 export interface ITaskType {
@@ -39,6 +47,10 @@ export class LikePostTargetData {
     constructor(params: any = {}) {
         makeAutoObservable(this)
         Object.assign(this, params)
+    }
+
+    get metricsLabel (): string {
+        return `${this.like_count}`
     }
 
     isValid(): boolean {
@@ -84,12 +96,38 @@ export class TaskTargetData implements ITaskTargetData {
       makeAutoObservable(this)
     }
 
+    metricsLabel(tType: TaskTypeEnum): string {
+        if (tType == TaskTypeEnum.like_post && this.like_post) {
+            return this.like_post.metricsLabel
+        }
+        return ''
+    }
+
 }
 
 export interface ITaskResultMetrics {
-    like_post?: ILikePostResultMetrics
-    // TODO
+    like_post: LikePostResultMetrics
 }
+
+export class TaskResultMetrics implements TaskResultMetrics {
+    like_post: LikePostResultMetrics = new LikePostResultMetrics()
+
+    constructor(props?: ITaskResultMetrics) {
+        Object.assign(this, props)
+        if (props) {
+            this.like_post = new LikePostResultMetrics(props.like_post)
+        }
+        makeAutoObservable(this)
+    }
+
+    metricsLabel (tType: TaskTypeEnum): string {
+        if (tType == TaskTypeEnum.like_post) {
+            return this.like_post.metricsLabel
+        }
+        return ''
+    }
+}
+
 /** Bot task error class */
 export interface IBotTaskError {
     error_msg: string
@@ -108,22 +146,39 @@ export interface IBotTask {
     platform?: PlatformEnum;
     task_type: TaskTypeEnum;
     error?: IBotTaskError;
-    task_result_metrics: ITaskResultMetrics
+    task_result_metrics: TaskResultMetrics
     task_target_data: TaskTargetData 
-    // bots_used?: string[]
-
-    /*
-    constructor (
-        id: string,
-        is_active: boolean,
-        status: BotTaskStatusEnum,
-    ) {
-        this.id = id
-        this.is_active = is_active
-        this.status = status
-    }
-    */
 }
+
+export class BotTask implements IBotTask {
+    id: string = '';
+    is_active: boolean = false;
+    status: BotTaskStatusEnum = BotTaskStatusEnum.stopped;
+    created_date: string = '';
+    updated_date: string = '';
+    next_run_timestamp?: number;
+    title: string = '';
+    platform?: PlatformEnum;
+    task_type: TaskTypeEnum = TaskTypeEnum.dummy;
+    error?: IBotTaskError;
+    task_result_metrics: TaskResultMetrics = new TaskResultMetrics()
+    task_target_data: TaskTargetData  = new TaskTargetData()
+
+    constructor(params: IBotTask) {
+        Object.assign(this, params)
+        this.task_result_metrics = new TaskResultMetrics(params.task_result_metrics)
+        this.task_target_data = new TaskTargetData(params.task_target_data)
+        makeAutoObservable(this)
+    }
+
+    get metricsLabel (): string {
+        const tP = this.task_type
+        const tM = this.task_result_metrics.metricsLabel(tP)
+        const tD = this.task_target_data.metricsLabel(tP)
+        return `${tM}/${tD}`
+    }
+}
+
 
 /** Create bot task class 
  * it is auto observed
@@ -185,18 +240,32 @@ export class CreateBotTask {
     }
 }
 
-export interface IBotTaskSearch {
-  bot_tasks: IBotTask[]
-  total: number
+
+export interface IBotTasksSearch {
+  bot_tasks: BotTask[];
+  total: number;
 }
 
-export class BotTasksSearch implements IBotTaskSearch {
-  bot_tasks: IBotTask[] = []
+export class BotTasksSearch {
+  bot_tasks: BotTask[] = []
   total: number = 0
 
-  constructor() {
+  constructor(params?: IBotTasksSearch) {
+    // Object.assign(this, params)
     makeAutoObservable(this)
+    if (params == undefined) {
+    } else {
+        this.total = params.total
+        this.setTasks(params.bot_tasks)
+    }
   }
+
+    setTasks (botTasks: BotTask[], replace: boolean = true) {
+        if (replace) {  this.bot_tasks = [] }
+        botTasks.forEach((task) =>
+            this.bot_tasks.push(new BotTask(task))
+        )
+    }
 }
 
 export class BotTasksSearchQuery {
@@ -206,11 +275,26 @@ export class BotTasksSearchQuery {
   task_type?: TaskTypeEnum = undefined;
   is_active?: boolean = undefined;
   status?: BotTaskStatusEnum = undefined;
+  include_hidden: boolean = false;
 
   constructor(params: any = {}) {
-      makeAutoObservable(this)
       Object.assign(this, params)
+      makeAutoObservable(this)
   }
+
+  getQuery(): any {
+    return Object.fromEntries(
+    Object.entries(this).filter(
+      (([_, v]) => 
+        v != ''
+      )) 
+    ) as any 
+  }
+
+  resetDefaults () {
+    Object.assign(this, new BotTasksSearchQuery())
+  }
+
 }
 
 export interface CountableMetrics {

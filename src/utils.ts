@@ -1,6 +1,8 @@
 import { createStandaloneToast, UseToastOptions } from "@chakra-ui/react"
 import { message } from "antd"
 import { AxiosResponse } from "axios"
+import { IFilterValue } from "./models/bots"
+import { IBotTask } from "./models/bots_tasks"
 
 const chakraToast = createStandaloneToast()
 
@@ -79,4 +81,13 @@ export function sweetyDate(
     s: string
 ) {
     return stringToDate(s).toUTCString()
+}
+
+export function getFilterByLabel(
+    label: string | number | undefined,
+    filters: IFilterValue[]
+): IFilterValue | undefined {
+    const defV = filters[0]
+    if (label === undefined) { return defV }
+    return filters.filter(s => s.label == label)[0] || defV
 }

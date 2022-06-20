@@ -1,5 +1,5 @@
 import botsTasksApi from "@/api/botsTasks";
-import { BotTasksSearch, BotTasksSearchQuery, CreateBotTask, IBotTask, IBotTaskSearch, ITaskType } from "@/models/bots_tasks";
+import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, ITaskType, IBotTasksSearch } from "@/models/bots_tasks";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
 import { makeAutoObservable } from "mobx";
@@ -105,7 +105,7 @@ export class BotTasksStoreErrors {
 
 export class BotTasksStore {
   taskTypes: ITaskType[] = [];
-  currentTask?: IBotTask;
+  currentTask?: BotTask;
   newTask: CreateBotTask = new CreateBotTask();
   loaders: BotTaskStoreLoaders = new BotTaskStoreLoaders();
   errors: BotTasksStoreErrors = new BotTasksStoreErrors();
@@ -125,7 +125,7 @@ export class BotTasksStore {
     this.newTask = newTask
   }
 
-  setCurrentTask(t: IBotTask) {
+  setCurrentTask(t: BotTask) {
     console.log('run set current task')
     this.currentTask = t
     console.log('run set current task', this.currentTask)
@@ -179,18 +179,16 @@ export class BotTasksStore {
     console.log('continue to request')
     this.loaders.botTasksLoading = true
     try {
-      const resp = await botsTasksApi.getBotTasks(this.tasksSearchQuery)
+      const resp = await botsTasksApi.getBotTasks(
+          this.tasksSearchQuery.getQuery()
+      )
       const [isSuccess, msg] = simpleProcessResponse(
         resp, '', 'error while getting bot tasks'
       )
-      const searchTasks: IBotTaskSearch = resp.data
-      // TODO: improve with BotTasksSearch internall method
-      replace && (this.tasksSearch.bot_tasks = searchTasks.bot_tasks)
-      // TODO: fix when not replace
-      !replace && 
-        (this.tasksSearch.bot_tasks = 
-           this.tasksSearch.bot_tasks.concat(searchTasks.bot_tasks)
-        )
+      const searchTasks: IBotTasksSearch = resp.data
+      this.tasksSearch.setTasks(searchTasks.bot_tasks, replace)
+      // console.log(`tst tasks search are`, this.tasksSearch)
+      // console.log(`tst task`, this.tasksSearch.bot_tasks[0].metricsLabel)
       this.tasksSearch.total = searchTasks.total
       if (!isSuccess) {
         this.errors.setTasksLoadingError(msg)
@@ -285,7 +283,7 @@ export class BotTasksStore {
       )
       !isSuccess && this.errors.setTaskLoadingError(msg)
       if (isSuccess) {
-        const currentTask: IBotTask = resp.data
+        const currentTask: BotTask = resp.data
         this.setCurrentTask(currentTask)
       }
     } catch (error) {
