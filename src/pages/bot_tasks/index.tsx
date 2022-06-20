@@ -170,7 +170,7 @@ const TasksTable = observer(() => {
                 {/* eof task type */}
                 {/* task type */}      
                 <Td>
-                  { task.metricsLabel }
+                  <div dangerouslySetInnerHTML={{__html: task.metricsLabel}} />
                 </Td>
                 {/* eof task type */}
                 {/* task created_date */}      

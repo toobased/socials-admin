@@ -161,8 +161,9 @@ export class BotTask implements IBotTask {
     platform?: PlatformEnum;
     task_type: TaskTypeEnum = TaskTypeEnum.dummy;
     error?: IBotTaskError;
-    task_result_metrics: TaskResultMetrics = new TaskResultMetrics()
-    task_target_data: TaskTargetData  = new TaskTargetData()
+    task_result_metrics: TaskResultMetrics = new TaskResultMetrics();
+    task_target_data: TaskTargetData  = new TaskTargetData();
+    bots_used: string[] = [];
 
     constructor(params: IBotTask) {
         Object.assign(this, params)
@@ -175,7 +176,8 @@ export class BotTask implements IBotTask {
         const tP = this.task_type
         const tM = this.task_result_metrics.metricsLabel(tP)
         const tD = this.task_target_data.metricsLabel(tP)
-        return `${tM}/${tD}`
+        const bL = this.bots_used.length
+        return `${tM}/${tD} <br/> ${bL} bots used`
     }
 }
 
