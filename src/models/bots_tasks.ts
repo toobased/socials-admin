@@ -5,19 +5,32 @@ import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskTypeEnum, WorkLagEnum } fr
 import { RegularLikeGroupTargetData } from "./tasks_regular_like";
 import { WatchVideoTargetData } from "./tasks_watch_video";
 
+export enum SortOrder {
+  ascending = 1,
+  descending = -1
+}
+
 export interface ITaskDateFinish {
     date: string
 }
 
 export class LikePostResultMetrics {
     like_count: number = 0
-
     constructor(params?: any) {
         Object.assign(this, params)
     }
-
     get metricsLabel (): string {
         return `${this.like_count}`
+    }
+}
+
+export class WatchVideoResultMetrics {
+    watch_count: number = 0
+    constructor(params?: any) {
+        Object.assign(this, params)
+    }
+    get metricsLabel (): string {
+        return `${this.watch_count}`
     }
 }
 
@@ -100,6 +113,9 @@ export class TaskTargetData implements ITaskTargetData {
         if (tType == TaskTypeEnum.like_post && this.like_post) {
             return this.like_post.metricsLabel
         }
+        if (tType == TaskTypeEnum.watch_video && this.watch_video) {
+            return this.watch_video.metricsLabel
+        }
         return ''
     }
 
@@ -107,15 +123,18 @@ export class TaskTargetData implements ITaskTargetData {
 
 export interface ITaskResultMetrics {
     like_post: LikePostResultMetrics
+    watch_video: WatchVideoResultMetrics
 }
 
 export class TaskResultMetrics implements TaskResultMetrics {
     like_post: LikePostResultMetrics = new LikePostResultMetrics()
+    watch_video: WatchVideoResultMetrics = new WatchVideoResultMetrics()
 
     constructor(props?: ITaskResultMetrics) {
         Object.assign(this, props)
         if (props) {
             this.like_post = new LikePostResultMetrics(props.like_post)
+            this.watch_video = new WatchVideoResultMetrics(props.watch_video)
         }
         makeAutoObservable(this)
     }
@@ -123,6 +142,9 @@ export class TaskResultMetrics implements TaskResultMetrics {
     metricsLabel (tType: TaskTypeEnum): string {
         if (tType == TaskTypeEnum.like_post) {
             return this.like_post.metricsLabel
+        }
+        if (tType == TaskTypeEnum.watch_video) {
+            return this.watch_video.metricsLabel
         }
         return ''
     }
@@ -278,6 +300,8 @@ export class BotTasksSearchQuery {
   is_active?: boolean = undefined;
   status?: BotTaskStatusEnum = undefined;
   include_hidden: boolean = false;
+  sort_by_created_date: SortOrder = SortOrder.descending;
+  sort_by_updated_date?: SortOrder = undefined;
 
   constructor(params: any = {}) {
       Object.assign(this, params)

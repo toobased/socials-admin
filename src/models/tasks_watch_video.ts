@@ -19,6 +19,10 @@ export class WatchVideoTargetData {
     makeAutoObservable(this)
   }
 
+    get metricsLabel (): string {
+        return `${this.watch_count}`
+    }
+
     isValid(): boolean {
       if (
         (this.video_link.trim().length == 0) ||
