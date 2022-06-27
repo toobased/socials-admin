@@ -177,7 +177,7 @@ export const RegularLikeGroupDataContent = observer((
             />
           </div>
           <Select
-            isDisabled={true}
+            isDisabled={false}
             value={`${data.work_lag}`}
             onChange={(e) => {
               data.work_lag = e.target.value as WorkLagEnum
