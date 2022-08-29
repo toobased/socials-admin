@@ -100,15 +100,15 @@ const EditBotTask: NextPage = observer(() => {
         </Heading>
 
         <BotTaskCreationForm />
-        {newTask.task_type == TaskActionType.like_post && 
+        {newTask.action_type == TaskActionType.like_post && 
           newTask.task_target_data.like_post &&
           <LikePostDataBlock />
         }
-        {newTask.task_type == TaskActionType.regular_like_group && 
+        {newTask.action_type == TaskActionType.regular_like_group && 
           newTask.task_target_data.regular_like_group &&
           <RegularLikeGroupCreateBlock />
         }
-        {newTask.task_type == TaskActionType.watch_video &&
+        {newTask.action_type == TaskActionType.watch_video &&
           <WatchVideoCreateBlock />
         }
         <BotTaskErrorContainer />
