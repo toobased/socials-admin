@@ -1,9 +1,13 @@
-import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video";
 import { makeAutoObservable } from "mobx";
+import { LikeAction } from "./actions/like";
+
+import { WatchAction } from "./actions/watch";
 import { PlatformEnum } from "./enums/bots";
-import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskTypeEnum, WorkLagEnum } from "./enums/bot_tasks";
+import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
+import { SocialSource } from "./social_source";
 import { RegularLikeGroupTargetData } from "./tasks_regular_like";
 import { WatchVideoTargetData } from "./tasks_watch_video";
+import { BaseDate } from "./utils";
 
 export enum SortOrder {
   ascending = 1,
@@ -34,13 +38,26 @@ export class WatchVideoResultMetrics {
     }
 }
 
-export interface ITaskType {
-    id: string
-    name: string
-    description: string
-    platforms: PlatformEnum[]
-    duration_type: TaskDurationTypeEnum
-    is_active: boolean
+export class BotTaskTypeTarget {
+  target!: TaskTarget
+  platforms: Array<PlatformEnum> = []
+
+  construct (p: Partial<BotTaskType>) {
+    Object.assign(this, p)
+  }
+}
+
+export class BotTaskType {
+  id!: string
+  action_type!: TaskActionType
+  name!: string
+  description!: string
+  targets: Array<BotTaskTypeTarget> = []
+  is_active!: boolean
+
+  construct (p: Partial<BotTaskType>) {
+    Object.assign(this, p)
+  }
 }
 
 export class TaskDateFinish {
@@ -109,11 +126,11 @@ export class TaskTargetData implements ITaskTargetData {
       makeAutoObservable(this)
     }
 
-    metricsLabel(tType: TaskTypeEnum): string {
-        if (tType == TaskTypeEnum.like_post && this.like_post) {
+    metricsLabel(tType: TaskActionType): string {
+        if (tType == TaskActionType.Like && this.like_post) {
             return this.like_post.metricsLabel
         }
-        if (tType == TaskTypeEnum.watch_video && this.watch_video) {
+        if (tType == TaskActionType.Watch && this.watch_video) {
             return this.watch_video.metricsLabel
         }
         return ''
@@ -139,68 +156,97 @@ export class TaskResultMetrics implements TaskResultMetrics {
         makeAutoObservable(this)
     }
 
-    metricsLabel (tType: TaskTypeEnum): string {
-        if (tType == TaskTypeEnum.like_post) {
+    metricsLabel (tType: TaskActionType): string {
+        if (tType == TaskActionType.Like) {
             return this.like_post.metricsLabel
         }
-        if (tType == TaskTypeEnum.watch_video) {
+        if (tType == TaskActionType.Watch) {
             return this.watch_video.metricsLabel
         }
         return ''
     }
 }
 
+export enum TaskErrorKind {
+    Db = 'Db',
+    IncorrectData = 'IncorrectData',
+    ActionError = 'ActionError',
+    Dummy = 'Dummy',
+    NotImplemented = 'NotImplemented'
+}
+
 /** Bot task error class */
-export interface IBotTaskError {
-    error_msg: string
-    detail_msg: string
+export class TaskError {
+  kind: TaskErrorKind = TaskErrorKind.Dummy;
+  msg: string = '';
+  detail_msg: string = '';
+
+  constructor(p: Partial<BotTaskOptions> = {}) {
+    Object.assign(this, p)
+  }
+}
+
+export class BotTaskOptions {
+  delete_after_finished: boolean = false;
+  is_hidden: boolean = false;
+  is_testing: boolean = false;
+  is_browser: boolean = false;
+
+  constructor(p: Partial<BotTaskOptions> = {}) {
+    Object.assign(this, p)
+  }
+}
+
+export class TaskActionEnum {
+  LikeAction: LikeAction | undefined = undefined
+  WatchAction: WatchAction | undefined = undefined
+
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  from_action_type(t: TaskActionType) {
+    Object.assign(this, new TaskActionEnum())
+    const T = TaskActionType
+    switch (t) {
+      case T.Watch:
+        this.WatchAction = new WatchAction()
+        break
+      case T.Like:
+        this.LikeAction = new LikeAction()
+        break
+    }
+  }
 }
 
 /** Bot task class */
-export interface IBotTask {
-    id: string;
-    is_active: boolean;
-    status: BotTaskStatusEnum;
-    created_date: string;
-    updated_date: string;
-    next_run_timestamp?: number;
-    title: string;
-    platform?: PlatformEnum;
-    task_type: TaskTypeEnum;
-    error?: IBotTaskError;
-    task_result_metrics: TaskResultMetrics
-    task_target_data: TaskTargetData 
-}
+export class BotTask {
+  id: string = '';
+  is_active: boolean = false;
+  status: BotTaskStatusEnum = BotTaskStatusEnum.Active;
+  created_date?: BaseDate;
+  updated_date?: BaseDate;
+  next_run_timestamp: BaseDate | null = null;
+  title: string = '';
+  platform?: PlatformEnum;
+  options: BotTaskOptions = new BotTaskOptions();
+  error: TaskError | null = null;
+  action_type: TaskActionType = TaskActionType.Dummy;
+  action!: TaskActionEnum;
+  social_source: SocialSource | null = null;
 
-export class BotTask implements IBotTask {
-    id: string = '';
-    is_active: boolean = false;
-    status: BotTaskStatusEnum = BotTaskStatusEnum.stopped;
-    created_date: string = '';
-    updated_date: string = '';
-    next_run_timestamp?: number;
-    title: string = '';
-    platform?: PlatformEnum;
-    task_type: TaskTypeEnum = TaskTypeEnum.dummy;
-    error?: IBotTaskError;
-    task_result_metrics: TaskResultMetrics = new TaskResultMetrics();
-    task_target_data: TaskTargetData  = new TaskTargetData();
-    bots_used: string[] = [];
+  // TODO? bots_used: string[] = [];
 
-    constructor(params: IBotTask) {
-        Object.assign(this, params)
-        this.task_result_metrics = new TaskResultMetrics(params.task_result_metrics)
-        this.task_target_data = new TaskTargetData(params.task_target_data)
-        makeAutoObservable(this)
-    }
+  constructor(params: Partial<BotTask>) {
+      Object.assign(this, params)
+      makeAutoObservable(this)
+  }
 
-    get metricsLabel (): string {
-        const tP = this.task_type
-        const tM = this.task_result_metrics.metricsLabel(tP)
-        const tD = this.task_target_data.metricsLabel(tP)
-        const bL = this.bots_used.length
-        return `${tM}/${tD} <br/> ${bL} bots used`
-    }
+  get metricsLabel (): string {
+    const at = this.action_type
+    return `${at}`
+    // return `${tM}/${tD} <br/> ${bL} bots used`
+  }
 }
 
 
@@ -208,59 +254,43 @@ export class BotTask implements IBotTask {
  * it is auto observed
 * */
 export class CreateBotTask {
-    title: string = '';
-    platform: PlatformEnum = PlatformEnum.vk;
-    task_type?: TaskTypeEnum = undefined;
-    task_target_data: TaskTargetData = new TaskTargetData();
     is_active: boolean = true;
+    title: string = '';
+    platform: PlatformEnum = PlatformEnum.Vk;
     is_testing: boolean = false;
+    action_type: TaskActionType = TaskActionType.Dummy;
+    action: TaskActionEnum = new TaskActionEnum();
+    social_source_id: string | null = null;
 
-    constructor(params: any = {}) {
-        const { task_target_data } = params
+    constructor(p: Partial<CreateBotTask>) {
         makeAutoObservable(this)
-        Object.assign(this, params)
-        this.task_target_data = new TaskTargetData(task_target_data)
+        Object.assign(this, p)
     }
 
     isValid (): boolean {
+    return true
       let v = false
       if (
         !(Object.values(PlatformEnum).includes(this.platform)) ||
-        !(this.task_type) ||
-        !(Object.values(TaskTypeEnum).includes(this.task_type))
+        !(this.action_type) ||
+        !(Object.values(TaskActionType).includes(this.action_type))
       ) {
         return false
-      }
-
-      // validation check for like_post
-      if(this.task_type == TaskTypeEnum.like_post) {
-        (this.task_target_data.like_post != undefined) &&
-          (v = this.task_target_data.like_post.isValid())
-      }
-      // validation check for regular_like_group
-      if(this.task_type == TaskTypeEnum.regular_like_group) {
-        (this.task_target_data.regular_like_group != undefined) &&
-          (v = this.task_target_data.regular_like_group.isValid())
-      }
-      // validation check for watch_video
-      if(this.task_type == TaskTypeEnum.watch_video) {
-        (this.task_target_data.watch_video != undefined) &&
-          (v = this.task_target_data.watch_video.isValid())
       }
       return v
     }
 
-    assign (t: IBotTask) {
+    assign (t: Partial<BotTask>) {
       Object.assign(this, t)
     }
 
     reset () {
+    /* TODO
       Object.assign(this, {
         title: '',
-        platform: PlatformEnum.vk,
-        task_type: '',
-        task_target_data: new TaskTargetData()
+        platform: PlatformEnum.Vk,
       })
+    */
     }
 }
 
@@ -296,7 +326,7 @@ export class BotTasksSearchQuery {
   skip: number = 0;
   limit: number = 10;
   platform?: PlatformEnum = undefined;
-  task_type?: TaskTypeEnum = undefined;
+  task_type?: TaskActionType = undefined;
   is_active?: boolean = undefined;
   status?: BotTaskStatusEnum = undefined;
   include_hidden: boolean = false;

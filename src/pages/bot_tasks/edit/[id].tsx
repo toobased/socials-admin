@@ -1,7 +1,7 @@
 import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group"
 import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video"
 import { CreateBotTask } from "@/models/bots_tasks"
-import { TaskTypeEnum } from "@/models/enums/bot_tasks"
+import { TaskActionType } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { errorMessageChakra, successMessageChakra } from "@/utils"
 import { Button, Heading } from "@chakra-ui/react"
@@ -100,15 +100,15 @@ const EditBotTask: NextPage = observer(() => {
         </Heading>
 
         <BotTaskCreationForm />
-        {newTask.task_type == TaskTypeEnum.like_post && 
+        {newTask.task_type == TaskActionType.like_post && 
           newTask.task_target_data.like_post &&
           <LikePostDataBlock />
         }
-        {newTask.task_type == TaskTypeEnum.regular_like_group && 
+        {newTask.task_type == TaskActionType.regular_like_group && 
           newTask.task_target_data.regular_like_group &&
           <RegularLikeGroupCreateBlock />
         }
-        {newTask.task_type == TaskTypeEnum.watch_video &&
+        {newTask.task_type == TaskActionType.watch_video &&
           <WatchVideoCreateBlock />
         }
         <BotTaskErrorContainer />

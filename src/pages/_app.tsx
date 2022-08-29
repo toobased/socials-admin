@@ -44,8 +44,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     console.log('process env is', process.env)
     const loadInitialData = async () => {
-      await appStore.getCommonInfo();
-      await userStore.checkUserAuthorized();
+      // await appStore.getCommonInfo();
+      // await userStore.checkUserAuthorized();
       setInitialDataLoading(false)
     }
     loadInitialData();
@@ -58,7 +58,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return(
     <>
       <ChakraProvider theme={chakraTheme}>
-      { userStore.isUserAuthorized &&
+      { userStore.isUserAuthorized || true &&
           <Layout>
               <HeadingNav />
               <Content style={{minHeight: '100vh'}}>
@@ -66,9 +66,11 @@ function MyApp({ Component, pageProps }: AppProps) {
               </Content>
           </Layout>
       }
+      {/* 
       { !userStore.isUserAuthorized &&
         <Login {...pageProps}/>
       }
+      */}
       </ChakraProvider>
     </>
   )

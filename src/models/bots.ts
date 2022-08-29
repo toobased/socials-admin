@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { CountryEnum } from "./enums/bots";
+import { CountryEnum, PlatformEnum } from "./enums/bots";
 
 export interface BotInterface {
   id: string;
@@ -22,28 +22,6 @@ export interface BotInterface {
   rest_until?: string;
 }
 
-/*
-export class Bot implements BotInterface {
-  id: string = "";
-  username: string = "";
-  password: string = "";
-  access_token: string = "";
-  created_time: string | Date = "";
-  created_source: string = "";
-  last_used: string | Date = "";
-  is_active: boolean = false;
-  is_in_use: boolean = false;
-  like_count: number = 0;
-  reply_count: number = 0;
-  comment_count: number = 0;
-  platform?: PlatformEnum;
-  gender?: GenderEnum;
-  constructor(props: Record<string,any>) {
-    Object.assign(this, props)
-  }
-}
-*/
-
 export class BotCreate {
   id: string = "";
   username: string = "";
@@ -51,7 +29,7 @@ export class BotCreate {
   access_token: string = "";
   is_active: boolean = false;
   is_in_use: boolean = false;
-  platform: PlatformEnum = PlatformEnum.vk;
+  platform: PlatformEnum = PlatformEnum.Unspecified;
   gender: GenderEnum = GenderEnum.male;
   country: CountryEnum = CountryEnum.russia;
   rest_until?: string = undefined;
@@ -127,13 +105,6 @@ export interface IFilterValue {
   isIconText?: boolean;
 }
 
-export enum PlatformEnum {
-  vk = "vk",
-  ok = "ok",
-  instagram = "instagram",
-  yt = "youtube"
-}
-
 export enum GenderEnum {
   male = "male",
   female = "female"
@@ -151,11 +122,12 @@ const fIcons = {
 
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
-  { label: "vk", query_value: PlatformEnum.vk, icon: 'cib:vk', iconColor: '#4C75A3' },
-  { label: "ok", query_value: PlatformEnum.ok, icon: 'fa:odnoklassniki-square', 
+  { label: "vk", query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
+  { label: "ok", query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
       iconColor: '#ed812b' },
-  { label: "instagram", query_value: PlatformEnum.instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
-  { label: "youtube", query_value: PlatformEnum.yt, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
+  { label: "instagram", query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
+  { label: "youtube", query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
+  { label: "dzen", query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
 ]
 
 export const genderFilters: IFilterValue[] = [

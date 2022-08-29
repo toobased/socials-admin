@@ -48,7 +48,9 @@ const TaskDetailPage: NextPage = observer(() => {
 
   return (
     <main>
+      {/*
       <TaskMetrics />
+      */}
       <TaskDataInfo />
     </main>
   )

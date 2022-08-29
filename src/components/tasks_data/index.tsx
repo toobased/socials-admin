@@ -1,24 +1,26 @@
-import { IBotTask, IBotTaskError } from "@/models/bots_tasks"
-import { TaskTypeEnum } from "@/models/enums/bot_tasks"
+import { TaskError } from "@/models/bots_tasks"
+import { TaskActionType } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { Heading } from "@chakra-ui/react"
 import { observer } from "mobx-react"
 import { useContext } from "react"
 import { LikePostDataInfo } from "./like_post"
 import { RegularLikeGroupInfoBlock } from "./regular_like_group"
+import { WatchTaskDataInfo } from "./watch"
 
-export interface TaskErrorProps {
-  error: IBotTaskError 
+interface TaskErrorContainerProps {
+  error: TaskError
 }
 
-export const TaskError = ({ error }: TaskErrorProps) => {
+export const TaskErrorContainer = (props: TaskErrorContainerProps) => {
+  const error = props.error
   return (
     <div className="bg-red-500 p-4 my-2 text-white rounded-md max-w-xl">
       <Heading size="sm" color="white">
         Task error
       </Heading>
       <div className="mt-3">
-        { error.error_msg }
+        kind: { error.kind }, msg: { error.msg }
       </div>
       <div>
         { error.detail_msg }
@@ -34,7 +36,7 @@ export const TaskDataInfo = observer(() => {
   if (!currentTask) {
     return ( <></>) }
 
-  const taskType = currentTask.task_type
+  const actionType = currentTask.action_type
 
   return (
     <div
@@ -44,14 +46,22 @@ export const TaskDataInfo = observer(() => {
         Task Data
       </Heading>
       { currentTask.error &&
-        <TaskError error={currentTask.error} />
+        <TaskErrorContainer error={currentTask.error} />
       }
-      {taskType == TaskTypeEnum.like_post &&
+      {actionType == TaskActionType.Watch &&
+        <WatchTaskDataInfo />
+      }
+
+      {/*
+      {actionType == TaskActionType.like_post &&
         <LikePostDataInfo />
       }
-      {taskType == TaskTypeEnum.regular_like_group &&
+      */}
+      {/*
+      {actionType == TaskActionType.regular_like_group &&
         <RegularLikeGroupInfoBlock />
       }
+      */}
     </div>
   )
 })

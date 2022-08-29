@@ -1,16 +1,16 @@
 export enum BotTaskStatusEnum {
-    running = 'running',
-    stopped = 'stopped',
-    finished = 'finished',
-    error = 'error'
+  Active = 'Active',
+  Processing = 'Processing',
+  Stopped = 'Stopped',
+  Error = 'Error',
+  Finished = 'Finished'
 }
 
-export enum TaskTypeEnum {
-    like_post = 'like_post',
-    repost_post = 'repost_post',
-    regular_like_group = 'regular_like_group',
-    watch_video = 'watch_video',
-    dummy = 'dummy'
+export enum TaskActionType {
+  Dummy = 'Dummy',
+  Like = 'Like',
+  Watch = 'Watch',
+  Repost = 'Repost'
 }
 
 export enum WorkLagEnum {
@@ -33,4 +33,12 @@ export enum WorkLagEnum {
 export enum TaskDurationTypeEnum {
     finite = "finite",
     regular = "regular"
+}
+
+export enum TaskTarget {
+  Dummy = 'Dummy',
+  Video = 'Video',
+  Post = 'Post',
+  User = 'User',
+  Group = 'Group'
 }

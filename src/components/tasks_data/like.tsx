@@ -4,10 +4,11 @@ import { observer } from "mobx-react"
 import { useContext } from "react"
 import TaskDataTile from "../common/TaskDataTile"
 
-export const LikePostDataInfo = observer(() => {
+export const LikeTaskDataInfo = observer(() => {
   const tasksStore = useContext(BotTasksContext)
   const currentTask = tasksStore.currentTask
-  const data = currentTask?.task_target_data.like_post
+  // const data = currentTask.
+  const data = currentTask?.action.LikeAction
 
   if (!data) {
     return (

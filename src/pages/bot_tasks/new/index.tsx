@@ -1,16 +1,17 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { Button, Checkbox, Heading, Input, NumberInput, NumberInputField, Select, Switch } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext } from "@/store/botsTasksStore";
-import { PlatformEnum } from "@/models/bots";
-import { TaskTypeEnum, WorkLagEnum } from "@/models/enums/bot_tasks";
-import { CreateBotTask, LikePostTargetData } from "@/models/bots_tasks";
+import { TaskActionType, WorkLagEnum } from "@/models/enums/bot_tasks";
+import { CreateBotTask, LikePostTargetData, TaskActionEnum } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
 import { errorMessageChakra, successMessageChakra } from "@/utils";
-import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group";
-import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video";
+import { PlatformEnum } from "@/models/enums/bots";
+import { TaskActionForm } from "@/components/actions/TaskActionForm";
+import { ActionFormConfig } from "@/models/action_form";
+import { WatchAction } from "@/models/actions/watch";
 
 export interface TaskDateEndPickerProps {
   onDateChange: Function
@@ -21,107 +22,13 @@ export const TaskDateEndPicker = (props: TaskDateEndPickerProps) => {
     <>
       <DatePicker
         showTime
-        onChange={(value: any, dateString: string) => {
+        onChange={(_value: any, dateString: string) => {
           props.onDateChange(dateString)
         }}
       />
     </>
   )
 }
-
-
-export const LikePostDataBlock = observer(() => {
-  const botTasksStore = useContext(BotTasksContext)
-  const taskData = botTasksStore.newTask.task_target_data
-  const data = taskData.like_post
-
-  if (!data) {
-    return (
-      <div>
-        no like post data
-      </div>
-    )
-  }
-
-  return (
-    <div className="bg-white rounded-lg px-4 py-6 mt-4">
-      <Heading size="md" className="mb-2">
-        Like Post data
-      </Heading>
-      {/* post link */}
-      <div className="max-w-md">
-        <div className="font-semibold text-md">Post link</div>
-        <Input
-          className="mt-1"
-          placeholder="Enter post link"
-          value={data.post_link}
-          onChange={(e) => {
-            data.post_link = e.target.value
-          }}
-        />
-      </div>
-      {/* eof post link */}
-      <div className="flex flex-wrap gap-3 items-center mt-3">
-      {/* like count */}
-      <div className="">
-        <div className="font-semibold text-md">Like count</div>
-        <NumberInput
-          className="mt-1"
-          placeholder="Enter like count"
-          defaultValue={1}
-          value={data.like_count}
-          onChange={(s:string, n: number) => {
-            !n && (data.like_count = undefined)
-            n && (data.like_count = n)
-          }}
-        >
-          <NumberInputField>
-          </NumberInputField>
-        </NumberInput>
-      </div>
-      {/* eof like count */}
-      {/* work lag select */}
-      <div className="">
-        <div className="font-semibold text-md">
-          How long process the work
-        </div>
-        <Select
-          value={`${data.work_lag}`}
-          onChange={(e) => {
-            const value = e.target.value
-            value != WorkLagEnum.custom_date &&
-              (data.date_finish.date = '')
-            data.work_lag = e.target.value as WorkLagEnum
-          }}
-        >
-          {Object.values(WorkLagEnum).map((item, index) =>
-            <option 
-              key={index} 
-              value={`${item}`}
-            >
-              { item }
-            </option>
-          )}
-        </Select>
-      </div>
-      {/* eof work lag select */}
-      {/* date picker */}
-      { data.work_lag == WorkLagEnum.custom_date && 
-        <div className="mt-3">
-          <TaskDateEndPicker
-            onDateChange={(dateString: string) => {
-              data.date_finish && (data.date_finish.date = dateString)
-            }}
-          />
-        </div>
-      }
-      {/* eof date picker */}
-      </div>
-    </div>
-  )
-
-})
-
 export const BotTaskAddButton = observer(() => {
   const router = useRouter()
   const botTasksStore = useContext(BotTasksContext)
@@ -148,7 +55,7 @@ export const BotTaskAddButton = observer(() => {
         disabled={!task.isValid()}
         isLoading={currentBotTaskLoading}
         loadingText="Creating"
-        onClick={e => createBotTask() }
+        onClick={_e => createBotTask() }
       >
         Создать таск
       </Button>
@@ -243,7 +150,9 @@ export const BotTaskCreationForm = observer(() => {
 
     const currentTaskTypes = () => {
       return taskTypes.filter((item) =>
-        item.platforms.includes(task.platform)
+        item.targets.filter(i => i.platforms.includes(
+          task.platform
+        ))
       )
     }
 
@@ -254,31 +163,23 @@ export const BotTaskCreationForm = observer(() => {
         </div>
         <Select
           placeholder='Выбери тип таска'
-          value={`${task.task_type}`}
+          value={`${task.action_type}`}
           onChange={(e) => {
-            task.task_type = e.target.value as TaskTypeEnum
+            const t = e.target.value as TaskActionType
+            task.action_type = t
+            task.action.from_action_type(t)
           }}
         >
           { currentTaskTypes().map((item, index) =>
               <option
-                value={item.id}
+                value={item.action_type}
                 key={index}
                 disabled={!item.is_active}
               >
                 {item.name}
               </option>
           )}
-          {/* 
-          { Object.values(TaskTypeEnum).map((item, index) =>
-            <option
-              value={item}
-              key={index}
-            >
-              {item}
-            </option>
-          )}
-          */}
-</Select>
+        </Select>
       </div>
     )
   })
@@ -329,6 +230,9 @@ const NewBotTask: NextPage = observer(() => {
     botTasksStore.getTasksTypes()
     botTasksStore.newTask.reset()
   }, [])
+
+  const actionFormConfig = task.action?.WatchAction?.form_config();
+
   return (
     <>
       <main className="mx-11 my-7">
@@ -336,15 +240,13 @@ const NewBotTask: NextPage = observer(() => {
           Новый таск
         </Heading>
         <BotTaskCreationForm />
-        {task.task_type == TaskTypeEnum.like_post && 
-          <LikePostDataBlock />
+
+        action is { JSON.stringify(task.action) }
+
+        {actionFormConfig &&
+        <TaskActionForm config={actionFormConfig} />
         }
-        {task.task_type == TaskTypeEnum.regular_like_group && 
-          <RegularLikeGroupCreateBlock />
-        }
-        {task.task_type == TaskTypeEnum.watch_video &&
-          <WatchVideoCreateBlock />
-        }
+
         <BotTaskErrorContainer />
         <BotTaskAddButton />
       </main>

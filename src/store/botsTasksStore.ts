@@ -1,5 +1,6 @@
 import botsTasksApi from "@/api/botsTasks";
-import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, ITaskType, IBotTasksSearch } from "@/models/bots_tasks";
+import { DbFindResult } from "@/models/api";
+import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, BotTaskType } from "@/models/bots_tasks";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
 import { makeAutoObservable } from "mobx";
@@ -104,7 +105,7 @@ export class BotTasksStoreErrors {
 }
 
 export class BotTasksStore {
-  taskTypes: ITaskType[] = [];
+  taskTypes: BotTaskType[] = [];
   currentTask?: BotTask;
   newTask: CreateBotTask = new CreateBotTask();
   loaders: BotTaskStoreLoaders = new BotTaskStoreLoaders();
@@ -131,7 +132,7 @@ export class BotTasksStore {
     console.log('run set current task', this.currentTask)
   }
 
-  setTaskTypes(types: ITaskType[]) {
+  setTaskTypes(types: BotTaskType[]) {
     this.taskTypes = types
   }
 
@@ -157,8 +158,9 @@ export class BotTasksStore {
       const [isSuccess, msg] = simpleProcessResponse(
         resp, '', 'error while getting tasks types'
       )
-      if (isSuccess) {
-        this.setTaskTypes(resp.data)
+      const data: DbFindResult<BotTaskType> = resp.data
+      if (isSuccess && data) {
+        this.setTaskTypes(data.items)
       } else {
         this.errors.setTaskTypesLoadingError(msg)
       }
@@ -185,8 +187,8 @@ export class BotTasksStore {
       const [isSuccess, msg] = simpleProcessResponse(
         resp, '', 'error while getting bot tasks'
       )
-      const searchTasks: IBotTasksSearch = resp.data
-      this.tasksSearch.setTasks(searchTasks.bot_tasks, replace)
+      const searchTasks: DbFindResult<BotTask> = resp.data
+      this.tasksSearch.setTasks(searchTasks.items, replace)
       // console.log(`tst tasks search are`, this.tasksSearch)
       // console.log(`tst task`, this.tasksSearch.bot_tasks[0].metricsLabel)
       this.tasksSearch.total = searchTasks.total
