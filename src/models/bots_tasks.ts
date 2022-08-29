@@ -217,6 +217,22 @@ export class TaskActionEnum {
         break
     }
   }
+
+  setTarget(t: TaskTarget) {
+    if (this.LikeAction) {
+      // this.LikeAction.
+    }
+    if (this.WatchAction) {
+      this.WatchAction.target = t
+    }
+  }
+
+  get target (): TaskTarget | undefined {
+    if (this.WatchAction) {
+      return this.WatchAction.target
+    }
+    return undefined
+  }
 }
 
 /** Bot task class */

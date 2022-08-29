@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { Button, Checkbox, Heading, Input, NumberInput, NumberInputField, Select, Switch } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext } from "@/store/botsTasksStore";
-import { TaskActionType, WorkLagEnum } from "@/models/enums/bot_tasks";
+import { TaskActionType, TaskTarget, WorkLagEnum } from "@/models/enums/bot_tasks";
 import { CreateBotTask, LikePostTargetData, TaskActionEnum } from "@/models/bots_tasks";
 import { DatePicker } from "antd";
 import { errorMessageChakra, successMessageChakra } from "@/utils";
@@ -129,6 +129,8 @@ export const BotTaskCreationForm = observer(() => {
           value={`${task.platform as string}`}
           onChange={(e) => {
             task.platform = e.target.value as PlatformEnum
+            task.action_type = TaskActionType.Dummy
+            task.action = new TaskActionEnum()
           }}
           placeholder='Выбери платформу'
         >
@@ -148,11 +150,11 @@ export const BotTaskCreationForm = observer(() => {
       return (<></>)
     }
 
-    const currentTaskTypes = () => {
+    function currentTaskTypes () {
       return taskTypes.filter((item) =>
         item.targets.filter(i => i.platforms.includes(
           task.platform
-        ))
+        )).length > 0
       )
     }
 
@@ -177,6 +179,48 @@ export const BotTaskCreationForm = observer(() => {
                 disabled={!item.is_active}
               >
                 {item.name}
+              </option>
+          )}
+        </Select>
+      </div>
+    )
+  })
+
+  const SelectTaskTarget = observer(() => {
+    const taskTypes = botTasksStore.taskTypes
+    if (taskTypes == undefined) {
+      return (<></>)
+    }
+
+    function currentTaskTargets (): TaskTarget[] {
+      return taskTypes.find((item) =>
+        item.action_type == task.action_type &&
+        item.targets.filter(i => i.platforms.includes(
+          task.platform
+        )).length > 0
+      )?.targets.map(t => t.target) || []
+    }
+
+    return (
+      <div>
+        <div className="font-semibold text-md mb-1">
+          Выбери таргет таска
+        </div>
+        <Select
+          placeholder='Выбери таргет таска'
+          value={`${task.action.target}`}
+          onChange={(e) => {
+            const t = e.target.value as TaskTarget
+            task.action.setTarget(t)
+          }}
+        >
+          { currentTaskTargets().map((item, index) =>
+              <option
+                value={item}
+                key={index}
+                disabled={false}
+              >
+                {item}
               </option>
           )}
         </Select>
@@ -212,6 +256,7 @@ export const BotTaskCreationForm = observer(() => {
       <div className="flex flex-wrap gap-3 mt-3">
         <SelectPlatform />
         <SelectTaskType />
+        <SelectTaskTarget />
       </div>
       <div className="mt-2 flex gap-3 items-center">
         <SelectTaskActive />
