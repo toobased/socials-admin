@@ -1,5 +1,5 @@
-import { countryFiltes, GenderEnum, IFilterValue, PlatformEnum, platformFilters } from "@/models/bots";
-import { CountryEnum } from "@/models/enums/bots";
+import { countryFiltes, GenderEnum, IFilterValue, platformFilters } from "@/models/bots";
+import { CountryEnum, PlatformEnum } from "@/models/enums/bots";
 import { BotContext } from "@/store/botsStore";
 import { Button, DatePicker, Input, Radio, Switch } from "antd"
 import { observer } from "mobx-react"
@@ -30,7 +30,7 @@ const CreateForm = () => {
   const AccessTokenHelper = observer(() => {
     return (
       <div>
-        {newBot.platform == PlatformEnum.vk &&
+        {newBot.platform == PlatformEnum.Vk &&
           <AccessTokenVkHelper />
         }
       </div>
@@ -201,12 +201,13 @@ const CreateForm = () => {
           />
         </div>
         <div>
+          {/*
           <DatePicker
             showTime
-            onChange={(value: any, dateString: string) => {
               newBot.rest_until = dateString
             }}
           />
+          */}
         </div>
       </div>
       {/* eof bot resting */}

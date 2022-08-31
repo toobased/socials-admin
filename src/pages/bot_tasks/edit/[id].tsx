@@ -1,5 +1,3 @@
-import { RegularLikeGroupCreateBlock } from "@/components/tasks_data/regular_like_group"
-import { WatchVideoCreateBlock } from "@/components/tasks_data/watch_video"
 import { CreateBotTask } from "@/models/bots_tasks"
 import { TaskActionType } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
@@ -9,7 +7,7 @@ import { observer } from "mobx-react"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useContext, useEffect } from "react"
-import { BotTaskAddButton, BotTaskCreationForm, BotTaskErrorContainer, LikePostDataBlock } from "../new"
+import { BotTaskAddButton, BotTaskCreationForm, BotTaskErrorContainer } from "../new"
 
 export const BotTaskUpdateButton = observer(() => {
   const router = useRouter()
@@ -37,7 +35,7 @@ export const BotTaskUpdateButton = observer(() => {
         disabled={!task.isValid()}
         isLoading={currentBotTaskLoading}
         loadingText="Saving..."
-        onClick={e => updateBotTask() }
+        onClick={_e => updateBotTask() }
       >
         Save task
       </Button>
@@ -100,6 +98,7 @@ const EditBotTask: NextPage = observer(() => {
         </Heading>
 
         <BotTaskCreationForm />
+        {/*
         {newTask.action_type == TaskActionType.like_post && 
           newTask.task_target_data.like_post &&
           <LikePostDataBlock />
@@ -111,6 +110,7 @@ const EditBotTask: NextPage = observer(() => {
         {newTask.action_type == TaskActionType.watch_video &&
           <WatchVideoCreateBlock />
         }
+        */}
         <BotTaskErrorContainer />
         <BotTaskUpdateButton />
       </main>

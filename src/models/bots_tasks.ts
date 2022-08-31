@@ -278,7 +278,7 @@ export class CreateBotTask {
     action: TaskActionEnum = new TaskActionEnum();
     social_source_id: string | null = null;
 
-    constructor(p: Partial<CreateBotTask>) {
+    constructor(p: Partial<CreateBotTask> = {}) {
         makeAutoObservable(this)
         Object.assign(this, p)
     }

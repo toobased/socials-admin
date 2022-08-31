@@ -165,7 +165,7 @@ const TasksTable = observer(() => {
                 {/* eof task platform */}
                 {/* task type */}      
                 <Td>
-                  { task.task_type }
+                  { task.action_type }
                 </Td>
                 {/* eof task type */}
                 {/* task type */}      
@@ -175,7 +175,7 @@ const TasksTable = observer(() => {
                 {/* eof task type */}
                 {/* task created_date */}      
                 <Td>
-                  { sweetyDate(task.created_date) }
+                  {task.created_date?.sweety }
                 </Td>
                 {/* eof task created_date */}
                 {/* task next_time_run */}      
@@ -183,8 +183,7 @@ const TasksTable = observer(() => {
                   <div>
                   {task.next_run_timestamp &&
                     <div>
-                      { new Date(task.next_run_timestamp * 1000).
-                      toUTCString()}
+                      {task.next_run_timestamp.sweety }
                     </div>
                   }
                   {!task.next_run_timestamp &&
@@ -314,7 +313,7 @@ const BotTaskFilters = observer((
         <Icon icon="bx:hide" width="22" />
         <Switch
           isChecked={filters.include_hidden}
-          onChange={e => {
+          onChange={_e => {
             filters.include_hidden = !filters.include_hidden
             onLoadTasks(true)
           }}

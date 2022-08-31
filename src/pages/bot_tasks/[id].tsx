@@ -1,6 +1,4 @@
 import { TaskDataInfo } from "@/components/tasks_data";
-import TaskMetrics from "@/components/tasks_metrics";
-import { IBotTask } from "@/models/bots_tasks";
 import { BotTasksContext } from "@/store/botsTasksStore";
 import { observer } from "mobx-react";
 import { NextPage } from "next";

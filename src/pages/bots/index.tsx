@@ -9,7 +9,7 @@ import Column from 'antd/lib/table/Column'
 import CopyClipboardButton from '@/components/buttons/CopyClipboardButton'
 import BooleanIcon from '@/components/common/BooleanIcon'
 import { useRouter } from 'next/router'
-import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, IFilterValue, inUseFilters, PlatformEnum, platformFilters } from '@/models/bots'
+import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
 import Link from 'next/link'
 import { SizeType } from 'antd/lib/config-provider/SizeContext'
 import { Button, Menu, MenuButton, MenuItem, MenuItemOption, MenuList, MenuOptionGroup, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Radio, RadioGroup } from '@chakra-ui/react'
@@ -21,6 +21,7 @@ import { errorMessageChakra } from '@/utils'
 import SelectMenuButton from '@/components/common/SelectMenuButton'
 import SimpleLabel from '@/components/common/SimpleLabel'
 import OptionDropdownFilter from '@/components/common/OptionDropdownFilter'
+import { PlatformEnum } from '@/models/enums/bots'
 
 const { Option } = Select
 

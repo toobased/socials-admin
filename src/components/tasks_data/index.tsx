@@ -4,8 +4,6 @@ import { BotTasksContext } from "@/store/botsTasksStore"
 import { Heading } from "@chakra-ui/react"
 import { observer } from "mobx-react"
 import { useContext } from "react"
-import { LikePostDataInfo } from "./like_post"
-import { RegularLikeGroupInfoBlock } from "./regular_like_group"
 import { WatchTaskDataInfo } from "./watch"
 
 interface TaskErrorContainerProps {

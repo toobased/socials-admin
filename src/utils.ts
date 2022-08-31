@@ -2,7 +2,6 @@ import { createStandaloneToast, UseToastOptions } from "@chakra-ui/react"
 import { message } from "antd"
 import { AxiosResponse } from "axios"
 import { IFilterValue } from "./models/bots"
-import { IBotTask } from "./models/bots_tasks"
 
 const chakraToast = createStandaloneToast()
 

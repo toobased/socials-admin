@@ -22,25 +22,25 @@ export const LikeTaskDataInfo = observer(() => {
     {/* post_link */}
       <TaskDataTile 
         label="Post link"
-        data={data.post_link}
+        data={""}
       />
     {/* post_link */}
     {/* like_post */}
       <TaskDataTile 
         label="Like count"
-        data={`${data.like_count}`}
+        data={""}
       />
     {/* like_post */}
     {/* work_lag */}
       <TaskDataTile 
         label="Work lag"
-        data={`${data.work_lag}`}
+        data={""}
       />
     {/* work_lag */}
     {/* date_finish */}
       <TaskDataTile 
         label="Work lag"
-        data={`${sweetyDate(data.date_finish.date)}`}
+        data={""}
       />
     {/* date_finish */}
     </div>
