@@ -48,12 +48,21 @@ export const menuItems: MenuItem[] = [
   },
   */
   {
+   key: "3",
+    name: "Таргеты",
+    path: "/social_sources",
+    icon: "bx:target-lock",
+    children: []
+  },
+/*
+  {
    key: "4",
     name: "Боты",
     path: "/bots",
     icon: "bxs:bot",
     children: []
   },
+*/
   {
    key: "5",
     name: "Таски ботов",

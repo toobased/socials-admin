@@ -14,6 +14,7 @@ import { ButtonTheme } from '@/styles/chakraButtonTheme';
 import { BotTasksContext } from '@/store/botsTasksStore';
 import HeadingNav from '@/components/common/HeadingNav';
 import LoadingContainer from '@/components/common/LoadingContainer';
+import { AddSourceModal } from '@/components/social_source/AddSourceModal';
 
 /*
 const colors = {
@@ -71,6 +72,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Login {...pageProps}/>
       }
       */}
+      <AddSourceModal />
       </ChakraProvider>
     </>
   )

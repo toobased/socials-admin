@@ -21,7 +21,6 @@ const TaskDetailPage: NextPage = observer(() => {
     ) {
       return
     }
-    // load current bot
     tasksStore.getBotTaskByIdApi(id)
   }, [])
 

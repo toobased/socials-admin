@@ -122,12 +122,12 @@ const fIcons = {
 
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
-  { label: "vk", query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
-  { label: "ok", query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
+  { label: PlatformEnum.Vk, query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
+  { label: PlatformEnum.Ok, query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
       iconColor: '#ed812b' },
-  { label: "instagram", query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
-  { label: "youtube", query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
-  { label: "dzen", query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
+  { label: PlatformEnum.Instagram, query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
+  { label: PlatformEnum.Youtube, query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
+  { label: PlatformEnum.Dzen, query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
 ]
 
 export const genderFilters: IFilterValue[] = [

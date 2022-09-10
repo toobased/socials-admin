@@ -300,14 +300,7 @@ export class CreateBotTask {
       Object.assign(this, t)
     }
 
-    reset () {
-    /* TODO
-      Object.assign(this, {
-        title: '',
-        platform: PlatformEnum.Vk,
-      })
-    */
-    }
+    reset () { Object.assign(this, new CreateBotTask()) }
 }
 
 
@@ -341,6 +334,7 @@ export class BotTasksSearch {
 export class BotTasksSearchQuery {
   skip: number = 0;
   limit: number = 10;
+  source_id: string | undefined = undefined;
   platform?: PlatformEnum = undefined;
   task_type?: TaskActionType = undefined;
   is_active?: boolean = undefined;
@@ -349,7 +343,7 @@ export class BotTasksSearchQuery {
   sort_by_created_date: SortOrder = SortOrder.descending;
   sort_by_updated_date?: SortOrder = undefined;
 
-  constructor(params: any = {}) {
+  constructor(params: Partial<BotTasksSearchQuery> = {}) {
       Object.assign(this, params)
       makeAutoObservable(this)
   }
