@@ -1,8 +1,11 @@
+import { AppContext } from "@/store/appStore";
 import { Menu } from "antd";
 import Sider from "antd/lib/layout/Sider";
 import SubMenu from "antd/lib/menu/SubMenu";
+import { observer } from "mobx-react";
 import Link from "next/link";
 import { NextRouter } from "next/router";
+import { useContext } from "react";
 
 export interface MenuItem {
     key: string;
@@ -25,28 +28,13 @@ export const menuItems: MenuItem[] = [
     icon: "ant-design:home-filled",
     children: []
   },
-    /*
   {
-    key: "2",
-    name: "Vk",
-    path: "/",
-    children: [
-      {
-        key: "2-1",
-        name: "Bots",
-        path: "/",
-        children: []
-      }
-    ]
+   key: "3",
+    name: "Таргеты",
+    path: "/social_sources",
+    icon: "bx:target-lock",
+    children: []
   },
-  {
-    key: "3",
-    name: "Instagram",
-    path: "/",
-    children: [
-    ]
-  },
-  */
   {
    key: "4",
     name: "Боты",
@@ -95,7 +83,8 @@ const getMenuItems = (items: Array<any>) => {
   )
 }
 
-const NavSidebar = () => {
+const NavSidebar = observer(() => {
+    const appStore = useContext(AppContext)
   return (
     <>
       <Sider
@@ -104,7 +93,7 @@ const NavSidebar = () => {
         collapsed={false}
       >
         <Menu
-          theme="dark"
+          theme={appStore.prefs.currentTheme}
           mode="vertical"
         >
           { getMenuItems(menuItems) }
@@ -112,7 +101,6 @@ const NavSidebar = () => {
       </Sider>
     </>
   );
-}
-
+})
 
 export default NavSidebar

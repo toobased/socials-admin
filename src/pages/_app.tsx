@@ -5,15 +5,16 @@ import type { AppProps } from 'next/app'
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@/store/appStore';
 import { UserContext } from '@/store/userStore';
-import Login from './login';
-import NavSidebar from '@/components/NavSidebar';
-import { Layout } from 'antd';
-import { ChakraProvider, Theme } from '@chakra-ui/react';
-import { extendTheme } from '@chakra-ui/react';
-import { ButtonTheme } from '@/styles/chakraButtonTheme';
-import { BotTasksContext } from '@/store/botsTasksStore';
+// import Login from './login';
+// import NavSidebar from '@/components/NavSidebar';
+// import { Layout } from 'antd';
+import { ChakraProvider } from '@chakra-ui/react';
+
+// import { BotTasksContext } from '@/store/botsTasksStore';
 import HeadingNav from '@/components/common/HeadingNav';
 import LoadingContainer from '@/components/common/LoadingContainer';
+import { AddSourceModal } from '@/components/social_source/AddSourceModal';
+import chakraTheme from '@/styles/theme';
 
 /*
 const colors = {
@@ -26,23 +27,17 @@ const colors = {
 }
 */
 
-const chakraTheme = extendTheme({
-  // colors: colors,
-  components: {
-    Button: ButtonTheme
-  }
-})
-
-const { Content } = Layout
+// const { Content } = Layout
 
 function MyApp({ Component, pageProps }: AppProps) {
   const appStore = useContext(AppContext)
-  const userStore = useContext(UserContext) 
+  const userStore = useContext(UserContext)
 
   const [initialDataLoading, setInitialDataLoading] = useState(true);
 
   useEffect(() => {
     console.log('process env is', process.env)
+    appStore.prefs.init()
     const loadInitialData = async () => {
       // await appStore.getCommonInfo();
       // await userStore.checkUserAuthorized();
@@ -59,18 +54,17 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <ChakraProvider theme={chakraTheme}>
       { userStore.isUserAuthorized || true &&
-          <Layout>
-              <HeadingNav />
-              <Content style={{minHeight: '100vh'}}>
-                <Component {...pageProps} />
-              </Content>
-          </Layout>
+         <div>
+          <HeadingNav />
+          <Component {...pageProps} />
+        </div>
       }
       {/* 
       { !userStore.isUserAuthorized &&
         <Login {...pageProps}/>
       }
       */}
+      <AddSourceModal />
       </ChakraProvider>
     </>
   )

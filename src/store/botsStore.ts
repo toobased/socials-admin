@@ -1,5 +1,6 @@
 import botsApi from "@/api/bots";
-import { BotCreate, BotInterface, BotSearch, BotSearchQuery, GenderEnum } from "@/models/bots";
+import { DbFindResult } from "@/models/api";
+import { BotCreate, Bot, BotSearch, BotSearchQuery, GenderEnum } from "@/models/bots";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
 import { makeAutoObservable, observable } from "mobx";
@@ -49,9 +50,9 @@ testBot.gender = GenderEnum.male
 export class BotStore {
  // newBot: BotCreate = testBot;
  newBot: BotCreate = new BotCreate();
- currentBot?: BotInterface;
- bots?: BotInterface[];
- botSearch?: BotSearch;
+ currentBot?: Bot;
+ bots?: Bot[];
+ botSearch?: DbFindResult<Bot>;
  botSearchQuery: BotSearchQuery = new BotSearchQuery();
  loaders: BotStoreLoaders = new BotStoreLoaders();
  errors: BotStoreErrors = new BotStoreErrors();
@@ -66,23 +67,25 @@ export class BotStore {
  setNewBot(newBot: BotCreate) {
   this.newBot = newBot
  }
+
+ setNewFromBase(base: Bot) {
+ }
+
  resetNewBot() {
    this.newBot = new BotCreate()
  }
 
- setCurrentBot(bot: BotInterface) {
+ setCurrentBot(bot: Bot) {
    this.currentBot = bot
  }
  removeCurrentBot() {
    this.currentBot = undefined
  }
 
- setBots (bots: BotInterface[]) {
+ setBots (bots: Bot[]) {
    this.bots = bots
  }
- setBotSearch (botSearch: BotSearch) {
-   this.botSearch = botSearch
- }
+ setBotSearch (r: DbFindResult<Bot>) { this.botSearch = r }
  setBotSearchQuery (botSearchQuery: BotSearchQuery) {
    this.botSearchQuery = botSearchQuery
  }
@@ -123,16 +126,14 @@ export class BotStore {
    if (this.botsLoading) {
      return
    }
-   if (this?.botSearch?.bots && !replace) {
+   if (this.botSearch?.items && !replace) {
      return
    }
    this.setBotsLoading(true)
    this.botsLoadingError = false
    try {
-     const botSearch: BotSearch = await botsApi.getBots(
-       this.botSearchQuery
-     )
-     this.setBotSearch(botSearch)
+     const r = await botsApi.getBots(this.botSearchQuery)
+     this.setBotSearch(r)
    } catch (error) {
      this.botsLoadingError = true
      throw console.log('error while search bots', error)
@@ -180,8 +181,10 @@ export class BotStore {
 
  async updateBotApi (): Promise<[boolean, string]> {
    try {
-     const resp: AxiosResponse = 
-      await botsApi.updateBot(this.newBot)
+    const id = this.currentBot?.id
+    if (!id) { return [false, 'no current bot id']}
+     const resp: AxiosResponse =
+      await botsApi.updateBot(id, this.newBot)
      return simpleProcessResponse(
        resp,
        "bot updated",

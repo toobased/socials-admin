@@ -34,7 +34,7 @@ const AccessTokenVkHelper = observer(() => {
     </Button>
 
   const TokenLink = () =>
-    <div className="flex items-center my-1 bg-white max-w-max rounded-md py-2 px-3">
+    <div className="flex items-center my-1 max-w-max rounded-md py-2 px-3">
       <span>
         link is ready, click to copy
       </span>

@@ -12,6 +12,7 @@ import { PlatformEnum } from "@/models/enums/bots";
 import { TaskActionForm } from "@/components/actions/TaskActionForm";
 import { ActionFormConfig } from "@/models/action_form";
 import { WatchAction } from "@/models/actions/watch";
+import { SourceStoreContext } from "@/store/socialSourcesStore";
 
 export interface TaskDateEndPickerProps {
   onDateChange: Function
@@ -31,6 +32,7 @@ export const TaskDateEndPicker = (props: TaskDateEndPickerProps) => {
 }
 export const BotTaskAddButton = observer(() => {
   const router = useRouter()
+
   const botTasksStore = useContext(BotTasksContext)
   const task = botTasksStore.newTask
   const currentBotTaskLoading = botTasksStore.loaders.currentBotTaskLoading
@@ -82,8 +84,10 @@ export const BotTaskErrorContainer = observer(() => {
 })
 
 export const BotTaskCreationForm = observer(() => {
+  const sourcesStore = useContext(SourceStoreContext)
   const botTasksStore = useContext(BotTasksContext)
   const task: CreateBotTask = botTasksStore.newTask
+  const sources = sourcesStore.sourcesSearch.items
 
   const SetTaskTest = observer(() => {
     return (
@@ -115,6 +119,29 @@ export const BotTaskCreationForm = observer(() => {
             task.title = e.target.value
           }}
         />
+      </div>
+    )
+  })
+
+  const SelectResource = observer(() => {
+    return (
+      <div>
+        <div className="font-semibold text-md mb-1">
+          Выбери ресурс
+        </div>
+        <Select
+          value={`${task.social_source_id}`}
+          onChange={e =>
+            task.social_source_id = e.target.value
+          }
+          placeholder='Выбери ресурс'
+        >
+          {sources.map((s, i) =>
+            <option key={i} value={s.id}>
+              {s.name}
+            </option>
+          )}
+        </Select>
       </div>
     )
   })
@@ -246,12 +273,15 @@ export const BotTaskCreationForm = observer(() => {
   })
 
   return (
-    <div className="bg-white rounded-lg px-4 py-6">
-      <Heading size="md" className="mb-2">
+    <div className="rounded-lg px-4 py-6">
+      <Heading size="md" className="mb-2 dark:text-white">
         Общие настройки для таска
       </Heading>
       <div className="mt-2">
       <InputTaskTitle />
+      </div>
+      <div className="mt-2 max-w-md">
+        <SelectResource />
       </div>
       <div className="flex flex-wrap gap-3 mt-3">
         <SelectPlatform />
@@ -269,19 +299,22 @@ export const BotTaskCreationForm = observer(() => {
 
 const NewBotTask: NextPage = observer(() => {
   const botTasksStore = useContext(BotTasksContext)
+  const sourceStore = useContext(SourceStoreContext)
   const task = botTasksStore.newTask
 
   useEffect(() => {
     botTasksStore.getTasksTypes()
     botTasksStore.newTask.reset()
+    if (sourceStore.sourcesSearch.items.length == 0) {
+      sourceStore.getSources()
+    }
   }, [])
-
-  const actionFormConfig = task.action?.WatchAction?.form_config();
+  const actionFormConfig = task.action?.form_config(task.action_type)
 
   return (
     <>
       <main className="mx-11 my-7">
-        <Heading className="mb-4">
+        <Heading className="mb-4 dark:text-white">
           Новый таск
         </Heading>
         <BotTaskCreationForm />

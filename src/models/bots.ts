@@ -1,48 +1,81 @@
 import { makeAutoObservable } from "mobx";
 import { CountryEnum, PlatformEnum } from "./enums/bots";
+import { BaseDate } from "./utils";
 
-export interface BotInterface {
-  id: string;
-  username: string;
-  password: string;
-  access_token: string;
-  created_time: string | Date;
-  created_source: string;
-  last_used: string | Date;
-  is_active: boolean;
-  is_in_use: boolean;
-  is_banned: boolean;
-  is_resting: boolean;
-  like_count: number;
-  reply_count: number;
-  comment_count: number;
-  country?: CountryEnum;
-  platform?: PlatformEnum;
-  gender?: GenderEnum;
-  rest_until?: string;
+export enum BotStatus {
+    Configure = 'Configure', Ready = 'Ready',
+    Resting = 'Resting', InUse = 'InUse',
+    Banned = 'Banned', ActionRequired = 'ActionRequired',
+    Error = 'Error'
+}
+
+export class BotPlatformData {
+    refresh_token: string | null = null;
+    expires_in: string | null = null;
+    constructor(props: Partial<BotPlatformData> = {}) { Object.assign(this, props) }
+}
+
+export class BotExtra {
+    notes: string | null = null;
+    constructor(props: Partial<BotExtra> = {}) { Object.assign(this, props) }
+}
+
+export enum BotErrorKind {
+    Dummy = 'Dummy', Common = 'Common',
+    Auth = 'Auth', Access = 'Access', Ban = 'Ban' }
+export class BotError {
+    kind!: BotErrorKind
+    msg: string = ''
+    detail_msg: string = ''
+    constructor(props: Partial<BotError> = {}) { Object.assign(this, props) }
+}
+
+export class Bot {
+    id!: string;
+    social_id: string = '';
+    username: string = '';
+    password: string = '';
+    access_token: string | null = null;
+    // times
+    date_created!: BaseDate;
+    date_updated!: BaseDate;
+    last_used: BaseDate | null = null;
+    rest_until: BaseDate | null = null;
+    // eof times
+    platform!: PlatformEnum;
+    status!: BotStatus;
+    created_source: string | null = null;
+    platform_data: BotPlatformData = new BotPlatformData();
+    extra: BotExtra = new BotExtra();
+    error: BotError | null = null;
+    gender: GenderEnum = GenderEnum.Unknown;
+
+    constructor(p: Partial<Bot> = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, p)
+    }
 }
 
 export class BotCreate {
-  id: string = "";
+  social_id: string = "";
   username: string = "";
   password: string = "";
   access_token: string = "";
-  is_active: boolean = false;
-  is_in_use: boolean = false;
   platform: PlatformEnum = PlatformEnum.Unspecified;
-  gender: GenderEnum = GenderEnum.male;
-  country: CountryEnum = CountryEnum.russia;
-  rest_until?: string = undefined;
+  created_source: string | null = null;
+  make_ready: boolean = false;
+  gender: GenderEnum = GenderEnum.Male;
+  rest_until: string | null = null;
 
-  constructor(params: any = {}) {
+  constructor(params: Partial<BotCreate> = {}) {
     makeAutoObservable(this)
     Object.assign(this, params)
   }
 
   canBeCreated () {
     if (
-      (this.username.trim().length != 11)  ||
-      (this.password.trim().length < 6) ||
+      // (this.username.trim().length != 11)  ||
+      // (this.password.trim().length < 6) ||
       (!this.platform) ||
       (!this.gender)
     ) {
@@ -55,7 +88,7 @@ export class BotCreate {
 
 export interface BotSearch {
     total: number;
-    bots: BotInterface[];
+    bots: Bot[];
 }
 
 
@@ -106,8 +139,9 @@ export interface IFilterValue {
 }
 
 export enum GenderEnum {
-  male = "male",
-  female = "female"
+  Male = "Male",
+  Female = "Female",
+ Unknown = "Unknown"
 }
 
 const fIcons = {
@@ -122,21 +156,21 @@ const fIcons = {
 
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
-  { label: "vk", query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
-  { label: "ok", query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
+  { label: PlatformEnum.Vk, query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
+  { label: PlatformEnum.Ok, query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
       iconColor: '#ed812b' },
-  { label: "instagram", query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
-  { label: "youtube", query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
-  { label: "dzen", query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
+  { label: PlatformEnum.Instagram, query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
+  { label: PlatformEnum.Youtube, query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
+  { label: PlatformEnum.Dzen, query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
 ]
 
 export const genderFilters: IFilterValue[] = [
   { label: "All", query_value: '',
   icon: 'bxs:select-multiple'},
-  { label: "male", query_value: GenderEnum.male,
+  { label: "male", query_value: GenderEnum.Male,
     icon: 'noto:boy-light-skin-tone'
   },
-  { label: "female", query_value: GenderEnum.female, 
+  { label: "female", query_value: GenderEnum.Female, 
     icon: 'noto-v1:girl-light-skin-tone'
   },
 ]

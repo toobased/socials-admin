@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { isCurrentPage, MenuItem, menuItems } from "../NavSidebar"
+import ThemeSwitcher from "./ThemeSwitcher"
 
 export const MainMenuItemCard: React.FC<{
     item: MenuItem,
@@ -9,7 +10,7 @@ export const MainMenuItemCard: React.FC<{
     const router = useRouter()
     const isCurrent = isCurrentPage(item, router)
     const style = {
-        backgroundColor: isCurrent ? '#4bddea': 'white'
+        backgroundColor: isCurrent ? '#4bddea': ''
     }
     return (
         <Link href={item.path} passHref>
@@ -30,7 +31,7 @@ export const MainMenuItemCard: React.FC<{
 
 export const MainMenuItems = () => {
     return (
-        <div className="flex border-t py-2 flex-wrap justify-center gap-2 bg-white sticky top-0 z-10 shadow-md shadow-amber-50">
+        <div className="flex border-t py-2 flex-wrap justify-center gap-2 sticky top-0 z-10 flex-1">
             {menuItems.map((item: MenuItem, index: number) =>
                 <MainMenuItemCard
                     key={index}
@@ -48,7 +49,10 @@ const HeadingNav = () => {
   }
 
   return (
-    <MainMenuItems />
+    <div className="flex justify-between">
+        <MainMenuItems />
+        <ThemeSwitcher />
+    </div>
   )
 }
 

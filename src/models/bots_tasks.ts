@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { LikeAction } from "./actions/like";
 
 import { WatchAction } from "./actions/watch";
+import { ActionFormConfig } from "./action_form";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
 import { SocialSource } from "./social_source";
@@ -201,9 +202,22 @@ export class TaskActionEnum {
   LikeAction: LikeAction | undefined = undefined
   WatchAction: WatchAction | undefined = undefined
 
-  constructor() {
-    makeAutoObservable(this)
-  }
+    constructor(p: Partial<TaskActionEnum> = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, p)
+        if (p.LikeAction) { this.LikeAction = new LikeAction(p.LikeAction) }
+        if (p.WatchAction) { this.WatchAction = new WatchAction(p.WatchAction) }
+    }
+
+
+    form_config(t: TaskActionType): ActionFormConfig | undefined {
+        const T = TaskActionType
+        switch (t) {
+            case T.Watch: return this.WatchAction?.form_config()
+            case T.Like: return this.LikeAction?.form_config()
+        }
+        return undefined
+    }
 
   from_action_type(t: TaskActionType) {
     Object.assign(this, new TaskActionEnum())
@@ -220,7 +234,7 @@ export class TaskActionEnum {
 
   setTarget(t: TaskTarget) {
     if (this.LikeAction) {
-      // this.LikeAction.
+      this.LikeAction.target = t
     }
     if (this.WatchAction) {
       this.WatchAction.target = t
@@ -228,9 +242,8 @@ export class TaskActionEnum {
   }
 
   get target (): TaskTarget | undefined {
-    if (this.WatchAction) {
-      return this.WatchAction.target
-    }
+    if (this.WatchAction) { return this.WatchAction.target }
+    if (this.LikeAction) { return this.LikeAction.target }
     return undefined
   }
 }
@@ -240,9 +253,9 @@ export class BotTask {
   id: string = '';
   is_active: boolean = false;
   status: BotTaskStatusEnum = BotTaskStatusEnum.Active;
-  created_date?: BaseDate;
-  updated_date?: BaseDate;
-  next_run_timestamp: BaseDate | null = null;
+  date_created?: BaseDate;
+  date_updated?: BaseDate;
+  next_run_time: BaseDate | null = null;
   title: string = '';
   platform?: PlatformEnum;
   options: BotTaskOptions = new BotTaskOptions();
@@ -253,15 +266,22 @@ export class BotTask {
 
   // TODO? bots_used: string[] = [];
 
-  constructor(params: Partial<BotTask>) {
-      Object.assign(this, params)
-      makeAutoObservable(this)
-  }
+    constructor(p: Partial<BotTask>) {
+        makeAutoObservable(this)
+        Object.assign(this, p)
+        if (p.next_run_time) { this.next_run_time = new BaseDate(p.next_run_time) }
+        if (p.date_created) { this.date_created = new BaseDate(p.date_created) }
+        if (p.date_updated) { this.date_updated = new BaseDate(p.date_updated) }
+        if (p.action) { this.action = new TaskActionEnum(p.action) }
+    }
 
   get metricsLabel (): string {
-    const at = this.action_type
-    return `${at}`
-    // return `${tM}/${tD} <br/> ${bL} bots used`
+    const T = TaskActionType
+    switch (this.action_type) {
+        // case T.Like: this.action.LikeAction.metricsLabel;
+        case T.Watch: return this.action.WatchAction?.metricsLabel || '';
+        default: return ''
+    }
   }
 }
 
@@ -300,14 +320,7 @@ export class CreateBotTask {
       Object.assign(this, t)
     }
 
-    reset () {
-    /* TODO
-      Object.assign(this, {
-        title: '',
-        platform: PlatformEnum.Vk,
-      })
-    */
-    }
+    reset () { Object.assign(this, new CreateBotTask()) }
 }
 
 
@@ -341,6 +354,7 @@ export class BotTasksSearch {
 export class BotTasksSearchQuery {
   skip: number = 0;
   limit: number = 10;
+  source_id: string | undefined = undefined;
   platform?: PlatformEnum = undefined;
   task_type?: TaskActionType = undefined;
   is_active?: boolean = undefined;
@@ -349,7 +363,7 @@ export class BotTasksSearchQuery {
   sort_by_created_date: SortOrder = SortOrder.descending;
   sort_by_updated_date?: SortOrder = undefined;
 
-  constructor(params: any = {}) {
+  constructor(params: Partial<BotTasksSearchQuery> = {}) {
       Object.assign(this, params)
       makeAutoObservable(this)
   }

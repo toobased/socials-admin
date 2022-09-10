@@ -16,10 +16,6 @@ const CreateForm = () => {
   const botStore = useContext(BotContext);
   const { newBot } = botStore;
 
-  const currentCountryFilter = (): IFilterValue | undefined => countryFiltes.filter(
-    (f) => f.query_value == newBot.country
-  )[0] || undefined
-
   const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter(
     (f) => f.query_value == newBot.platform
   )[0] || undefined
@@ -68,24 +64,6 @@ const CreateForm = () => {
         onChange={(e) =>
           newBot.gender = e.target.value
         }
-      />
-    </div>
-    </>
-  ))
-
-  const SelectCountry = observer(() => (
-    <>
-    {/* GENDER SELECT */}
-    <div>
-      <OptionDropdownFilter
-        filterLabel="Select country"
-        showServerLabel={false}
-        currentFilter={currentCountryFilter()}
-        currentRaw={newBot.country}
-        filterValues={countryFiltes}
-        onValueSelect={(value: any) => {
-          newBot.country = value as CountryEnum
-        }}
       />
     </div>
     </>
@@ -157,30 +135,13 @@ const CreateForm = () => {
     <>
     {/* IS ACTIVE */}
     <div 
-      className="flex justify-between max-w-xs bg-white p-3 rounded-lg"
+      className="flex justify-between max-w-xs p-3 rounded-lg"
     >
       <div>Is bot active</div>
       <Switch
-        checked={newBot.is_active}
+        checked={newBot.make_ready}
         onChange={(value) => 
-          newBot.is_active = value
-        }
-      />
-    </div>
-    </>
-  ))
-
-  const SetInUse = observer(() => (
-    <>
-    {/* IS IN USE */}
-    <div
-      className="flex justify-between max-w-xs bg-white p-3 rounded-lg"
-    >
-      <div>Is bot should be used</div>
-      <Switch
-        checked={newBot.is_in_use}
-        onChange={(value) => 
-          newBot.is_in_use = value
+          newBot.make_ready = value
         }
       />
     </div>
@@ -221,7 +182,6 @@ const CreateForm = () => {
       <div className="flex flex-wrap gap-4">
         <SelectPlatform />
         <SelectGender />
-        <SelectCountry />
       </div>
       <div className="mt-2 flex flex-wrap gap-4">
         <InputUsername />
@@ -235,7 +195,6 @@ const CreateForm = () => {
       </div>
       <div className="mt-3 flex flex-col gap-2">
         <SetActive />
-        <SetInUse />
         <SetBotResting />
       </div>
       {/* EOF BOT FORM */}

@@ -1,4 +1,4 @@
-import { BotInterface } from "@/models/bots";
+import { Bot } from "@/models/bots";
 import { BotContext } from "@/store/botsStore";
 import { errorMessage, successMessage } from "@/utils";
 import { observer } from 'mobx-react'
@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Title from "antd/lib/typography/Title";
 import SimpleTile from "@/components/common/SimpleTile";
+import ErrorBox from "@/components/common/ErrorBox";
 
 const BotPage: NextPage = observer(() => {
   // store
@@ -94,8 +95,8 @@ const BotPage: NextPage = observer(() => {
   )
 
   const BotCommonInfo = observer(() => {
-    const createdDate = new Date(currentBot.created_time).toUTCString()
-    const lastUsedDate = new Date(currentBot.last_used).toUTCString()
+    const createdDate = currentBot.date_created.elapsed_sweety
+    const lastUsedDate = currentBot.last_used?.elapsed_sweety || '--'
     return (
       <div className="flex flex-col gap-2">
         { createdDate }
@@ -121,7 +122,7 @@ const BotPage: NextPage = observer(() => {
         />
         <SimpleTile
           title="Access token"
-          value={currentBot.access_token}
+          value={currentBot.access_token?.toString()}
         />
         <SimpleTile
           title="Platform"
@@ -133,6 +134,13 @@ const BotPage: NextPage = observer(() => {
           value={currentBot.gender}
           useClipboard={false}
         />
+        { currentBot.error &&
+            <ErrorBox
+                kind={currentBot.error?.kind}
+                msg={currentBot.error?.msg}
+                detail={currentBot.error?.detail_msg}
+            />
+        }
       </div>
     )
   });
