@@ -41,11 +41,11 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
   const router = useRouter()
   // const router = useRouter()
 
-  console.log('bots are', botStore.bots)
+  console.log('bots are', botStore.botSearch)
   const botQuery = botStore?.botSearchQuery
   const currentPage = botStore?.currentPage
   const total = botStore?.botSearch?.total
-  const bots = botStore?.botSearch?.bots
+  const bots = botStore?.botSearch?.items
 
   // current filters
   const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined

@@ -309,7 +309,7 @@ const NewBotTask: NextPage = observer(() => {
       sourceStore.getSources()
     }
   }, [])
-  const actionFormConfig = task.action?.WatchAction?.form_config();
+  const actionFormConfig = task.action?.form_config(task.action_type)
 
   return (
     <>

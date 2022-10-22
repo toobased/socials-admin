@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { LikeAction } from "./actions/like";
 
 import { WatchAction } from "./actions/watch";
+import { ActionFormConfig } from "./action_form";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
 import { SocialSource } from "./social_source";
@@ -205,6 +206,15 @@ export class TaskActionEnum {
     makeAutoObservable(this)
   }
 
+    form_config(t: TaskActionType): ActionFormConfig | undefined {
+        const T = TaskActionType
+        switch (t) {
+            case T.Watch: return this.WatchAction?.form_config()
+            case T.Like: return this.LikeAction?.form_config()
+        }
+        return undefined
+    }
+
   from_action_type(t: TaskActionType) {
     Object.assign(this, new TaskActionEnum())
     const T = TaskActionType
@@ -220,7 +230,7 @@ export class TaskActionEnum {
 
   setTarget(t: TaskTarget) {
     if (this.LikeAction) {
-      // this.LikeAction.
+      this.LikeAction.target = t
     }
     if (this.WatchAction) {
       this.WatchAction.target = t
@@ -228,9 +238,8 @@ export class TaskActionEnum {
   }
 
   get target (): TaskTarget | undefined {
-    if (this.WatchAction) {
-      return this.WatchAction.target
-    }
+    if (this.WatchAction) { return this.WatchAction.target }
+    if (this.LikeAction) { return this.LikeAction.target }
     return undefined
   }
 }

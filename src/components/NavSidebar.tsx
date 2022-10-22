@@ -25,28 +25,6 @@ export const menuItems: MenuItem[] = [
     icon: "ant-design:home-filled",
     children: []
   },
-    /*
-  {
-    key: "2",
-    name: "Vk",
-    path: "/",
-    children: [
-      {
-        key: "2-1",
-        name: "Bots",
-        path: "/",
-        children: []
-      }
-    ]
-  },
-  {
-    key: "3",
-    name: "Instagram",
-    path: "/",
-    children: [
-    ]
-  },
-  */
   {
    key: "3",
     name: "Таргеты",
@@ -54,7 +32,6 @@ export const menuItems: MenuItem[] = [
     icon: "bx:target-lock",
     children: []
   },
-/*
   {
    key: "4",
     name: "Боты",
@@ -62,7 +39,6 @@ export const menuItems: MenuItem[] = [
     icon: "bxs:bot",
     children: []
   },
-*/
   {
    key: "5",
     name: "Таски ботов",

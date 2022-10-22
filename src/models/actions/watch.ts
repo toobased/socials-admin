@@ -64,4 +64,5 @@ export class WatchAction {
     ]
     return new ActionFormConfig({ fields })
   }
+
 }
