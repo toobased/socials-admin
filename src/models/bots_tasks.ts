@@ -249,9 +249,9 @@ export class BotTask {
   id: string = '';
   is_active: boolean = false;
   status: BotTaskStatusEnum = BotTaskStatusEnum.Active;
-  created_date?: BaseDate;
-  updated_date?: BaseDate;
-  next_run_timestamp: BaseDate | null = null;
+  date_created?: BaseDate;
+  date_updated?: BaseDate;
+  next_run_time: BaseDate | null = null;
   title: string = '';
   platform?: PlatformEnum;
   options: BotTaskOptions = new BotTaskOptions();
@@ -262,10 +262,13 @@ export class BotTask {
 
   // TODO? bots_used: string[] = [];
 
-  constructor(params: Partial<BotTask>) {
-      Object.assign(this, params)
-      makeAutoObservable(this)
-  }
+    constructor(p: Partial<BotTask>) {
+        makeAutoObservable(this)
+        Object.assign(this, p)
+        if (p.next_run_time) { this.next_run_time = new BaseDate(p.next_run_time) }
+        if (p.date_created) { this.date_created = new BaseDate(p.date_created) }
+        if (p.date_updated) { this.date_updated = new BaseDate(p.date_updated) }
+    }
 
   get metricsLabel (): string {
     const at = this.action_type

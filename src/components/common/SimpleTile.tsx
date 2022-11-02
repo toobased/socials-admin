@@ -12,7 +12,7 @@ const SimpleTile = ({
   useClipboard = true
 }: SimpleTileProps) => {
   return (
-    <div className="flex items-center bg-white max-w-max px-4 py-2 rounded-lg">
+    <div className="flex items-center max-w-max px-4 py-2 rounded-lg">
       <span className="">
         { title }: &nbsp;
       </span>

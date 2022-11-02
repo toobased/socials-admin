@@ -47,7 +47,7 @@ const SourceCard = observer((params: { source: SocialSource, onRemove(s: SocialS
     }
 
     return (
-        <div className="bg-white rounded-lg px-3 py-2 flex w-80 h-36  flex-col items-center gap-2 overflow-hidden justify-center cursor-pointer" onClick={() => goSourcePage()}>
+        <div className="rounded-lg px-3 py-2 flex w-80 h-36  flex-col items-center gap-2 overflow-hidden justify-center cursor-pointer" onClick={() => goSourcePage()}>
             <img src={avatar()} alt="no avatar" className="w-16 object-contain" />
             <div className="text-lg font-medium text-center">
                 {source.name}

@@ -12,19 +12,16 @@ import { useRouter } from 'next/router'
 import { Heading } from '@chakra-ui/react'
 import { isCurrentPage, MenuItem, menuItems } from '@/components/NavSidebar'
 import { Icon } from '@iconify/react'
+import ThemeSwitcher from '@/components/common/ThemeSwitcher'
 
 export const MainMenuItemCard: React.FC<{
     item: MenuItem,
 }> = ({item}) => {
     const router = useRouter()
     const isCurrent = isCurrentPage(item, router)
-    const style = {
-        backgroundColor: isCurrent ? '#4bddea': 'white'
-    }
     return (
         <Link href={item.path} passHref>
             <div 
-                style={style}
                 className="py-4 px-6 cursor-pointer flex gap-2 items-center rounded-lg hover:opacity-60 select-none"
             >
                 {item.icon &&
@@ -57,7 +54,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto">
-        <Heading className="mb-2 text-center my-10">
+        <Heading className="mb-2 text-center my-10 dark:text-white">
             Куда тебе нужно?
         </Heading>
         <MainMenuItems />

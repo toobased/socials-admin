@@ -5,6 +5,7 @@ import { TaskTarget } from "../enums/bot_tasks"
 export class LikeStats {
     like_count: number = 0
     processed_posts_ids: string[] = []
+    bots_used: string[] = []
 
     constructor(p: Partial<LikeStats> = {}) { 
         Object.assign(this, p)

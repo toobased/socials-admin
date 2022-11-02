@@ -32,7 +32,7 @@ const SourcePlatforms = observer(() => {
 
         return (
           <div key={i}
-            className="bg-white min-w-[300px] p-4 rounded-lg min-h-[100px] relative"
+            className="min-w-[300px] p-4 rounded-lg min-h-[100px] relative"
           >
             <div className="flex gap-2 items-center mt-2 mb-3">
               <div>

@@ -46,7 +46,7 @@ export const TaskActionForm = observer((props: TaskActionFormProps) => {
   const config = props.config
   const fields = config.fields
   return (
-    <div className="bg-white p-4 rounded-lg">
+    <div className="p-4 rounded-lg">
       <div>
         content is there
         {JSON.stringify(fields)}

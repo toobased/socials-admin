@@ -273,8 +273,8 @@ export const BotTaskCreationForm = observer(() => {
   })
 
   return (
-    <div className="bg-white rounded-lg px-4 py-6">
-      <Heading size="md" className="mb-2">
+    <div className="rounded-lg px-4 py-6">
+      <Heading size="md" className="mb-2 dark:text-white">
         Общие настройки для таска
       </Heading>
       <div className="mt-2">
@@ -314,7 +314,7 @@ const NewBotTask: NextPage = observer(() => {
   return (
     <>
       <main className="mx-11 my-7">
-        <Heading className="mb-4">
+        <Heading className="mb-4 dark:text-white">
           Новый таск
         </Heading>
         <BotTaskCreationForm />
