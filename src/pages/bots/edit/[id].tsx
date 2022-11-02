@@ -25,7 +25,7 @@ const EditBot: NextPage = observer(() => {
     botStore.getBotApi(id).then(() => {
       if (botStore.currentBot) {
         botStore.setNewBot(
-          new BotCreate(botStore.currentBot)
+          new BotCreate(botStore.currentBot as Partial<BotCreate>)
         )
       }
     })
@@ -37,7 +37,7 @@ const EditBot: NextPage = observer(() => {
     if (isSaved){
       successMessage(msg)
       botStore.getBotsApi(true)
-      router.push(`/bots/${newBot.id}`)
+      router.push(`/bots/${currentBot?.id}`)
     } else {
       errorMessage(msg)
     }

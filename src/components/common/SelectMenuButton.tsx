@@ -12,18 +12,17 @@ const SelectMenuButton = ({
 }: SelectMenuButtonProps) => {
   return (
     <MenuButton>
-      <Button 
-        variant="ghost"
+      <Button
+        variant="outline"
         className="flex gap-2 items-center"
-        bgColor="white"
-        textColor="black"
       >
         <div>
           {inner}
         </div>
         <Icon
+            color={'white'}
           icon={
-            isOpened ? 'fluent:chevron-up-12-filled' : 
+            isOpened ? 'fluent:chevron-up-12-filled' :
               'fluent:chevron-down-12-filled'
           }
         />

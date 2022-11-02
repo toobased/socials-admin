@@ -38,7 +38,7 @@ export const TaskDataInfo = observer(() => {
 
   return (
     <div
-      className="bg-white rounded-lg py-3 px-4 m-3"
+      className="rounded-lg py-3 px-4 m-3"
     >
       <Heading size="lg">
         Task Data

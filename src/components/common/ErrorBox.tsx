@@ -10,7 +10,7 @@ const SimpleTile = ({
     kind = "", msg = "", detail = ""
 }: ErrorBoxProps) => {
   return (
-    <div className="flex flex-col items-center bg-white max-w-max px-4 py-2 rounded-lg">
+    <div className="flex flex-col items-center max-w-max px-4 py-2 rounded-lg">
       <span className="">
         { kind }: &nbsp;
       </span>

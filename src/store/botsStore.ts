@@ -67,6 +67,10 @@ export class BotStore {
  setNewBot(newBot: BotCreate) {
   this.newBot = newBot
  }
+
+ setNewFromBase(base: Bot) {
+ }
+
  resetNewBot() {
    this.newBot = new BotCreate()
  }
