@@ -335,6 +335,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
             <div className="cursor-pointer">
               <div className="">
                 {new Date(created_time).toUTCString()}
+                ({created_time})
               </div>
             </div>
           )

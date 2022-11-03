@@ -202,9 +202,13 @@ export class TaskActionEnum {
   LikeAction: LikeAction | undefined = undefined
   WatchAction: WatchAction | undefined = undefined
 
-  constructor() {
-    makeAutoObservable(this)
-  }
+    constructor(p: Partial<TaskActionEnum> = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, p)
+        if (p.LikeAction) { this.LikeAction = new LikeAction(p.LikeAction) }
+        if (p.WatchAction) { this.WatchAction = new WatchAction(p.WatchAction) }
+    }
+
 
     form_config(t: TaskActionType): ActionFormConfig | undefined {
         const T = TaskActionType
@@ -268,12 +272,16 @@ export class BotTask {
         if (p.next_run_time) { this.next_run_time = new BaseDate(p.next_run_time) }
         if (p.date_created) { this.date_created = new BaseDate(p.date_created) }
         if (p.date_updated) { this.date_updated = new BaseDate(p.date_updated) }
+        if (p.action) { this.action = new TaskActionEnum(p.action) }
     }
 
   get metricsLabel (): string {
-    const at = this.action_type
-    return `${at}`
-    // return `${tM}/${tD} <br/> ${bL} bots used`
+    const T = TaskActionType
+    switch (this.action_type) {
+        // case T.Like: this.action.LikeAction.metricsLabel;
+        case T.Watch: return this.action.WatchAction?.metricsLabel || '';
+        default: return ''
+    }
   }
 }
 

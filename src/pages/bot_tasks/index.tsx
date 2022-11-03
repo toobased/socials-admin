@@ -70,7 +70,7 @@ const TasksTable = observer(() => {
   const tableHeaderItems = [
     "Название", "Статус", "Активный",
     "Есть ошибка", "Платформа", "Тип таска", "Метрика",
-    "Дата создания", "Следующая итерация", "Действия"
+    "Дата создания", "Updated date", "Следующая итерация", "Действия"
   ]
 
   const handleDeleteTask = async (id: string) => {
@@ -131,7 +131,7 @@ const TasksTable = observer(() => {
                 key={index}
               >
                 {/* task title */}      
-                <Td 
+                <Td
                   onClick={() => handleGoTaskDetail(task.id)}
                   className="font-semibold cursor-pointer">
                   { task.title }
@@ -174,16 +174,22 @@ const TasksTable = observer(() => {
                 </Td>
                 {/* eof task type */}
                 {/* task created_date */}      
-                <Td>
-                  {task.date_created?.normal }
+                <Td className="min-w-max">
+                    <div> {task.date_created?.normal } </div>
+                  <div>({task.date_created?.elapsed_sweety})</div>
                 </Td>
                 {/* eof task created_date */}
+                {/* task udated_date */}
+                <Td>
+                  <div>{task.date_updated?.elapsed_sweety}</div>
+                </Td>
+                {/* eof task updated_date */}
                 {/* task next_time_run */}      
                 <Td>
                   <div>
                   {task.next_run_time &&
                     <div>
-                      {task.next_run_time.sweety }
+                      {task.next_run_time.cntdwn_sweety}
                     </div>
                   }
                   {!task.next_run_time &&

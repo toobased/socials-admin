@@ -95,8 +95,8 @@ const BotPage: NextPage = observer(() => {
   )
 
   const BotCommonInfo = observer(() => {
-    const createdDate = currentBot.date_created.sweety
-    const lastUsedDate = currentBot.last_used?.sweety || '--'
+    const createdDate = currentBot.date_created.elapsed_sweety
+    const lastUsedDate = currentBot.last_used?.elapsed_sweety || '--'
     return (
       <div className="flex flex-col gap-2">
         { createdDate }
