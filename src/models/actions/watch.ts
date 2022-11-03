@@ -31,6 +31,12 @@ export class WatchAction {
     Object.assign(this, p)
   }
 
+    get metricsLabel () {
+        const n = this.data.watch_count
+        const d = this.stats.watched_count
+        return `${d}/${n}`
+    }
+
   form_config () {
     const fields: ActionFormField[] = [
       {

@@ -46,6 +46,27 @@ export class LikeAction {
         value: () => this.data.like_count,
         setter: (v: any) => { this.data.like_count = v }
       },
+      {
+        field_type: ActionFormFieldType.InputNumber,
+        label: 'Like random threshold',
+        placeholder: '2',
+        value: () => this.data.like_random_threshold,
+        setter: (v: any) => { this.data.like_random_threshold = v }
+      },
+      {
+        field_type: ActionFormFieldType.InputNumber,
+        label: 'Time spread (seconds)',
+        placeholder: '7200',
+        value: () => this.data.time_spread,
+        setter: (v: any) => { this.data.time_spread = v }
+      },
+      {
+        field_type: ActionFormFieldType.InputString,
+        label: 'Target link',
+        placeholder: 'https://...',
+        value: () => this.data.resource_link,
+        setter: (v: any) => { this.data.resource_link = v }
+      },
     ]
     return new ActionFormConfig({ fields })
   }
