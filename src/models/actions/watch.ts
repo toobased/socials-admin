@@ -1,3 +1,5 @@
+import { ActionDataFormStep } from "@/components/tasks/create/steps/data";
+import { CreateTaskStep } from "@/components/tasks/CreateTaskModal";
 import { makeAutoObservable } from "mobx";
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "../action_form";
 import { TaskTarget } from "../enums/bot_tasks";
@@ -36,6 +38,11 @@ export class WatchAction {
         const d = this.stats.watched_count
         return `${d}/${n}`
     }
+
+    withTarget (target: TaskTarget) { this.target = target; return this }
+
+    // actionDataStep () { return (ActionDataFormStep()) }
+    // actionDataStep = ActionDataFormStep
 
   form_config () {
     const fields: ActionFormField[] = [

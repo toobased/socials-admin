@@ -1,6 +1,7 @@
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "@/models/action_form"
-import { Input, NumberInput, NumberInputField } from "@chakra-ui/react"
+import { Box, Input, NumberInput, NumberInputField, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "@chakra-ui/react"
 import { observer } from "mobx-react"
+import { useEffect } from "react"
 import InfoTooltip from "../common/InfoTooltip"
 
 export interface TaskActionFormProps {
@@ -32,7 +33,7 @@ const InputStringComponent = observer((props: {field: ActionFormField}) => {
   return (
     <Input
       className="mt-1"
-      placeholder={field.placeholder}
+            placeholder={field.placeholder}
       value={field.value()}
       disabled={false}
       onChange={(e) => {
@@ -42,15 +43,72 @@ const InputStringComponent = observer((props: {field: ActionFormField}) => {
   )
 })
 
+const SliderNumberComponent = observer((props: {field: ActionFormField}) => {
+  const field = props.field
+    const dv = 3
+    useEffect(() => field.setter(dv), [])
+  return (
+    <div className="max-w-md font-semibold text-2xl">
+    <div className="text-center">{field.value()}</div>
+    <Slider
+        aria-label='slider-ex-4'
+        defaultValue={dv}
+        min={field.min}
+        max={field.max}
+        onChange={(v) => field.setter(v)}
+    >
+      <SliderTrack bg='red.100'>
+        <SliderFilledTrack bg='tomato' />
+      </SliderTrack>
+      <SliderThumb boxSize={6}>
+        <Box color='tomato'/>
+      </SliderThumb>
+    </Slider>
+    </div>
+  )
+})
+
+const ProcessTimePickerComponent = observer((props: {field: ActionFormField}) => {
+  const field = props.field
+    const items = [
+        { l: 'Instantly', v: 0},
+        { l: '10 seconds', v: 10},
+        { l: '1 minute', v: 60},
+        { l: '2 minutes', v: 120},
+        { l: '5 minutes', v: 300},
+        { l: '10 minutes', v: 600},
+        { l: '20 minutes', v: 1200},
+        { l: '30 minutes', v: 1800},
+        { l: '1 hour', v: 3600},
+        { l: '2 hours', v: 7200},
+        { l: '3 hours', v: 10800},
+        { l: '8 hours', v: 28800},
+        { l: '12 hours', v: 43200},
+        { l: '1 day', v: 86400},
+        { l: '2 days', v: 172800},
+        { l: '3 days', v: 259200},
+        { l: '4 days', v: 345600},
+        { l: '1 week', v: 604800},
+        { l: '2 weeks', v: 1209600},
+    ]
+    useEffect(() => field.setter(items[5].v), [])
+  return (
+    <div className="max-w-md font-semibold text-2xl">
+        <div>{field.value()}</div>
+        <Select onChange={(v) => field.setter(v.target.value)} value={field.value()}>
+            {items.map((item, indx) =>
+                <option key={indx} value={item.v}>{item.l}</option>
+            )}
+        </Select>
+    </div>
+  )
+})
+
 export const TaskActionForm = observer((props: TaskActionFormProps) => {
   const config = props.config
   const fields = config.fields
   return (
     <div className="p-4 rounded-lg">
-      <div>
-        content is there
-        {JSON.stringify(fields)}
-      </div>
       {fields.map((field, index) =>
         <div key={index}>
           <div className="font-semibold text-md mb-1 flex gap-2">
@@ -65,6 +123,12 @@ export const TaskActionForm = observer((props: TaskActionFormProps) => {
             }
             { field.field_type == ActionFormFieldType.InputString &&
               <InputStringComponent field={field} />
+            }
+            { field.field_type == ActionFormFieldType.SliderNumber &&
+              <SliderNumberComponent field={field} />
+            }
+            { field.field_type == ActionFormFieldType.ProcessTimePicker &&
+              <ProcessTimePickerComponent field={field} />
             }
           </div>
         </div>

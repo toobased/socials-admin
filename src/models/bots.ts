@@ -1,5 +1,7 @@
+import { ChooseItem } from "@/components/common/ChooseContainer";
 import { makeAutoObservable } from "mobx";
 import { CountryEnum, PlatformEnum } from "./enums/bots";
+import { TaskActionType, TaskTarget } from "./enums/bot_tasks";
 import { BaseDate } from "./utils";
 
 export enum BotStatus {
@@ -138,6 +140,18 @@ export interface IFilterValue {
   isIconText?: boolean;
 }
 
+export function filtersToChooseItems(f: IFilterValue[]): ChooseItem[] {
+    return f.map(v => {
+        return {
+            value: v.query_value,
+            title: v.label,
+            icon: v.icon,
+            iconColor: v.iconColor
+        } as ChooseItem
+    })
+} 
+
+
 export enum GenderEnum {
   Male = "Male",
   Female = "Female",
@@ -154,6 +168,13 @@ const fIcons = {
     }
 }
 
+const c = {
+    red: '#dc2626',
+    blue: '#1d4ed8',
+    violet: '#6d28d9',
+    orange: '#ea580c'
+}
+
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
   { label: PlatformEnum.Vk, query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
@@ -162,6 +183,21 @@ export const platformFilters: IFilterValue[] = [
   { label: PlatformEnum.Instagram, query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
   { label: PlatformEnum.Youtube, query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
   { label: PlatformEnum.Dzen, query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
+]
+
+export const actionFilters: IFilterValue[] = [
+  { label: TaskActionType.Dummy, query_value: TaskActionType.Dummy, icon: 'bxs:select-multiple', iconColor: '#4C75A3' },
+  { label: TaskActionType.Like, query_value: TaskActionType.Like, icon: 'icon-park-solid:like', iconColor: c.red },
+  { label: TaskActionType.Watch, query_value: TaskActionType.Watch, icon: 'akar-icons:eye', iconColor: c.blue },
+  { label: TaskActionType.Repost, query_value: TaskActionType.Repost, icon: 'bx:share', iconColor: c.violet },
+]
+
+export const targetFilters: IFilterValue[] = [
+  { label: TaskTarget.Post, query_value: TaskTarget.Post, icon: 'mdi:post-it-note-edit', iconColor: c.red },
+  { label: TaskTarget.Group, query_value: TaskTarget.Group, icon: 'ph:package-fill', iconColor:  c.orange },
+  { label: TaskTarget.User, query_value: TaskTarget.User, icon: 'mdi:user', iconColor: c.violet },
+  { label: TaskTarget.Video, query_value: TaskTarget.Video, icon: 'material-symbols:video-camera-back-outline-rounded', iconColor: c.red },
+  { label: TaskTarget.Dummy, query_value: TaskTarget.Dummy, icon: '', iconColor: '' },
 ]
 
 export const genderFilters: IFilterValue[] = [

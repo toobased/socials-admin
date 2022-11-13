@@ -1,6 +1,8 @@
 export enum ActionFormFieldType {
   InputNumber,
-  InputString
+  InputString,
+    SliderNumber,
+    ProcessTimePicker
 }
 
 export class ActionFormField {
@@ -9,11 +11,11 @@ export class ActionFormField {
   hint?: string | null = null
   placeholder: string = ''
   value: any
+    min?: number
+    max?: number
   setter!: Function
 
-  constructor(p: Partial<ActionFormField>) {
-    Object.assign(this, p)
-  }
+constructor(p: Partial<ActionFormField>) { Object.assign(this, p) }
 }
 
 export class ActionFormConfig {

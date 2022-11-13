@@ -3,7 +3,9 @@ import { TaskActionType } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { Heading } from "@chakra-ui/react"
 import { observer } from "mobx-react"
+import { clearObserving } from "mobx/dist/internal"
 import { useContext } from "react"
+import { SocialPostView } from "../social/SocialPostView"
 import { WatchTaskDataInfo } from "./watch"
 
 interface TaskErrorContainerProps {
@@ -35,6 +37,7 @@ export const TaskDataInfo = observer(() => {
     return ( <></>) }
 
   const actionType = currentTask.action_type
+    const currentPost = currentTask.action.currentPost(actionType)
 
   return (
     <div
@@ -46,6 +49,9 @@ export const TaskDataInfo = observer(() => {
       { currentTask.error &&
         <TaskErrorContainer error={currentTask.error} />
       }
+        {currentPost &&
+            <SocialPostView post={currentPost}/>
+        }
       {actionType == TaskActionType.Watch &&
         <WatchTaskDataInfo />
       }

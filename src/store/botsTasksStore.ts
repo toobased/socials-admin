@@ -1,8 +1,13 @@
 import botsTasksApi from "@/api/botsTasks";
+import { ActionDataFormStep, LinkPickerStep, LinkPickerStepProps } from "@/components/tasks/create/steps/data";
+import { CreateTaskStep } from "@/components/tasks/CreateTaskModal";
 import { DbFindResult } from "@/models/api";
-import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, BotTaskType } from "@/models/bots_tasks";
+import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, BotTaskType, TaskActionEnum } from "@/models/bots_tasks";
+import { PlatformEnum } from "@/models/enums/bots";
+import { TaskActionType, TaskTarget } from "@/models/enums/bot_tasks";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
+import { SwitchLayoutGroupContext } from "framer-motion";
 import { makeAutoObservable } from "mobx";
 import { createContext } from "react";
 
@@ -15,37 +20,15 @@ export class BotTaskStoreLoaders {
   botTaskLoading: boolean = false;
   botTaskTypesLoading: boolean = false;
 
-  setCurrentBotTaskLoading(l: boolean) {
-    this.currentBotTaskLoading = l
-  }
+  setCurrentBotTaskLoading(l: boolean) { this.currentBotTaskLoading = l }
+  setBotTaskCreationLoading(l: boolean) { this.botTaskCreationLoading = l }
+  setBotTasksLoading (l: boolean) { this.botTasksLoading = l }
+  setDeleteBotTaskLoading (l: boolean) { this.deleteBotTaskLoading = l }
+  setUpdateBotTaskLoading (l: boolean) { this.deleteBotTaskLoading = l }
+  setBotTaskLoading (l: boolean) { this.botTaskLoading = l }
+  setBotTaskTypesLoading (l: boolean) { this.botTaskTypesLoading = l }
 
-  setBotTaskCreationLoading(l: boolean) {
-    this.botTaskCreationLoading = l
-  }
-
-  setBotTasksLoading (l: boolean) {
-      this.botTasksLoading = l
-  }
-
-  setDeleteBotTaskLoading (l: boolean) {
-      this.deleteBotTaskLoading = l
-  }
-
-  setUpdateBotTaskLoading (l: boolean) {
-      this.deleteBotTaskLoading = l
-  }
-
-  setBotTaskLoading (l: boolean) {
-    this.botTaskLoading = l
-  }
-
-  setBotTaskTypesLoading (l: boolean) {
-      this.botTaskTypesLoading = l
-  }
-
-  constructor() {
-    makeAutoObservable(this)
-  }
+  constructor() { makeAutoObservable(this) }
 }
 
 export class BotTasksStoreErrors {
@@ -105,22 +88,52 @@ export class BotTasksStoreErrors {
 }
 
 export class BotTasksStore {
+  newTask: CreateBotTask = new CreateBotTask();
   taskTypes: BotTaskType[] = [];
   currentTask?: BotTask;
-  newTask: CreateBotTask = new CreateBotTask();
   loaders: BotTaskStoreLoaders = new BotTaskStoreLoaders();
   errors: BotTasksStoreErrors = new BotTasksStoreErrors();
   tasksSearch: BotTasksSearch = new BotTasksSearch();
   tasksSearchQuery: BotTasksSearchQuery = new BotTasksSearchQuery();
   currentPage: number = 1;
 
-  constructor () {
-    makeAutoObservable(this)
-  }
+    createStep: CreateTaskStep | null = null
+    setCreateStep (s: CreateTaskStep | null) { this.createStep = s }
 
-  setCurrentPage (p: number) {
-    this.currentPage = p
-  }
+  constructor () { makeAutoObservable(this) }
+
+    createTaskDataStep(): (() => CreateTaskStep) | null {
+        const def = ActionDataFormStep
+        if (!this.newTask) { return null }
+        switch (this.newTask.action_type) {
+            case TaskActionType.Like: {
+                const params = this.newTask.action.LikeAction?.getPostLinkStepParams(this.newTask)
+                if (!params) { return null }
+                return (() => LinkPickerStep(params))
+            }
+        }
+        return def
+    }
+
+  setCurrentPage (p: number) { this.currentPage = p }
+
+    getActionsForPlatform(p: PlatformEnum) {
+        if (this.taskTypes.length == 0) { return [] }
+        const ac: any[] = []
+        this.taskTypes.forEach(t => t.targets.forEach(v =>
+            v.platforms.includes(p) && ac.push(t.action_type)
+        ))
+        return ac
+    }
+
+    getTargetsForPlatformAction(p: PlatformEnum, a: TaskActionType): TaskTarget[] {
+        if (this.taskTypes.length == 0) { return [] }
+        const t: TaskTarget[] = []
+        const tt = this.taskTypes.find(t => t.action_type == a)
+        if (!tt) { return [] }
+        tt.targets.forEach(v => v.platforms.includes(p) && t.push(v.target))
+        return t
+    }
 
   setNewTask(newTask: CreateBotTask) {
     this.newTask = newTask
@@ -128,7 +141,7 @@ export class BotTasksStore {
 
   setCurrentTask(t: BotTask) {
     console.log('run set current task')
-    this.currentTask = t
+    this.currentTask = new BotTask(t)
     console.log('run set current task', this.currentTask)
   }
 
@@ -294,7 +307,6 @@ export class BotTasksStore {
       this.loaders.setBotTaskLoading(false)
     }
   }
-
 }
 
 

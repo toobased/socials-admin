@@ -1,3 +1,5 @@
+import { ActionDataFormStep } from "@/components/tasks/create/steps/data";
+import { CreateTaskStep } from "@/components/tasks/CreateTaskModal";
 import { makeAutoObservable } from "mobx";
 import { LikeAction } from "./actions/like";
 
@@ -5,6 +7,7 @@ import { WatchAction } from "./actions/watch";
 import { ActionFormConfig } from "./action_form";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
+import { SocialPost } from "./social/post";
 import { SocialSource } from "./social_source";
 import { RegularLikeGroupTargetData } from "./tasks_regular_like";
 import { WatchVideoTargetData } from "./tasks_watch_video";
@@ -209,6 +212,19 @@ export class TaskActionEnum {
         if (p.WatchAction) { this.WatchAction = new WatchAction(p.WatchAction) }
     }
 
+    dataStep (): undefined | (() => CreateTaskStep) {
+        // if (this.WatchAction) { return this.WatchAction.actionDataStep }
+        // if (this.LikeAction) { this.LikeAction.actionDataStep() }
+        return undefined
+    }
+
+    currentPost (t: TaskActionType): SocialPost | undefined {
+        const T = TaskActionType
+        switch (t) {
+            case T.Like: return this.LikeAction?.extra.post
+        }
+        return undefined
+    }
 
     form_config(t: TaskActionType): ActionFormConfig | undefined {
         const T = TaskActionType
@@ -261,18 +277,18 @@ export class BotTask {
   options: BotTaskOptions = new BotTaskOptions();
   error: TaskError | null = null;
   action_type: TaskActionType = TaskActionType.Dummy;
-  action!: TaskActionEnum;
+  action: TaskActionEnum = new TaskActionEnum();
   social_source: SocialSource | null = null;
 
   // TODO? bots_used: string[] = [];
 
     constructor(p: Partial<BotTask>) {
-        makeAutoObservable(this)
         Object.assign(this, p)
         if (p.next_run_time) { this.next_run_time = new BaseDate(p.next_run_time) }
         if (p.date_created) { this.date_created = new BaseDate(p.date_created) }
         if (p.date_updated) { this.date_updated = new BaseDate(p.date_updated) }
         if (p.action) { this.action = new TaskActionEnum(p.action) }
+        makeAutoObservable(this)
     }
 
   get metricsLabel (): string {
@@ -280,6 +296,7 @@ export class BotTask {
     switch (this.action_type) {
         // case T.Like: this.action.LikeAction.metricsLabel;
         case T.Watch: return this.action.WatchAction?.metricsLabel || '';
+        case T.Like: return this.action.LikeAction?.metricsLabel || '';
         default: return ''
     }
   }
@@ -302,6 +319,24 @@ export class CreateBotTask {
         makeAutoObservable(this)
         Object.assign(this, p)
     }
+
+    withPlatform (v: PlatformEnum) { this.platform = v; return this }
+    withActionType (v: TaskActionType) {
+        const T = TaskActionType
+        this.action_type = v;
+        this.action = new TaskActionEnum()
+        switch (this.action_type) {
+            case T.Like: this.action.LikeAction = new LikeAction(); break
+            case T.Watch: this.action.WatchAction = new WatchAction(); break
+        }
+        return this
+    }
+    withTarget (v: TaskTarget) {
+        if (this.action.WatchAction) { this.action.WatchAction.withTarget(v)}
+        else if (this.action.LikeAction) { this.action.LikeAction.withTarget(v)}
+        return this
+    }
+
 
     isValid (): boolean {
     return true
