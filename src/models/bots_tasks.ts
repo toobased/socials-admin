@@ -1,10 +1,9 @@
-import { ActionDataFormStep } from "@/components/tasks/create/steps/data";
-import { CreateTaskStep } from "@/components/tasks/CreateTaskModal";
 import { makeAutoObservable } from "mobx";
 import { LikeAction } from "./actions/like";
 
 import { WatchAction } from "./actions/watch";
 import { ActionFormConfig } from "./action_form";
+import { CreateFormStep } from "./create_form_steps";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
 import { SocialPost } from "./social/post";
@@ -212,7 +211,7 @@ export class TaskActionEnum {
         if (p.WatchAction) { this.WatchAction = new WatchAction(p.WatchAction) }
     }
 
-    dataStep (): undefined | (() => CreateTaskStep) {
+    dataStep (): undefined | (() => CreateFormStep) {
         // if (this.WatchAction) { return this.WatchAction.actionDataStep }
         // if (this.LikeAction) { this.LikeAction.actionDataStep() }
         return undefined

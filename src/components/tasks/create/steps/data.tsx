@@ -1,29 +1,30 @@
 import { TaskActionForm } from "@/components/actions/TaskActionForm"
 import { SocialPostView } from "@/components/social/SocialPostView"
 import { ActionFormConfig, ActionFormFieldType } from "@/models/action_form"
+import { CreateFormStep } from "@/models/create_form_steps"
 import { SocialPost } from "@/models/social/post"
-import { BotTasksContext } from "@/store/botsTasksStore"
 import { Button } from "@chakra-ui/react"
 import { observer } from "mobx-react"
-import { useContext } from "react"
-import { CreateTaskStep } from "../../CreateTaskModal"
 
-export function ActionDataFormStep(): CreateTaskStep {
-    const tasksStore = useContext(BotTasksContext)
+export interface ActionDataFormStepProps {
+    formConfig: () => ActionFormConfig | undefined
+}
+
+export function ActionDataFormStep(p: ActionDataFormStepProps): CreateFormStep {
+    const { formConfig } = p
     const component = observer(() => {
-        const t = tasksStore.newTask
-        const actionFormConfig = t.action.form_config(t.action_type)
+        const cfg = formConfig()
         return (
             <div>
-                {actionFormConfig &&
+                {cfg &&
                     <div>
-                        <TaskActionForm config={actionFormConfig} />
+                        <TaskActionForm config={cfg} />
                     </div>
                 }
             </div>
         )
     })
-    return new CreateTaskStep({
+    return new CreateFormStep({
         title: '',
         isFinal: true,
         Body: component
@@ -38,52 +39,48 @@ export interface LinkPickerStepProps {
     value: () => any
     setter: (v: any) => void
     onAction: () => Promise<boolean>
+    onNext?: () => void
 }
 
-export function LinkPickerStep(p: LinkPickerStepProps): CreateTaskStep {
-    const tasksStore = useContext(BotTasksContext)
+export function LinkPickerStep(p: LinkPickerStepProps): CreateFormStep {
+    const id = 'link-picker'
+    const { title, value, setter, onAction, onNext } = p
     const component = observer(() => {
-        const t = tasksStore.newTask
-        const actionFormConfig = t.action.form_config(t.action_type)
-        const nextStep = ApprovePostStep()
         const cfg = new ActionFormConfig({
             fields: [
                     {
                         field_type: ActionFormFieldType.InputString,
-                        label: p.title,
+                        label: title,
                         placeholder: p.placeholdler || '',
-                        value: p.value,
-                        setter: p.setter
+                        value: value,
+                        setter: setter
                     },
                 ]
             })
         return (
             <div>
-                {actionFormConfig &&
-                    <div>
-                        <TaskActionForm config={cfg} />
-                        <Button onClick={async () => {
-                            const res = await p.onAction()
-                            res && tasksStore.setCreateStep(nextStep)
-                        }}>{p.actionLabel}</Button>
-                    </div>
-                }
+                <div>
+                    <TaskActionForm config={cfg} />
+                    <Button onClick={async () => {
+                        const res = await onAction()
+                        res && onNext && onNext()
+                    }}>{p.actionLabel}</Button>
+                </div>
             </div>
         )
     })
-    return new CreateTaskStep({
-        title: '',
-        isFinal: false,
-        Body: component
-    })
+    return new CreateFormStep({ id, title: '', isFinal: false, Body: component })
 }
 
-export function ApprovePostStep(): CreateTaskStep {
-    const tasksStore = useContext(BotTasksContext)
+export interface ApprovePostStepProps {
+    post?: () => SocialPost | undefined,
+    onNext: () => void
+}
+
+export function ApprovePostStep(p: ApprovePostStepProps): CreateFormStep {
+    const { post, onNext } = p
     const component = observer(() => {
-        const t = tasksStore.newTask
-        const nextStep = ActionDataFormStep()
-        const p = t.action.currentPost(t.action_type)
+        const p = post?.()
         return (
             <div>
                 {p &&
@@ -91,13 +88,16 @@ export function ApprovePostStep(): CreateTaskStep {
                         <div>
                             <SocialPostView post={p} />
                         </div>
-                        <Button onClick={() => tasksStore.setCreateStep(nextStep)}>Далее</Button>
+                        <Button onClick={() => {
+                            onNext()
+                        }}>Далее</Button>
                     </div>
                 }
+                {!post && <div>no post specified</div> }
             </div>
         )
     })
-    return new CreateTaskStep({
+    return new CreateFormStep({
         title: '',
         isFinal: false,
         Body: component

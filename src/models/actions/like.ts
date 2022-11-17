@@ -1,7 +1,6 @@
 import { isErr } from "@/api/models/base"
 import socialApi from "@/api/social"
-import { ActionDataFormStep, LinkPickerStepProps } from "@/components/tasks/create/steps/data"
-import { CreateTaskStep } from "@/components/tasks/CreateTaskModal"
+import { LinkPickerStepProps } from "@/components/tasks/create/steps/data"
 import { fireErr } from "@/utils"
 import { makeAutoObservable } from "mobx"
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "../action_form"
@@ -76,9 +75,8 @@ export class LikeAction {
                     return false
                 }
                 this.extra.post = new SocialPost(postResult.data.Ok)
-                console.log('tst need implement')
                 return true
-            }
+            },
         }
     }
 
@@ -109,15 +107,6 @@ export class LikeAction {
         value: () => this.data.time_spread,
         setter: (v: any) => { this.data.time_spread = parseInt(v) }
       }
-            /*
-      {
-        field_type: ActionFormFieldType.InputString,
-        label: 'Target link',
-        placeholder: 'https://...',
-        value: () => this.data.resource_link,
-        setter: (v: any) => { this.data.resource_link = v }
-      },
-            */
     ]
     return new ActionFormConfig({ fields })
   }

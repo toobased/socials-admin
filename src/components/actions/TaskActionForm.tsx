@@ -45,7 +45,7 @@ const InputStringComponent = observer((props: {field: ActionFormField}) => {
 
 const SliderNumberComponent = observer((props: {field: ActionFormField}) => {
   const field = props.field
-    const dv = 3
+    const dv = 2
     useEffect(() => field.setter(dv), [])
   return (
     <div className="max-w-md font-semibold text-2xl">
@@ -64,6 +64,41 @@ const SliderNumberComponent = observer((props: {field: ActionFormField}) => {
         <Box color='tomato'/>
       </SliderThumb>
     </Slider>
+    </div>
+  )
+})
+
+const ProcessDurationPickerComponent = observer((props: {field: ActionFormField}) => {
+  const field = props.field
+    const items = [
+        { l: '1 second', v: 1},
+        { l: '5 seconds', v: 5},
+        { l: '10 seconds', v: 10},
+        { l: '20 seconds', v: 20},
+        { l: '30 seconds', v: 30},
+        { l: '40 seconds', v: 40},
+        { l: '50 seconds', v: 50},
+        { l: '1 minute', v: 60},
+        { l: '2 minutes', v: 120},
+        { l: '3 minutes', v: 180},
+        { l: '4 minutes', v: 240},
+        { l: '5 minutes', v: 300},
+        { l: '6 minutes', v: 360},
+        { l: '7 minutes', v: 420},
+        { l: '8 minutes', v: 480},
+        { l: '9 minutes', v: 540},
+        { l: '10 minutes', v: 600},
+        { l: '15 minutes', v: 900},
+        { l: '20 minutes', v: 1800}
+    ]
+    useEffect(() => field.setter(items[5].v), [])
+  return (
+    <div className="max-w-md font-semibold text-2xl">
+        <Select onChange={(v) => field.setter(v.target.value)} value={field.value()}>
+            {items.map((item, indx) =>
+                <option key={indx} value={item.v}>{item.l}</option>
+            )}
+        </Select>
     </div>
   )
 })
@@ -94,7 +129,6 @@ const ProcessTimePickerComponent = observer((props: {field: ActionFormField}) =>
     useEffect(() => field.setter(items[5].v), [])
   return (
     <div className="max-w-md font-semibold text-2xl">
-        <div>{field.value()}</div>
         <Select onChange={(v) => field.setter(v.target.value)} value={field.value()}>
             {items.map((item, indx) =>
                 <option key={indx} value={item.v}>{item.l}</option>
@@ -129,6 +163,9 @@ export const TaskActionForm = observer((props: TaskActionFormProps) => {
             }
             { field.field_type == ActionFormFieldType.ProcessTimePicker &&
               <ProcessTimePickerComponent field={field} />
+            }
+            { field.field_type == ActionFormFieldType.ProcessDurationPicker &&
+              <ProcessDurationPickerComponent field={field} />
             }
           </div>
         </div>

@@ -1,96 +1,86 @@
 import { ChooseContainer, ChooseItem } from "@/components/common/ChooseContainer"
 import { actionFilters, filtersToChooseItems, platformFilters, targetFilters } from "@/models/bots"
+import { CreateFormStep } from "@/models/create_form_steps"
 import { PlatformEnum } from "@/models/enums/bots"
-import { TaskTarget } from "@/models/enums/bot_tasks"
+import { TaskActionType, TaskTarget } from "@/models/enums/bot_tasks"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { observer } from "mobx-react"
 import { useContext } from "react"
-import { CreateTaskStep } from "../../CreateTaskModal"
-import { ActionDataFormStep } from "./data"
+// import { ActionDataFormStep } from "./data"
+//
+export interface SelectPlatformStepProps {
+    platformList: () => ChooseItem[]
+    value?: () => any
+    setter: (v: PlatformEnum) => void
+    onNext?: (id: string) => void
+}
 
-export const TaskPlatformStep = ((): CreateTaskStep => {
-    const tasksStore = useContext(BotTasksContext)
-    const newTask = tasksStore.newTask
-
-    const platformList: ChooseItem[] = filtersToChooseItems(
-        platformFilters
-            .filter(p => tasksStore.taskTypes
-                .find(t => t.targets
-                    .find(v => v.platforms.includes(p.query_value as PlatformEnum))
-                )
-            )
-    )
+export const SelectPlatformStep = ((p: SelectPlatformStepProps): CreateFormStep => {
+    const id = 'select-platform'
+    const { setter, platformList, onNext } = p
     const component = observer(() => {
-        const taskActionStep = TaskActionStep()
         return (
             <div>
                 <ChooseContainer
-                    items={platformList}
+                    items={platformList()}
                     inline={true}
                     onChoose={(v) => {
-                        newTask.withPlatform(v.value)
-                        tasksStore.setCreateStep(taskActionStep)
+                        setter(v.value)
+                        onNext && onNext(id)
                     }}
                 />
             </div>
         )
     })
-    return new CreateTaskStep({
-        title: 'Выбери платформу',
-        Body: component
-    })
+    return new CreateFormStep({ id, title: 'Выбери платформу', Body: component })
 })
 
-export const TaskActionStep = ((): CreateTaskStep => {
-    const tasksStore = useContext(BotTasksContext)
-    const chooseTargetStep = TaskTargetStep()
+export interface TaskActionStepProps {
+    actionsList: () => ChooseItem[]
+    value?: () => any
+    setter: (v: TaskActionType) => void
+    onNext?: (id: string) => void
+}
+
+export const TaskActionStep = ((p: TaskActionStepProps): CreateFormStep => {
+    const id = 'select-task-action'
+    const { setter, onNext, actionsList } = p
     const component = observer(() => {
-        const newTask = tasksStore.newTask
-        const actionsList: ChooseItem[] = filtersToChooseItems(actionFilters
-            .filter(v => tasksStore.getActionsForPlatform(newTask.platform).includes(`${v.query_value}`))
-        )
         return (
             <ChooseContainer
-                items={actionsList}
+                items={actionsList()}
                 inline={true}
                 onChoose={(v) => {
-                    newTask.withActionType(v.value)
-                    tasksStore.setCreateStep(chooseTargetStep)
+                    setter(v.value)
+                    onNext && onNext(id)
                 }}
             />
         )
     })
-    return new CreateTaskStep({
-        title: 'Выбери действие',
-        Body: component
-    })
+    return new CreateFormStep({ id, title: 'Выбери действие', Body: component })
 })
 
-export const TaskTargetStep = ((): CreateTaskStep => {
-    const tasksStore = useContext(BotTasksContext)
+export interface SelectTargetStepProps {
+    targetsList: () => ChooseItem[]
+    value?: () => any
+    setter: (v: TaskTarget) => void
+    onNext?: (id: string) => void
+}
+
+export const SelectTargetStep = ((p: SelectTargetStepProps): CreateFormStep => {
+    const id = 'select-target'
+    const { targetsList, setter, onNext } = p
     const component = observer(() => {
-        const newTask = tasksStore.newTask
-        // const s = ActionDataFormStep()
-        const s = tasksStore.createTaskDataStep()?.()
-        const targetsList: ChooseItem[] = filtersToChooseItems(
-            targetFilters
-            .filter(v =>
-                tasksStore.getTargetsForPlatformAction(newTask.platform, newTask.action_type)
-                .includes(v.query_value as TaskTarget)
-            ))
         return (
             <ChooseContainer
-                items={targetsList}
+                items={targetsList()}
                 inline={true}
                 onChoose={(v) => {
-                    newTask.withTarget(v.value)
-                    s && tasksStore.setCreateStep(s)
+                    setter(v.value)
+                    onNext && onNext(id)
                 }}
             />
         )
     })
-    return new CreateTaskStep({
-        title: 'Выбери таргет',
-        Body: component
-    })
+    return new CreateFormStep({ id, title: 'Выбери таргет', Body: component })
 })

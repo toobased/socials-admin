@@ -1,8 +1,8 @@
 import botsTasksApi from "@/api/botsTasks";
-import { ActionDataFormStep, LinkPickerStep, LinkPickerStepProps } from "@/components/tasks/create/steps/data";
-import { CreateTaskStep } from "@/components/tasks/CreateTaskModal";
+import { ActionDataFormStep, ApprovePostStep, LinkPickerStep, LinkPickerStepProps } from "@/components/tasks/create/steps/data";
 import { DbFindResult } from "@/models/api";
 import { BotTasksSearchQuery, CreateBotTask, BotTask, BotTasksSearch, BotTaskType, TaskActionEnum } from "@/models/bots_tasks";
+import { CreateFormStep } from "@/models/create_form_steps";
 import { PlatformEnum } from "@/models/enums/bots";
 import { TaskActionType, TaskTarget } from "@/models/enums/bot_tasks";
 import { simpleProcessResponse } from "@/utils";
@@ -97,19 +97,30 @@ export class BotTasksStore {
   tasksSearchQuery: BotTasksSearchQuery = new BotTasksSearchQuery();
   currentPage: number = 1;
 
-    createStep: CreateTaskStep | null = null
-    setCreateStep (s: CreateTaskStep | null) { this.createStep = s }
+    createStep: CreateFormStep | null = null
+    setCreateStep (s: CreateFormStep | null) { this.createStep = s }
 
   constructor () { makeAutoObservable(this) }
 
-    createTaskDataStep(): (() => CreateTaskStep) | null {
-        const def = ActionDataFormStep
+    createTaskDataStep(): CreateFormStep | null {
+        const def = ActionDataFormStep({ formConfig: () => this.newTask.action.form_config(this.newTask.action_type) })
         if (!this.newTask) { return null }
         switch (this.newTask.action_type) {
             case TaskActionType.Like: {
                 const params = this.newTask.action.LikeAction?.getPostLinkStepParams(this.newTask)
                 if (!params) { return null }
-                return (() => LinkPickerStep(params))
+                const approvePostStep = ApprovePostStep({
+                    post: () => this.newTask.action.currentPost(this.newTask.action_type),
+                    onNext: () => { this.setCreateStep(def) }
+                })
+                const step = LinkPickerStep({
+                    onNext: () => {
+                        console.log('run link picker on next, next is', approvePostStep)
+                        this.setCreateStep(approvePostStep)
+                    },
+                    ...params
+                })
+                return step
             }
         }
         return def

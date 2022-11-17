@@ -47,7 +47,7 @@ const TasksTableSkeleton = observer(() => {
   return (
     <div className="rounded-lg py-3 px-3 mt-4">
       <Stack>
-        {[...Array(limit)].map((index) => 
+        {[...Array(limit)].map((_item, index) =>
           <Skeleton 
             key={index}
             height="40px"
