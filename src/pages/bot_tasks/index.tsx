@@ -11,6 +11,7 @@ import { Icon } from "@iconify/react";
 import OptionDropdownFilter from "@/components/common/OptionDropdownFilter";
 import { platformFilters } from "@/models/bots";
 import { PlatformEnum } from "@/models/enums/bots";
+import { AppContext } from "@/store/appStore";
 
 const TasksTablePagination = observer(() => {
   const tasksStore = useContext(BotTasksContext)
@@ -46,7 +47,7 @@ const TasksTableSkeleton = observer(() => {
   return (
     <div className="rounded-lg py-3 px-3 mt-4">
       <Stack>
-        {[...Array(limit)].map((index) => 
+        {[...Array(limit)].map((_item, index) =>
           <Skeleton 
             key={index}
             height="40px"
@@ -248,10 +249,11 @@ const TasksTable = observer(() => {
 })
 
 const AddNewTaskButton = () => {
+  const appStore = useContext(AppContext)
   Comment
   return (
     <Button
-      onClick={() => router.push('bot_tasks/new')}
+      onClick={() => appStore.modals.setCreateTask(true)}
     >
       Добавить таск
     </Button>

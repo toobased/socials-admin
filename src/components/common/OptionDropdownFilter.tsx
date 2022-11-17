@@ -27,17 +27,17 @@ const OptionDropdownFilter = observer(({
     <>
     <SimpleLabel label={filterLabel} />
     <Menu>
-      <SelectMenuButton 
+      <SelectMenuButton
         inner={
           <>
             <div className="flex gap-2 justify-between min-w-[120px]">
               <div className="flex gap-2 items-center">
-                <Icon 
+                <Icon
                   icon={currentFilter?.icon ?? ''} 
                   color={currentFilter?.iconColor ?? ''}
                   width="20"
                 />
-                <div> 
+                <div>
                   {currentFilter?.label}
                 </div>
               </div>

@@ -1,20 +1,18 @@
 import { makeAutoObservable } from "mobx";
-import { createContext } from "react";
-import appApi from "@/api/app";
-import { AppInfo } from "@/models/app";
+import { createContext } from "react"; import appApi from "@/api/app"; import { AppInfo } from "@/models/app";
 import { successMessageChakra } from "@/utils";
 import { useColorMode, useColorModePreference, useColorModeValue } from "@chakra-ui/react";
 
 class AppModalsState {
     add_source =  false
+    create_task = false
     add_source_platform = false
-
-
 
     constructor() { makeAutoObservable(this) }
 
     setAddSource (v: boolean) { this.add_source = v }
     setAddSourcePlatform (v: boolean) { this.add_source_platform = v }
+    setCreateTask (v: boolean) { this.create_task = v }
 }
 
 enum AppTheme { Dark = "dark", Light = "light" }
@@ -30,6 +28,7 @@ class AppPrefs {
         if (!document) { return }
         this.theme = v
         const el = document.getElementById('__next')
+        document.documentElement.setAttribute('class', v)
         el?.setAttribute('class', v)
     }
 

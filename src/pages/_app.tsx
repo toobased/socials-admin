@@ -14,7 +14,9 @@ import { ChakraProvider } from '@chakra-ui/react';
 import HeadingNav from '@/components/common/HeadingNav';
 import LoadingContainer from '@/components/common/LoadingContainer';
 import { AddSourceModal } from '@/components/social_source/AddSourceModal';
+import { CreateTaskModal } from '@/components/tasks/CreateTaskModal';
 import chakraTheme from '@/styles/theme';
+import { BotTasksContext } from '@/store/botsTasksStore';
 
 /*
 const colors = {
@@ -32,6 +34,7 @@ const colors = {
 function MyApp({ Component, pageProps }: AppProps) {
   const appStore = useContext(AppContext)
   const userStore = useContext(UserContext)
+    const tasksStore = useContext(BotTasksContext)
 
   const [initialDataLoading, setInitialDataLoading] = useState(true);
 
@@ -39,6 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     console.log('process env is', process.env)
     appStore.prefs.init()
     const loadInitialData = async () => {
+        await tasksStore.getTasksTypes()
       // await appStore.getCommonInfo();
       // await userStore.checkUserAuthorized();
       setInitialDataLoading(false)
@@ -65,6 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
       */}
       <AddSourceModal />
+      <CreateTaskModal />
       </ChakraProvider>
     </>
   )

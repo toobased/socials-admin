@@ -1,6 +1,7 @@
 import { createStandaloneToast, UseToastOptions } from "@chakra-ui/react"
 import { message } from "antd"
 import { AxiosResponse } from "axios"
+import { BaseError, Result } from "./api/models/base"
 import { IFilterValue } from "./models/bots"
 
 const chakraToast = createStandaloneToast()
@@ -89,4 +90,10 @@ export function getFilterByLabel(
     const defV = filters[0]
     if (label === undefined) { return defV }
     return filters.filter(s => s.label == label)[0] || defV
+}
+
+export function fireErr<T, _E = BaseError>(p: AxiosResponse<Result<T>>) {
+    const st = p.status
+    const msg = `${st} || ${p.data.Err.msg}`
+    errorMessageChakra(msg)
 }

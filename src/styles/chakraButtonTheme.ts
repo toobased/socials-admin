@@ -9,7 +9,7 @@ export const ButtonTheme: ComponentStyleConfig = {
   variants: {},
   defaultProps: {
     variant: "solid",
-    colorScheme: "orange",
+    colorScheme: "gray",
     size: "md"
   }
 }
