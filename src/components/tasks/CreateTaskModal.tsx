@@ -6,7 +6,8 @@ import { AppContext } from "@/store/appStore"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import { observer } from "mobx-react"
-import { useContext } from "react"
+import { clearObserving } from "mobx/dist/internal"
+import { useContext, useEffect } from "react"
 import { ChooseItem } from "../common/ChooseContainer"
 import { BotTaskAddButton } from "./create/base"
 import { SelectPlatformStep, SelectTargetStep, TaskActionStep } from "./create/steps/default"
@@ -16,6 +17,45 @@ export const CreateTaskModal = observer(() => {
     const tasksStore = useContext(BotTasksContext)
     const newTask = tasksStore.newTask
     const modals = appStore.modals
+
+      useEffect(() => {
+        tasksStore.getTasksTypes()
+        tasksStore.newTask.reset()
+        initSteps()
+        console.log('call useEffect', tasksStore.newTask, tasksStore.taskTypes)
+      }, [])
+
+    const initSteps = () => {
+        const taskForm = new CreateFormSteps({
+            nextSetter: (s) => tasksStore.setCreateStep(s)
+        })
+        const taskSteps = [
+            SelectPlatformStep({
+                platformList,
+                setter: (v: PlatformEnum) => newTask.withPlatform(v),
+                onNext: (id: string) => taskForm.next(id)
+            }),
+            TaskActionStep({
+                actionsList,
+                setter: (v: TaskActionType) => newTask.withActionType(v),
+                onNext: (id: string) => taskForm.next(id)
+            }),
+            SelectTargetStep({
+                targetsList,
+                setter: (v: TaskTarget) => newTask.withTarget(v),
+                onNext: (id: string) => {
+                    const next = tasksStore.createTaskDataStep()
+                    if (!next) { return }
+                    taskForm.steps.push(next)
+                    // console.log('steps are', taskForm.steps)
+                    // console.log('id is', id)
+                    taskForm.next(id)
+                }
+            })
+        ]
+        taskForm.withSteps(taskSteps).init()
+        tasksStore.setCreateStep(taskForm.current)
+    }
 
     const platformList = (): ChooseItem[] =>
         filtersToChooseItems(
@@ -41,46 +81,22 @@ export const CreateTaskModal = observer(() => {
             )
         )
 
-    const taskForm = new CreateFormSteps({
-        nextSetter: (s) => tasksStore.setCreateStep(s)
-    })
-    const taskSteps = [
-        SelectPlatformStep({
-            platformList,
-            setter: (v: PlatformEnum) => newTask.withPlatform(v),
-            onNext: (id: string) => taskForm.next(id)
-        }),
-        TaskActionStep({
-            actionsList,
-            setter: (v: TaskActionType) => newTask.withActionType(v),
-            onNext: (id: string) => taskForm.next(id)
-        }),
-        SelectTargetStep({
-            targetsList,
-            setter: (v: TaskTarget) => newTask.withTarget(v),
-            onNext: (id: string) => {
-                const next = tasksStore.createTaskDataStep()
-                if (!next) { return }
-                taskForm.steps.push(next)
-                // console.log('steps are', taskForm.steps)
-                // console.log('id is', id)
-                taskForm.next(id)
-            }
-        })
-    ]
-    taskForm.withSteps(taskSteps).init()
-
     const currentStep = tasksStore.createStep
-    if (currentStep == null) { tasksStore.setCreateStep(taskForm.current) }
+    // if (currentStep == null) { }
 
     const l = { addTask: "Новый таск" }
     const onClose = () => {
         modals.setCreateTask(false)
-        tasksStore.setCreateStep(null)
+        // tasksStore.setCreateStep(null)
+        initSteps()
         tasksStore.newTask.reset()
     }
 
-    if (!currentStep) { return <></>}
+    if (!currentStep) {
+        console.log('no current step', currentStep, tasksStore.createStep, tasksStore.newTask)
+        return <>No current step</>
+    }
+
     const CurrentStepBody = currentStep.Body
 
     return (
