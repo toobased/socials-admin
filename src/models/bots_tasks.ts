@@ -234,6 +234,15 @@ export class TaskActionEnum {
         return undefined
     }
 
+    form_config(t: TaskActionType): ActionFormConfig | undefined {
+        const T = TaskActionType
+        switch (t) {
+            case T.Watch: return this.WatchAction?.form_config()
+            case T.Like: return this.LikeAction?.form_config()
+        }
+        return undefined
+    }
+
   from_action_type(t: TaskActionType) {
     Object.assign(this, new TaskActionEnum())
     const T = TaskActionType
