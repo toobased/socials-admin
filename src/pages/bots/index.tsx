@@ -22,6 +22,7 @@ import SelectMenuButton from '@/components/common/SelectMenuButton'
 import SimpleLabel from '@/components/common/SimpleLabel'
 import OptionDropdownFilter from '@/components/common/OptionDropdownFilter'
 import { PlatformEnum } from '@/models/enums/bots'
+import { AppContext } from '@/store/appStore'
 
 const { Option } = Select
 
@@ -435,6 +436,7 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
 
 const Bots: NextPage = observer(() => {
   // stores
+    const appStore = useContext(AppContext)
   const router = useRouter();
   const botStore = useContext(BotContext);
   // states
@@ -473,7 +475,7 @@ const Bots: NextPage = observer(() => {
       {/* RELOAD BUTTON */}
       <Button
         variant="solid"
-        onClick={() => router.push('bots/new')}
+        onClick={() => appStore.modals.setCreateBot(true)}
       >
         Add new bot
       </Button>

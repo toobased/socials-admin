@@ -1,6 +1,7 @@
 import botsApi from "@/api/bots";
 import { DbFindResult } from "@/models/api";
 import { BotCreate, Bot, BotSearch, BotSearchQuery, GenderEnum } from "@/models/bots";
+import { CreateFormStep } from "@/models/create_form_steps";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
 import { makeAutoObservable, observable } from "mobx";
@@ -59,10 +60,13 @@ export class BotStore {
  currentPage: number = 1;
  botsLoading: boolean = false;
  botsLoadingError: boolean = false;
+createStep: CreateFormStep | null = null
 
  constructor () {
    makeAutoObservable(this)
  }
+
+    setCreateStep (s: CreateFormStep | null) { this.createStep = s }
 
  setNewBot(newBot: BotCreate) {
   this.newBot = newBot
@@ -75,8 +79,8 @@ export class BotStore {
    this.newBot = new BotCreate()
  }
 
- setCurrentBot(bot: Bot) {
-   this.currentBot = bot
+ setCurrentBot(bot: Partial<Bot>) {
+   this.currentBot = new Bot(bot)
  }
  removeCurrentBot() {
    this.currentBot = undefined
@@ -143,9 +147,7 @@ export class BotStore {
  }
 
  async getBotApi (id: string) {
-   if (this.loaders.currentBotLoading) {
-     return
-   }
+   if (this.loaders.currentBotLoading) { return }
    this.loaders.setCurrentBotLoading(true)
    this.removeCurrentBot()
    this.errors.setCurrentBotError('')

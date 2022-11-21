@@ -1,5 +1,7 @@
+import botsApi from "@/api/bots";
 import { ChooseItem } from "@/components/common/ChooseContainer";
 import { makeAutoObservable } from "mobx";
+import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "./action_form";
 import { CountryEnum, PlatformEnum } from "./enums/bots";
 import { TaskActionType, TaskTarget } from "./enums/bot_tasks";
 import { BaseDate } from "./utils";
@@ -53,8 +55,16 @@ export class Bot {
     gender: GenderEnum = GenderEnum.Unknown;
 
     constructor(p: Partial<Bot> = {}) {
-        makeAutoObservable(this)
         Object.assign(this, p)
+        p.date_created && (this.date_created = new BaseDate(p.date_created))
+        p.date_updated && (this.date_updated = new BaseDate(p.date_updated))
+        p.last_used && (this.last_used = new BaseDate(p.last_used))
+        p.rest_until && (this.rest_until = new BaseDate(p.rest_until))
+        makeAutoObservable(this)
+    }
+
+    static async fetchByAccessToken(p: PlatformEnum, t: string) {
+        return await botsApi.fetchByAccessToken({platform: p, access_token: t})
     }
 }
 
@@ -67,7 +77,8 @@ export class BotCreate {
   created_source: string | null = null;
   make_ready: boolean = false;
   gender: GenderEnum = GenderEnum.Male;
-  rest_until: string | null = null;
+  rest_until: BaseDate | null = null;
+  rest_secs: number | null = null
 
   constructor(params: Partial<BotCreate> = {}) {
     makeAutoObservable(this)
@@ -84,6 +95,40 @@ export class BotCreate {
       return false
     }
     return true
+  }
+
+    reset () { Object.assign(this, new BotCreate()); return this }
+    withPlatform (p: PlatformEnum) { this.platform = p; return this }
+    withAccessToken (v: string) { this.access_token = v; return this }
+
+  form_config () {
+    const fields: ActionFormField[] = [
+      {
+        field_type: ActionFormFieldType.InputString,
+        label: 'Username (phone)',
+        placeholder: '+7 (xxx) ...',
+        value: () => this.username,
+        setter: (v: any) => { this.username = v }
+      },
+      {
+        field_type: ActionFormFieldType.InputString,
+        label: 'Пароль',
+        placeholder: 'xxx',
+        value: () => this.password,
+        setter: (v: any) => { this.password = v }
+      },
+      {
+        field_type: ActionFormFieldType.DatePicker,
+        label: 'Сколько боту отлеживаться',
+        placeholder: 'xxx',
+        value: () => this.rest_secs,
+        setter: (v: any) => {
+            this.rest_secs = v
+            this.rest_until = BaseDate.from_secs(v)
+        }
+      },
+    ]
+    return new ActionFormConfig({ fields })
   }
 
 }
@@ -140,7 +185,8 @@ export interface IFilterValue {
   isIconText?: boolean;
 }
 
-export function filtersToChooseItems(f: IFilterValue[]): ChooseItem[] {
+export function filtersToChooseItems(f: IFilterValue[], exclude_all = false): ChooseItem[] {
+    if (exclude_all) { f = f.filter(v => v.label.toLowerCase() != "all") }
     return f.map(v => {
         return {
             value: v.query_value,

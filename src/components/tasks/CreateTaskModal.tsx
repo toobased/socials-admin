@@ -6,7 +6,6 @@ import { AppContext } from "@/store/appStore"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import { observer } from "mobx-react"
-import { clearObserving } from "mobx/dist/internal"
 import { useContext, useEffect } from "react"
 import { ChooseItem } from "../common/ChooseContainer"
 import { BotTaskAddButton } from "./create/base"
@@ -22,7 +21,6 @@ export const CreateTaskModal = observer(() => {
         tasksStore.getTasksTypes()
         tasksStore.newTask.reset()
         initSteps()
-        console.log('call useEffect', tasksStore.newTask, tasksStore.taskTypes)
       }, [])
 
     const initSteps = () => {
@@ -47,8 +45,6 @@ export const CreateTaskModal = observer(() => {
                     const next = tasksStore.createTaskDataStep()
                     if (!next) { return }
                     taskForm.steps.push(next)
-                    // console.log('steps are', taskForm.steps)
-                    // console.log('id is', id)
                     taskForm.next(id)
                 }
             })
@@ -93,7 +89,6 @@ export const CreateTaskModal = observer(() => {
     }
 
     if (!currentStep) {
-        console.log('no current step', currentStep, tasksStore.createStep, tasksStore.newTask)
         return <>No current step</>
     }
 

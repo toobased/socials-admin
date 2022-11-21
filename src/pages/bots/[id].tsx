@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import Title from "antd/lib/typography/Title";
 import SimpleTile from "@/components/common/SimpleTile";
 import ErrorBox from "@/components/common/ErrorBox";
+import { AppContext } from "@/store/appStore";
 
 const BotPage: NextPage = observer(() => {
   // store
@@ -95,8 +96,9 @@ const BotPage: NextPage = observer(() => {
   )
 
   const BotCommonInfo = observer(() => {
-    const createdDate = currentBot.date_created.elapsed_sweety
-    const lastUsedDate = currentBot.last_used?.elapsed_sweety || '--'
+    const appStore = useContext(AppContext)
+    const createdDate = currentBot.date_created.elapsed_sweety(appStore.timestamp_now)
+    const lastUsedDate = currentBot.last_used?.elapsed_sweety(appStore.timestamp_now) || '--'
     return (
       <div className="flex flex-col gap-2">
         { createdDate }

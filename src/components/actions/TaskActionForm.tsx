@@ -1,4 +1,5 @@
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "@/models/action_form"
+import { BaseDate } from "@/models/utils"
 import { Box, Input, NumberInput, NumberInputField, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "@chakra-ui/react"
 import { observer } from "mobx-react"
 import { useEffect } from "react"
@@ -129,7 +130,15 @@ const ProcessTimePickerComponent = observer((props: {field: ActionFormField}) =>
     useEffect(() => field.setter(items[5].v), [])
   return (
     <div className="max-w-md font-semibold text-2xl">
-        <Select onChange={(v) => field.setter(v.target.value)} value={field.value()}>
+        <Select onChange={(v) => {
+            if (field.field_type == ActionFormFieldType.DatePicker) {
+                field.setter(v.target.value)
+                // field.setter(BaseDate.from_secs(parseInt(v.target.value)))
+            } else {
+                field.setter(v.target.value)
+            }
+        }}
+        value={field.value()}>
             {items.map((item, indx) =>
                 <option key={indx} value={item.v}>{item.l}</option>
             )}
@@ -162,6 +171,9 @@ export const TaskActionForm = observer((props: TaskActionFormProps) => {
               <SliderNumberComponent field={field} />
             }
             { field.field_type == ActionFormFieldType.ProcessTimePicker &&
+              <ProcessTimePickerComponent field={field} />
+            }
+            { field.field_type == ActionFormFieldType.DatePicker &&
               <ProcessTimePickerComponent field={field} />
             }
             { field.field_type == ActionFormFieldType.ProcessDurationPicker &&
