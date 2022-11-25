@@ -1,97 +1,76 @@
 import { observer } from 'mobx-react'
 import type { NextPage } from 'next'
-import React, { useContext, useEffect, useState } from 'react'
-// import { AppContext } from '@/store/appStore'
+import React, { useContext, useEffect } from 'react'
 import { BotContext } from '@/store/botsStore'
-import { Select, Table } from 'antd'
-import Column from 'antd/lib/table/Column'
-// import { Icon } from '@iconify/react'
-import CopyClipboardButton from '@/components/buttons/CopyClipboardButton'
-import BooleanIcon from '@/components/common/BooleanIcon'
+import { Table as CTable, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { activeFilters, BotSearchQuery, GenderEnum, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
-import Link from 'next/link'
-import { SizeType } from 'antd/lib/config-provider/SizeContext'
-import { Button, Menu, MenuButton, MenuItem, MenuItemOption, MenuList, MenuOptionGroup, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Radio, RadioGroup } from '@chakra-ui/react'
-import BooleanComponent from '@/components/common/BooleanComponent'
+import { activeFilters, BotSearchQuery, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
+import { Button, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
 import { Icon } from '@iconify/react'
 import ServerCallLabel from '@/components/common/ServerCallLabel'
-import botsApi from '@/api/bots'
-import { errorMessageChakra } from '@/utils'
-import SelectMenuButton from '@/components/common/SelectMenuButton'
-import SimpleLabel from '@/components/common/SimpleLabel'
+import { errorMessageChakra, shortStr } from '@/utils'
 import OptionDropdownFilter from '@/components/common/OptionDropdownFilter'
-import { PlatformEnum } from '@/models/enums/bots'
 import { AppContext } from '@/store/appStore'
+import SimpleTile from '@/components/common/SimpleTile'
+import { Pagination } from 'antd'
 
-const { Option } = Select
+type BotsTableProps = { onLoadBots: Function }
 
-type BotsTableProps = {
-  onLoadBots: Function
-}
+const TablePagination = observer(() => {
+  const store = useContext(BotContext)
+  const search = store.botSearch
+  const query = store.botSearchQuery
 
-const tableSizes = [
-  { value: "small", label: "small" },
-  { value: "middle", label: "middle" },
-  { value: "large", label: "large" },
-]
+  const totalItems = search.total
+  const limit = query.limit
+  // const skip = query.skip
+  const currentPage = store.currentPage
 
-const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
-  const botStore = useContext(BotContext);
+  return (
+    <div className="mt-3 width-full justify-end flex">
+      <Pagination
+        current={currentPage}
+        pageSize={limit}
+        total={totalItems}
+        onChange={(p: number) => {
+          console.log('run on change')
+          store.currentPage = p
+          query.skip =
+            (store.currentPage-1) * limit
+          store.getBotsApi(true)
+        }}
+      />
+    </div>
+  )
+})
+
+const BotsTableContent = observer(() => {
+  const botStore = useContext(BotContext)
+  const bots = botStore?.botSearch?.items
+  const appStore = useContext(AppContext)
 
   const router = useRouter()
-  // const router = useRouter()
 
-  console.log('bots are', botStore.botSearch)
-  const botQuery = botStore?.botSearchQuery
-  const currentPage = botStore?.currentPage
-  const total = botStore?.botSearch?.total
-  const bots = botStore?.botSearch?.items
+  const tableHeaderItems = [
+    "Username", "Password", "Access token",
+    "Дата создания", "Использовался", "Платформа", "Статус", "Действие"
+  ]
 
-  // current filters
-  const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined
-
-  const currentGenderFilter = (): IFilterValue | undefined => genderFilters.filter((f) => f.query_value == botQuery.gender)[0] || undefined
-
-  const currentActiveFilter = (): IFilterValue | undefined => activeFilters.filter((f) => f.query_value == botQuery.is_active)[0] || undefined
-
-  const currentInUseFilter = (): IFilterValue | undefined => inUseFilters.filter((f) => f.query_value == botQuery.is_in_use)[0] || undefined
-
-  const [tableSize, setTableSize] = useState(tableSizes[0].value)
-
-  const [isTableLoading, setTableLoading] = useState(false)
-
-  const handleGoEditPage = (id: string) => {
-    router.push(`bots/edit/${id}`)
-  }
-
-  const handleGoDetailPage = (id: string) => {
-    router.push(`bots/${id}`)
-  }
+  const handleGoEditPage = (id: string) => router.push(`bots/edit/${id}`)
+  const handleGoDetailPage = (id: string) => router.push(`bots/${id}`)
 
   const handleCheckBanned = async (id: string) => {
-    setTableLoading(true)
     const [isSuccess, msg] = await botStore.checkBannedApi(id)
     if (!isSuccess) {
       errorMessageChakra(msg)
-      setTableLoading(false)
       return
     }
     botStore.getBotsApi(true)
-    setTableLoading(false)
   }
 
-  const getIsTableLoading = () => {
-    if (
-      isTableLoading ||
-      botStore.botsLoading
-    ) {
-      return true
-    }
-    return false
-  }
-  //
-  //
+  if (botStore.botsLoading) { return (<div>loading...</div>) }
+  if (!bots) { return (<div>no bots</div>) }
+
   const BotActionsBlock = ({ id }: { id: string }) => {
     return (
       <Menu>
@@ -146,6 +125,100 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
       </Menu>
     )
   }
+
+  return (
+    <div
+      className="mt-4"
+    >
+      <CTable
+        className="rounded-lg"
+      >
+        <Thead>
+          <Tr>
+            { tableHeaderItems.map((item, index) =>
+              <Th key={index}>
+                { item }
+              </Th>
+            )}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {/* tasks */}
+            {bots.map((v, i) =>
+              <Tr
+                key={i}
+              >
+                {/* username*/}
+                <Td
+                  onClick={() => handleGoDetailPage(v.id)}
+                  className="font-semibold cursor-pointer">
+                  { v.username }
+                </Td>
+                {/* eof usename */}
+
+                {/* password */}
+                <Td className="">
+                    <SimpleTile value={shortStr(v.password)} useClipboard />
+                </Td>
+                {/* eof password */}
+
+                {/* token */}
+                <Td className="">
+                    <SimpleTile value={shortStr(v.access_token || '')} useClipboard />
+                </Td>
+                {/* eof token */}
+
+                {/* date created  */}
+                <Td className="">
+                    { v.date_created.normal }
+                </Td>
+                {/* eof date created */}
+
+                {/* last used */}
+                <Td className="">
+                    { v.last_used?.elapsed_sweety(appStore.timestamp_now) || '---' }
+                </Td>
+                {/* eof last used */}
+
+                {/* platform */}
+                <Td className="">
+                    { v.platform }
+                </Td>
+                {/* eof platform */}
+
+                {/* active */}
+                <Td className="">
+                    { v.status }
+                </Td>
+                {/* eof active */}
+
+                {/* bot action*/}
+                <Td className="">
+                    <BotActionsBlock id={v.id} />
+                </Td>
+                {/* eof bot action */}
+              </Tr>
+            )}
+          {/* eof bots */}
+        </Tbody>
+      </CTable>
+    </div>
+  )
+})
+
+const BotsTableFilters = observer((p: BotsTableProps) => {
+    const { onLoadBots } = p
+
+  const botStore = useContext(BotContext);
+  const botQuery = botStore?.botSearchQuery
+  // current filters
+  const currentPlatformFilter = (): IFilterValue | undefined => platformFilters.filter((f) => f.query_value == botQuery.platform)[0] || undefined
+
+  const currentGenderFilter = (): IFilterValue | undefined => genderFilters.filter((f) => f.query_value == botQuery.gender)[0] || undefined
+
+  const currentActiveFilter = (): IFilterValue | undefined => activeFilters.filter((f) => f.query_value == botQuery.is_active)[0] || undefined
+
+  const currentInUseFilter = (): IFilterValue | undefined => inUseFilters.filter((f) => f.query_value == botQuery.is_in_use)[0] || undefined
   return (
     <>
       {/* RELOAD BUTTON */}
@@ -230,209 +303,10 @@ const BotsTable = observer(({ onLoadBots }: BotsTableProps) => {
           />
         </div>
       </div>
-
-      {/* TABLE SIZE */}
-      <div className="mt-2">
-        <div>Table size</div>
-        <RadioGroup
-          value={tableSize}
-          onChange={(value) => {
-            setTableSize(value)
-          }}
-        >
-          {tableSizes.map((item, index) =>
-            <Radio
-              key={index}
-              value={item.value}
-            >
-              {item.label}
-            </Radio>
-          )}
-        </RadioGroup>
-      </div>
-
-      <Table
-        className="mt-3"
-        dataSource={bots}
-        size={tableSize as SizeType}
-        rowKey="id"
-        loading={getIsTableLoading()}
-        pagination={{
-          total: total,
-          pageSize: botQuery.limit,
-          current: currentPage,
-          size: "default",
-          onChange: ((page: number) => {
-            botStore.setCurrentPage(page)
-            botQuery.offset = (page - 1) * (bots?.length || 10)
-            onLoadBots(true)
-          })
-        }}
-      >
-        {/* USERNAME */}
-        <Column
-          title="Username"
-          dataIndex="username"
-          key="username"
-          render={(username: string, record: any) => (
-            <div className="cursor-pointer flex items-center">
-              <div className="w-28 truncate">
-                <Link
-                  href={`/bots/${record.id}`}
-                >
-                  {username}
-                </Link>
-              </div>
-              <CopyClipboardButton
-                copyContent={username}
-              />
-
-            </div>
-          )
-          }
-        />
-        {/* PASSWORD*/}
-        <Column
-          title="Password"
-          dataIndex="password"
-          key="password"
-          render={(password: string) => (
-            <div className="cursor-pointer flex items-center z-10">
-              <div className="w-20 truncate">
-                {password}
-              </div>
-              <CopyClipboardButton
-                copyContent={password}
-              />
-
-            </div>
-          )
-          }
-        />
-        {/* ACCESS_TOKEN */}
-        <Column
-          title="Access token"
-          dataIndex="access_token"
-          key="access_token"
-          render={(access_token: string) => (
-            <div className="cursor-pointer flex items-center">
-              <div className="w-20 truncate">
-                {access_token}
-              </div>
-              <CopyClipboardButton
-                copyContent={access_token}
-              />
-
-            </div>
-          )
-          }
-        />
-        {/* CREATED DATE*/}
-        <Column
-          title="Created date"
-          dataIndex="created_time"
-          key="created_time"
-          render={(created_time: string) => (
-            <div className="cursor-pointer">
-              <div className="">
-                {new Date(created_time).toUTCString()}
-                ({created_time})
-              </div>
-            </div>
-          )
-          }
-        />
-        {/* PLATFORM */}
-        <Column
-          title="Platform"
-          dataIndex="platform"
-          key="platform"
-          render={(platform: PlatformEnum) => (
-            <div className="cursor-pointer">
-              <div className="">
-                {platform}
-              </div>
-            </div>
-          )
-          }
-        />
-        {/* GENDER */}
-        <Column
-          title="Gender"
-          dataIndex="gender"
-          key="gender"
-          render={(gender: GenderEnum) => (
-            <div className="cursor-pointer">
-              <div className="">
-                {gender || '---'}
-              </div>
-            </div>
-          )
-          }
-        />
-        {/* IS ACTIVE */}
-        <Column
-          title="Active"
-          dataIndex="is_active"
-          key="is_active"
-          render={(is_active: boolean) => (
-            <div className="cursor-pointer">
-              <BooleanIcon
-                value={is_active}
-              />
-            </div>
-          )
-          }
-        />
-        {/* IS BANNED */}
-        <Column
-          title="Is banned"
-          dataIndex="is_banned"
-          key="is_banned"
-          render={(is_banned: boolean) => (
-            <div>
-              <BooleanComponent
-                value={is_banned}
-                reverseEffect={true}
-              />
-            </div>
-          )
-          }
-        />
-        {/* IS RESTING */}
-        <Column
-          title="Is resting"
-          dataIndex="is_resting"
-          key="is_resting"
-          render={(is_resting: boolean) => (
-            <div>
-              <BooleanComponent
-                value={is_resting}
-                negColor="#FBBF24"
-                reverseEffect={true}
-              />
-            </div>
-          )
-          }
-        />
-        {/* BOT ACTIONS */}
-        <Column
-          title="Actions"
-          dataIndex="bot_actions"
-          key="bot_actions"
-          render={(value: any, record: any) => (
-            <div>
-              <BotActionsBlock
-                id={record.id as string}
-              />
-            </div>
-          )
-          }
-        />
-      </Table>
-    </>
+  </>
   )
 })
+
 
 const Bots: NextPage = observer(() => {
   // stores
@@ -454,21 +328,9 @@ const Bots: NextPage = observer(() => {
   }, [])
   //
   if (botStore.botsLoadingError) {
-    return (
-      <>
-        loading error?
-      </>
-    )
+    return (<> loading error? </>)
   }
-  /*
-  if (!botStore?.botSearch?.bots && !botStore.botsLoading) {
-    return (
-      <>
-        loading...
-      </>
-    )
-  }
-  */
+
 
   return (
     <main className="mx-11 my-7">
@@ -480,11 +342,15 @@ const Bots: NextPage = observer(() => {
         Add new bot
       </Button>
       <div className="mt-3">
-        <BotsTable
-          onLoadBots={async () => {
-            botStore.getBotsApi(true)
-          }}
+        <BotsTableFilters
+          onLoadBots={async () => await botStore.getBotsApi(true)}
         />
+      </div>
+      <div className="mt-3">
+        <BotsTableContent />
+      </div>
+      <div className="mt-3">
+        <TablePagination />
       </div>
     </main>
   )

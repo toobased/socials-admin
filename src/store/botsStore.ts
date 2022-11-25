@@ -53,7 +53,7 @@ export class BotStore {
  newBot: BotCreate = new BotCreate();
  currentBot?: Bot;
  bots?: Bot[];
- botSearch?: DbFindResult<Bot>;
+ botSearch: BotSearch = new BotSearch();
  botSearchQuery: BotSearchQuery = new BotSearchQuery();
  loaders: BotStoreLoaders = new BotStoreLoaders();
  errors: BotStoreErrors = new BotStoreErrors();
@@ -86,10 +86,7 @@ createStep: CreateFormStep | null = null
    this.currentBot = undefined
  }
 
- setBots (bots: Bot[]) {
-   this.bots = bots
- }
- setBotSearch (r: DbFindResult<Bot>) { this.botSearch = r }
+ setBotSearch (r: DbFindResult<Bot>) { this.botSearch = new BotSearch(r) }
  setBotSearchQuery (botSearchQuery: BotSearchQuery) {
    this.botSearchQuery = botSearchQuery
  }
@@ -126,13 +123,8 @@ createStep: CreateFormStep | null = null
  }
 
  async getBotsApi (replace: boolean = false) {
-   // return null
-   if (this.botsLoading) {
-     return
-   }
-   if (this.botSearch?.items && !replace) {
-     return
-   }
+   if (this.botsLoading) { return }
+   if (this.botSearch?.items && !replace) { return }
    this.setBotsLoading(true)
    this.botsLoadingError = false
    try {

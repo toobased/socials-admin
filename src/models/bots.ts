@@ -2,6 +2,7 @@ import botsApi from "@/api/bots";
 import { ChooseItem } from "@/components/common/ChooseContainer";
 import { makeAutoObservable } from "mobx";
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "./action_form";
+import { DbFindResult } from "./api";
 import { CountryEnum, PlatformEnum } from "./enums/bots";
 import { TaskActionType, TaskTarget } from "./enums/bot_tasks";
 import { BaseDate } from "./utils";
@@ -133,9 +134,26 @@ export class BotCreate {
 
 }
 
-export interface BotSearch {
-    total: number;
-    bots: Bot[];
+export class BotSearch {
+    total!: number;
+    items!: Bot[];
+
+    constructor(p: Partial<DbFindResult<Bot>> = {}) {
+        makeAutoObservable(this)
+        if (!p.total || !p.items) {
+            return
+        } else {
+            this.total = p.total
+            this.setItems(p.items, true)
+        }
+    }
+
+    setItems(items: Bot[], replace: boolean = true) {
+        if (replace) {  this.items = [] }
+        items.forEach((v) =>
+            this.items.push(new Bot(v))
+        )
+    }
 }
 
 
@@ -150,7 +168,7 @@ export class BotSearchQueryInterface {
 
 export class BotSearchQuery {
   limit: number = 10;
-  offset: number = 0;
+  skip: number = 0;
   is_active?: number | string = '';
   is_in_use?: number | string = '';
   platform?: PlatformEnum | string = '';

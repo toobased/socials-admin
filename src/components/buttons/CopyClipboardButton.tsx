@@ -20,6 +20,7 @@ const CopyClipboardButton: React.FC<{
       >
         <Icon icon="ci:copy"
           width={22}
+            color="green"
         />
       </Button>
     </Tooltip>
