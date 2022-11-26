@@ -1,5 +1,5 @@
 import { DbFindResult } from "@/models/api";
-import { Bot, BotCreate, BotError, BotSearch, BotSearchQuery } from "@/models/bots";
+import { Bot, BotCreate, BotError, BotSearchQuery, BotUpdate } from "@/models/bots";
 import { AxiosResponse } from "axios";
 import { CheckBotByTokenQuery } from "./bots/query";
 import HttpClient from "./client";
@@ -38,7 +38,7 @@ class BotsApi extends HttpClient{
     return response
   }
 
-  public updateBot = async (id: string, bot: BotCreate): Promise<AxiosResponse> => {
+  public updateBot = async (id: string, bot: BotUpdate): Promise<AxiosResponse> => {
     const response: AxiosResponse = await this.client.patch(
       `/bots/${id}`, bot);
     return response

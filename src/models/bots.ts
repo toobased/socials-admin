@@ -35,6 +35,21 @@ export class BotError {
     constructor(props: Partial<BotError> = {}) { Object.assign(this, props) }
 }
 
+
+export class BotActionsRest {
+    like: BaseDate | null = null;
+    repost: BaseDate | null = null;
+    comment: BaseDate | null = null;
+
+    constructor(p: Partial<BotActionsRest> = {}) {
+        Object.assign(this, p)
+        p.like && (this.like = new BaseDate(p.like))
+        p.repost && (this.repost = new BaseDate(p.repost))
+        p.comment && (this.comment = new BaseDate(p.comment))
+        makeAutoObservable(this)
+    }
+}
+
 export class Bot {
     id!: string;
     social_id: string = '';
@@ -46,6 +61,7 @@ export class Bot {
     date_updated!: BaseDate;
     last_used: BaseDate | null = null;
     rest_until: BaseDate | null = null;
+    actions_rest: BotActionsRest = new BotActionsRest()
     // eof times
     platform!: PlatformEnum;
     status!: BotStatus;
@@ -61,11 +77,49 @@ export class Bot {
         p.date_updated && (this.date_updated = new BaseDate(p.date_updated))
         p.last_used && (this.last_used = new BaseDate(p.last_used))
         p.rest_until && (this.rest_until = new BaseDate(p.rest_until))
+        p.actions_rest && (this.actions_rest = new BotActionsRest(p.actions_rest))
         makeAutoObservable(this)
     }
 
     static async fetchByAccessToken(p: PlatformEnum, t: string) {
         return await botsApi.fetchByAccessToken({platform: p, access_token: t})
+    }
+
+    isConfigure () { return this.status == BotStatus.Configure }
+
+    setReady () { this.status = BotStatus.Ready; return this }
+
+    async makeReadyApi () {
+        const u = this.setReady().toUpdate();
+        await botsApi.updateBot(this.id, u)
+    }
+    toUpdate () { return BotUpdate.from_bot(this) }
+}
+
+export class BotUpdate {
+    social_id: string = '';
+    username: string = '';
+    password: string = '';
+    access_token: string | null = '';
+    platform: PlatformEnum = PlatformEnum.Unspecified;
+    status: BotStatus = BotStatus.Configure;
+    gender: GenderEnum = GenderEnum.Male;
+
+    constructor(params: Partial<BotUpdate> = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, params)
+    }
+
+    static from_bot (b: Bot) {
+        return new BotUpdate({
+            social_id: b.social_id,
+            username: b.username,
+            password: b.password,
+            access_token: b.access_token,
+            platform: b.platform,
+            status: b.status,
+            gender: b.gender
+        })
     }
 }
 

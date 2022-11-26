@@ -4,7 +4,8 @@ import { AxiosResponse } from "axios"
 import { BaseError, Result } from "./api/models/base"
 import { IFilterValue } from "./models/bots"
 
-export function shortStr (v: string, c = 6) {
+export function shortStr (v: any, c = 6) {
+    if (typeof v != 'string') { return '' }
     if (v.length <= c * 2) { return v }
     const f = v.substring(0, c)
     const s = v.substring(v.length - c, v.length)

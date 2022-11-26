@@ -53,7 +53,7 @@ const BotsTableContent = observer(() => {
 
   const tableHeaderItems = [
     "Username", "Password", "Access token",
-    "Дата создания", "Использовался", "Платформа", "Статус", "Действие"
+    "Дата создания", "Использовался", "Платформа", "Чил", "Чил по действиям", "Статус", "Действие"
   ]
 
   const handleGoEditPage = (id: string) => router.push(`bots/edit/${id}`)
@@ -186,9 +186,31 @@ const BotsTableContent = observer(() => {
                 </Td>
                 {/* eof platform */}
 
-                {/* active */}
+                {/* chil */}
                 <Td className="">
-                    { v.status }
+                    { v.rest_until?.cntdwn_sweety(appStore.timestamp_now) || '---' }
+                </Td>
+                {/* eof chil */}
+
+                {/* chil actions */}
+                <Td className="">
+                    <div>Like: {v.actions_rest.like?.cntdwn_sweety(appStore.timestamp_now) || '---'}</div>
+                    <div>Repost: {v.actions_rest.repost?.cntdwn_sweety(appStore.timestamp_now) || '---'}</div>
+                    <div>Comment: {v.actions_rest.comment?.cntdwn_sweety(appStore.timestamp_now) || '---'}</div>
+                </Td>
+                {/* eof chil actions */}
+
+                {/* active */}
+                <Td className="items-center gap-2">
+                    <div>{ v.status }</div>
+                    {/* launch btn */}
+                    {v.isConfigure() &&
+                        <Button onClick={async () => {
+                            await v.makeReadyApi()
+                            await botStore.getBotsApi(true)
+                        }} size="md">🚀</Button>
+                    }
+                    {/* launch btn */}
                 </Td>
                 {/* eof active */}
 
