@@ -32,7 +32,8 @@ const EditBot: NextPage = observer(() => {
   }, [])
 
   const saveBot = async () => {
-    const [isSaved, msg] = await botStore.updateBotApi()
+    const [isSaved, msg] = [false, 'unavailable']
+    // const [isSaved, msg] = await botStore.updateBotApi()
     console.log(isSaved, msg)
     if (isSaved){
       successMessage(msg)

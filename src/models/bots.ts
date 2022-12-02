@@ -104,6 +104,11 @@ export class BotUpdate {
     platform: PlatformEnum = PlatformEnum.Unspecified;
     status: BotStatus = BotStatus.Configure;
     gender: GenderEnum = GenderEnum.Male;
+    rest_until: BaseDate | null = null;
+
+    // locale
+    id: string = '';
+      rest_secs: number | null = null
 
     constructor(params: Partial<BotUpdate> = {}) {
         makeAutoObservable(this)
@@ -112,15 +117,48 @@ export class BotUpdate {
 
     static from_bot (b: Bot) {
         return new BotUpdate({
+            id: b.id,
             social_id: b.social_id,
             username: b.username,
             password: b.password,
             access_token: b.access_token,
             platform: b.platform,
             status: b.status,
-            gender: b.gender
+            gender: b.gender,
+            rest_until: b.rest_until
+
         })
     }
+
+      form_config () {
+        const fields: ActionFormField[] = [
+          {
+            field_type: ActionFormFieldType.InputString,
+            label: 'Username (phone)',
+            placeholder: '+7 (xxx) ...',
+            value: () => this.username,
+            setter: (v: any) => { this.username = v }
+          },
+          {
+            field_type: ActionFormFieldType.InputString,
+            label: 'Пароль',
+            placeholder: 'xxx',
+            value: () => this.password,
+            setter: (v: any) => { this.password = v }
+          },
+          {
+            field_type: ActionFormFieldType.DatePicker,
+            label: 'Сколько боту отлеживаться',
+            placeholder: 'xxx',
+            value: () => this.rest_secs,
+            setter: (v: any) => {
+                this.rest_secs = v
+                this.rest_until = BaseDate.from_secs(v)
+            }
+          },
+        ]
+        return new ActionFormConfig({ fields })
+      }
 }
 
 export class BotCreate {
@@ -155,6 +193,8 @@ export class BotCreate {
     reset () { Object.assign(this, new BotCreate()); return this }
     withPlatform (p: PlatformEnum) { this.platform = p; return this }
     withAccessToken (v: string) { this.access_token = v; return this }
+
+    static from_bot (b: Bot): BotCreate  { return new BotCreate(b as any) }
 
   form_config () {
     const fields: ActionFormField[] = [

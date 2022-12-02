@@ -18,19 +18,7 @@ import { CreateTaskModal } from '@/components/tasks/CreateTaskModal';
 import { CreateBotModal } from '@/components/bots/CreateBotModal';
 import chakraTheme from '@/styles/theme';
 import { BotTasksContext } from '@/store/botsTasksStore';
-
-/*
-const colors = {
-  error: 'red.500',
-  success: 'green.500',
-  primary: {
-    default: 'red.500',
-    _dark: 'red.500'
-  },
-}
-*/
-
-// const { Content } = Layout
+import { EditBotModal } from '@/components/bots/EditBotModal';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const appStore = useContext(AppContext)
@@ -64,7 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </div>
       }
-      {/* 
+      {/*
       { !userStore.isUserAuthorized &&
         <Login {...pageProps}/>
       }
@@ -73,6 +61,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AddSourceModal />
       <CreateTaskModal />
       <CreateBotModal />
+      <EditBotModal />
 
       </ChakraProvider>
     </>

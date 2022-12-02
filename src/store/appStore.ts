@@ -7,6 +7,7 @@ class AppModalsState {
     add_source =  false
     create_task = false
     create_bot = false
+    edit_bot = false
     add_source_platform = false
 
     constructor() { makeAutoObservable(this) }
@@ -15,6 +16,7 @@ class AppModalsState {
     setAddSourcePlatform (v: boolean) { this.add_source_platform = v }
     setCreateTask (v: boolean) { this.create_task = v }
     setCreateBot (v: boolean) { this.create_bot = v }
+    setEditBot (v: boolean) { this.edit_bot = v }
 }
 
 enum AppTheme { Dark = "dark", Light = "light" }
