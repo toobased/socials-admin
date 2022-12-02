@@ -1,6 +1,6 @@
 import botsApi from "@/api/bots";
 import { DbFindResult } from "@/models/api";
-import { BotCreate, Bot, BotSearch, BotSearchQuery, GenderEnum } from "@/models/bots";
+import { BotCreate, Bot, BotSearch, BotSearchQuery, GenderEnum, BotUpdate } from "@/models/bots";
 import { CreateFormStep } from "@/models/create_form_steps";
 import { simpleProcessResponse } from "@/utils";
 import { AxiosResponse } from "axios";
@@ -178,7 +178,7 @@ createStep: CreateFormStep | null = null
     const id = this.currentBot?.id
     if (!id) { return [false, 'no current bot id']}
      const resp: AxiosResponse =
-      await botsApi.updateBot(id, this.newBot)
+      await botsApi.updateBot(id, new BotUpdate(this.newBot))
      return simpleProcessResponse(
        resp,
        "bot updated",
