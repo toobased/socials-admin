@@ -7,7 +7,8 @@ import { BotContext } from "@/store/botsStore"
 import { fireErr } from "@/utils"
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import { observer } from "mobx-react"
-import { useContext, useEffect } from "react"
+import { clearObserving } from "mobx/dist/internal"
+import { useContext, useEffect, useState } from "react"
 import { ChooseItem } from "../common/ChooseContainer"
 import { ActionDataFormStep } from "../tasks/create/steps/data"
 import { SelectPlatformStep } from "../tasks/create/steps/default"
@@ -19,13 +20,16 @@ export const EditBotModal = observer(() => {
     const currentBot = botsStore.currentBotEdit
     const modals = appStore.modals
 
+    const [taskForm, setTaskForm] = useState<CreateFormSteps>()
+
       useEffect(() => {
         initSteps()
-      }, [])
+      }, [currentBot])
 
     const initSteps = () => {
-        const taskForm = new CreateFormSteps({
-            nextSetter: (s) => botsStore.setCreateStep(s)
+        console.log('call init steps')
+        const form = new CreateFormSteps({
+            nextSetter: (_s) => {}
         })
         const taskSteps = [
             ActionDataFormStep({
@@ -39,14 +43,16 @@ export const EditBotModal = observer(() => {
                 }
             })
         ]
-        taskForm.withSteps(taskSteps).init()
-        botsStore.setCreateStep(taskForm.current)
+        form.withSteps(taskSteps).init()
+        console.log('current is', form.current)
+        setTaskForm(form)
+        console.log('form is', taskForm)
     }
 
     const platformList = (): ChooseItem[] =>
         filtersToChooseItems(platformFilters, true)
 
-    const currentStep = botsStore.createStep
+    const currentStep = taskForm?.current
 
     const l = { modalTitle: "Редактирование бота" }
     const onClose = () => {
