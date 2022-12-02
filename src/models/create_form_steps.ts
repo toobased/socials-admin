@@ -30,6 +30,6 @@ export class CreateFormSteps {
         const cIndx = this.steps.findIndex(v => v.id == id)
         const next = this.steps[cIndx + 1]
         console.log('invoke next, next is', next)
-        this.nextSetter(next)
+        next && this.nextSetter(next)
     }
 }

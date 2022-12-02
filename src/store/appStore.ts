@@ -6,6 +6,7 @@ import { useColorMode, useColorModePreference, useColorModeValue } from "@chakra
 class AppModalsState {
     add_source =  false
     create_task = false
+    create_bot = false
     add_source_platform = false
 
     constructor() { makeAutoObservable(this) }
@@ -13,6 +14,7 @@ class AppModalsState {
     setAddSource (v: boolean) { this.add_source = v }
     setAddSourcePlatform (v: boolean) { this.add_source_platform = v }
     setCreateTask (v: boolean) { this.create_task = v }
+    setCreateBot (v: boolean) { this.create_bot = v }
 }
 
 enum AppTheme { Dark = "dark", Light = "light" }
@@ -39,14 +41,18 @@ class AppPrefs {
 }
 
 export class AppStore {
+    timestamp_now: number = new Date().getTime()
     modals = new AppModalsState();
     testField: string = "test field?";
     commonInfo?: AppInfo;
     prefs: AppPrefs = new AppPrefs()
 
+    setNow(v: number) { this.timestamp_now = v }
+    spawnUpdateInterval () { setInterval(() => this.setNow(new Date().getTime()), 1000) }
 
   constructor() {
       makeAutoObservable(this)
+      this.spawnUpdateInterval()
   }
 
   async getCommonInfo () {

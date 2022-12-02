@@ -15,6 +15,7 @@ import HeadingNav from '@/components/common/HeadingNav';
 import LoadingContainer from '@/components/common/LoadingContainer';
 import { AddSourceModal } from '@/components/social_source/AddSourceModal';
 import { CreateTaskModal } from '@/components/tasks/CreateTaskModal';
+import { CreateBotModal } from '@/components/bots/CreateBotModal';
 import chakraTheme from '@/styles/theme';
 import { BotTasksContext } from '@/store/botsTasksStore';
 
@@ -68,8 +69,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Login {...pageProps}/>
       }
       */}
+
       <AddSourceModal />
       <CreateTaskModal />
+      <CreateBotModal />
+
       </ChakraProvider>
     </>
   )

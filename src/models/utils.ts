@@ -1,32 +1,40 @@
 import { makeAutoObservable } from "mobx"
 
 export class BaseDate {
-    private now: number = new Date().getTime();
     secs_since_epoch!: number
     nanos_since_epoch!: number
+
+    // timestamp_now: number = new Date().getTime();
+    // from_secs_value?: number
 
     constructor(p: Partial<BaseDate>) {
         makeAutoObservable(this)
         Object.assign(this, p)
-        this.init()
+        // this.init()
     }
 
-    init() { this.spawnUpdateInterval() }
-
-    setNow(v: number) { this.now = v }
-
-    spawnUpdateInterval () {
-        setInterval(() => this.setNow(new Date().getTime()), 1000)
+    static from_secs(v: any) {
+        let r = (new Date().getTime() / 1000) + parseInt(v)
+        r = parseInt(r.toFixed(0))
+        return new BaseDate({
+            secs_since_epoch: r,
+            nanos_since_epoch: 0,
+            // from_secs_value: v
+        })
     }
 
+    // init() { this.spawnUpdateInterval() }
+    // setNow(v: number) { this.timestamp_now = v }
+    // spawnUpdateInterval () { setInterval(() => this.setNow(new Date().getTime()), 1000) }
+    //
     get toDate (): Date { return new Date(this.secs_since_epoch * 1000) }
     get normal (): string { return this.toDate.toUTCString() }
 
-    get elapsed_sweety (): string {
+    elapsed_sweety (timestamp_now: number): string {
         const f = (v: number) => v.toFixed(0)
         let [ day, hrs, min, sec ] = [0,0,0,0]
         const run = this.toDate.getTime()
-        const left = this.now - run
+        const left = timestamp_now - run
         if (left > 0) {
             day = (left / 1000 / 60 / 60 / 24)
             hrs = (left / 1000 / 60 / 60 % 24)
@@ -42,12 +50,12 @@ export class BaseDate {
         return r
     }
 
-    get cntdwn_sweety (): string {
+    cntdwn_sweety (timestamp_now: number): string {
         const run = this.toDate.getTime()
-        if (this.now > run) { return 'in queue' }
+        if (timestamp_now > run) { return 'in queue' }
         const f = (v: number) => v.toFixed(0)
         let [ day, hrs, min, sec ] = [0,0,0,0]
-        const left = run - this.now
+        const left = run - timestamp_now
         if (left > 0) {
             day = (left / 1000 / 60 / 60 / 24)
             hrs = (left / 1000 / 60 / 60 % 24)

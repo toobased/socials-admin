@@ -1,5 +1,8 @@
+import botsApi from "@/api/bots";
 import { ChooseItem } from "@/components/common/ChooseContainer";
 import { makeAutoObservable } from "mobx";
+import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "./action_form";
+import { DbFindResult } from "./api";
 import { CountryEnum, PlatformEnum } from "./enums/bots";
 import { TaskActionType, TaskTarget } from "./enums/bot_tasks";
 import { BaseDate } from "./utils";
@@ -32,6 +35,21 @@ export class BotError {
     constructor(props: Partial<BotError> = {}) { Object.assign(this, props) }
 }
 
+
+export class BotActionsRest {
+    like: BaseDate | null = null;
+    repost: BaseDate | null = null;
+    comment: BaseDate | null = null;
+
+    constructor(p: Partial<BotActionsRest> = {}) {
+        Object.assign(this, p)
+        p.like && (this.like = new BaseDate(p.like))
+        p.repost && (this.repost = new BaseDate(p.repost))
+        p.comment && (this.comment = new BaseDate(p.comment))
+        makeAutoObservable(this)
+    }
+}
+
 export class Bot {
     id!: string;
     social_id: string = '';
@@ -43,6 +61,7 @@ export class Bot {
     date_updated!: BaseDate;
     last_used: BaseDate | null = null;
     rest_until: BaseDate | null = null;
+    actions_rest: BotActionsRest = new BotActionsRest()
     // eof times
     platform!: PlatformEnum;
     status!: BotStatus;
@@ -53,8 +72,54 @@ export class Bot {
     gender: GenderEnum = GenderEnum.Unknown;
 
     constructor(p: Partial<Bot> = {}) {
-        makeAutoObservable(this)
         Object.assign(this, p)
+        p.date_created && (this.date_created = new BaseDate(p.date_created))
+        p.date_updated && (this.date_updated = new BaseDate(p.date_updated))
+        p.last_used && (this.last_used = new BaseDate(p.last_used))
+        p.rest_until && (this.rest_until = new BaseDate(p.rest_until))
+        p.actions_rest && (this.actions_rest = new BotActionsRest(p.actions_rest))
+        makeAutoObservable(this)
+    }
+
+    static async fetchByAccessToken(p: PlatformEnum, t: string) {
+        return await botsApi.fetchByAccessToken({platform: p, access_token: t})
+    }
+
+    isConfigure () { return this.status == BotStatus.Configure }
+
+    setReady () { this.status = BotStatus.Ready; return this }
+
+    async makeReadyApi () {
+        const u = this.setReady().toUpdate();
+        await botsApi.updateBot(this.id, u)
+    }
+    toUpdate () { return BotUpdate.from_bot(this) }
+}
+
+export class BotUpdate {
+    social_id: string = '';
+    username: string = '';
+    password: string = '';
+    access_token: string | null = '';
+    platform: PlatformEnum = PlatformEnum.Unspecified;
+    status: BotStatus = BotStatus.Configure;
+    gender: GenderEnum = GenderEnum.Male;
+
+    constructor(params: Partial<BotUpdate> = {}) {
+        makeAutoObservable(this)
+        Object.assign(this, params)
+    }
+
+    static from_bot (b: Bot) {
+        return new BotUpdate({
+            social_id: b.social_id,
+            username: b.username,
+            password: b.password,
+            access_token: b.access_token,
+            platform: b.platform,
+            status: b.status,
+            gender: b.gender
+        })
     }
 }
 
@@ -67,7 +132,8 @@ export class BotCreate {
   created_source: string | null = null;
   make_ready: boolean = false;
   gender: GenderEnum = GenderEnum.Male;
-  rest_until: string | null = null;
+  rest_until: BaseDate | null = null;
+  rest_secs: number | null = null
 
   constructor(params: Partial<BotCreate> = {}) {
     makeAutoObservable(this)
@@ -86,11 +152,62 @@ export class BotCreate {
     return true
   }
 
+    reset () { Object.assign(this, new BotCreate()); return this }
+    withPlatform (p: PlatformEnum) { this.platform = p; return this }
+    withAccessToken (v: string) { this.access_token = v; return this }
+
+  form_config () {
+    const fields: ActionFormField[] = [
+      {
+        field_type: ActionFormFieldType.InputString,
+        label: 'Username (phone)',
+        placeholder: '+7 (xxx) ...',
+        value: () => this.username,
+        setter: (v: any) => { this.username = v }
+      },
+      {
+        field_type: ActionFormFieldType.InputString,
+        label: 'Пароль',
+        placeholder: 'xxx',
+        value: () => this.password,
+        setter: (v: any) => { this.password = v }
+      },
+      {
+        field_type: ActionFormFieldType.DatePicker,
+        label: 'Сколько боту отлеживаться',
+        placeholder: 'xxx',
+        value: () => this.rest_secs,
+        setter: (v: any) => {
+            this.rest_secs = v
+            this.rest_until = BaseDate.from_secs(v)
+        }
+      },
+    ]
+    return new ActionFormConfig({ fields })
+  }
+
 }
 
-export interface BotSearch {
-    total: number;
-    bots: Bot[];
+export class BotSearch {
+    total!: number;
+    items!: Bot[];
+
+    constructor(p: Partial<DbFindResult<Bot>> = {}) {
+        makeAutoObservable(this)
+        if (!p.total || !p.items) {
+            return
+        } else {
+            this.total = p.total
+            this.setItems(p.items, true)
+        }
+    }
+
+    setItems(items: Bot[], replace: boolean = true) {
+        if (replace) {  this.items = [] }
+        items.forEach((v) =>
+            this.items.push(new Bot(v))
+        )
+    }
 }
 
 
@@ -105,7 +222,7 @@ export class BotSearchQueryInterface {
 
 export class BotSearchQuery {
   limit: number = 10;
-  offset: number = 0;
+  skip: number = 0;
   is_active?: number | string = '';
   is_in_use?: number | string = '';
   platform?: PlatformEnum | string = '';
@@ -140,7 +257,8 @@ export interface IFilterValue {
   isIconText?: boolean;
 }
 
-export function filtersToChooseItems(f: IFilterValue[]): ChooseItem[] {
+export function filtersToChooseItems(f: IFilterValue[], exclude_all = false): ChooseItem[] {
+    if (exclude_all) { f = f.filter(v => v.label.toLowerCase() != "all") }
     return f.map(v => {
         return {
             value: v.query_value,

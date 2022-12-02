@@ -61,6 +61,7 @@ const TasksTableSkeleton = observer(() => {
 
 const TasksTable = observer(() => {
   const tasksStore = useContext(BotTasksContext)
+  const appStore = useContext(AppContext)
   const tasksSearch = tasksStore.tasksSearch
   const tasks = tasksSearch.bot_tasks
   const tasksLoading = tasksStore.loaders.botTasksLoading
@@ -177,12 +178,12 @@ const TasksTable = observer(() => {
                 {/* task created_date */}      
                 <Td className="min-w-max">
                     <div> {task.date_created?.normal } </div>
-                  <div>({task.date_created?.elapsed_sweety})</div>
+                  <div>({task.date_created?.elapsed_sweety(appStore.timestamp_now)})</div>
                 </Td>
                 {/* eof task created_date */}
                 {/* task udated_date */}
                 <Td>
-                  <div>{task.date_updated?.elapsed_sweety}</div>
+                  <div>{task.date_updated?.elapsed_sweety(appStore.timestamp_now)}</div>
                 </Td>
                 {/* eof task updated_date */}
                 {/* task next_time_run */}      
@@ -190,7 +191,7 @@ const TasksTable = observer(() => {
                   <div>
                   {task.next_run_time &&
                     <div>
-                      {task.next_run_time.cntdwn_sweety}
+                      {task.next_run_time.cntdwn_sweety(appStore.timestamp_now)}
                     </div>
                   }
                   {!task.next_run_time &&

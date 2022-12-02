@@ -25,7 +25,7 @@ class BotsTasksApi extends HttpClient{
     return response
   }
 
-  public createBotTask = async (botTask: CreateBotTask): 
+  public createBotTask = async (botTask: CreateBotTask):
     Promise<AxiosResponse> => {
     const response: AxiosResponse = await this.client.post(
       `${prefixUrl}/`,

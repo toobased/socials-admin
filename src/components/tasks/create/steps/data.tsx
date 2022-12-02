@@ -8,10 +8,12 @@ import { observer } from "mobx-react"
 
 export interface ActionDataFormStepProps {
     formConfig: () => ActionFormConfig | undefined
+    actionLabel?: string
+    onAction?: () => void
 }
 
 export function ActionDataFormStep(p: ActionDataFormStepProps): CreateFormStep {
-    const { formConfig } = p
+    const { onAction, formConfig, actionLabel } = p
     const component = observer(() => {
         const cfg = formConfig()
         return (
@@ -19,6 +21,11 @@ export function ActionDataFormStep(p: ActionDataFormStepProps): CreateFormStep {
                 {cfg &&
                     <div>
                         <TaskActionForm config={cfg} />
+                    </div>
+                }
+                {onAction &&
+                    <div>
+                        <Button onClick={() => onAction()}>{actionLabel}</Button>
                     </div>
                 }
             </div>

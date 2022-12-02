@@ -2,6 +2,7 @@ export enum ActionFormFieldType {
   InputNumber,
   InputString,
     SliderNumber,
+    DatePicker,
     ProcessTimePicker,
     ProcessDurationPicker
 }

@@ -1,7 +1,9 @@
 import { DbFindResult } from "@/models/api";
-import { Bot, BotCreate, BotSearch, BotSearchQuery } from "@/models/bots";
+import { Bot, BotCreate, BotError, BotSearchQuery, BotUpdate } from "@/models/bots";
 import { AxiosResponse } from "axios";
+import { CheckBotByTokenQuery } from "./bots/query";
 import HttpClient from "./client";
+import { Result } from "./models/base";
 
 class BotsApi extends HttpClient{
   public getBots = async (
@@ -36,9 +38,16 @@ class BotsApi extends HttpClient{
     return response
   }
 
-  public updateBot = async (id: string, bot: BotCreate): Promise<AxiosResponse> => {
+  public updateBot = async (id: string, bot: BotUpdate): Promise<AxiosResponse> => {
     const response: AxiosResponse = await this.client.patch(
       `/bots/${id}`, bot);
+    return response
+  }
+
+  public fetchByAccessToken = async (q: CheckBotByTokenQuery)
+    :Promise<AxiosResponse<Result<Bot, BotError>>> => {
+    const response: AxiosResponse<Result<Bot, BotError>> = await this.client.post(
+      `/bots/check_by_token`, q);
     return response
   }
 }

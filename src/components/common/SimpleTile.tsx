@@ -7,15 +7,17 @@ type SimpleTileProps = {
 }
 
 const SimpleTile = ({
-  title = "some title",
-  value = "some value",
+  title = undefined,
+  value = "",
   useClipboard = true
 }: SimpleTileProps) => {
   return (
     <div className="flex items-center max-w-max px-4 py-2 rounded-lg">
-      <span className="">
-        { title }: &nbsp;
-      </span>
+        { title &&
+          <span className="">
+            { title }: &nbsp;
+          </span>
+        }
       <span className="font-semibold">
         { value }
       </span>
