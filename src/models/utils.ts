@@ -14,7 +14,8 @@ export class BaseDate {
     }
 
     static from_secs(v: any) {
-        const r = new Date().getTime() + parseInt(v)
+        let r = (new Date().getTime() / 1000) + parseInt(v)
+        r = parseInt(r.toFixed(0))
         return new BaseDate({
             secs_since_epoch: r,
             nanos_since_epoch: 0,
