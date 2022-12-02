@@ -52,6 +52,7 @@ export class BotStore {
  // newBot: BotCreate = testBot;
  newBot: BotCreate = new BotCreate();
  currentBot?: Bot;
+    currentBotEdit?: BotUpdate;
  bots?: Bot[];
  botSearch: BotSearch = new BotSearch();
  botSearchQuery: BotSearchQuery = new BotSearchQuery();
@@ -79,9 +80,8 @@ createStep: CreateFormStep | null = null
    this.newBot = new BotCreate()
  }
 
- setCurrentBot(bot: Partial<Bot>) {
-   this.currentBot = new Bot(bot)
- }
+ setCurrentBot(bot: Partial<Bot>) { this.currentBot = new Bot(bot) }
+ setCurrentBotEdit(bot?: Bot) { this.currentBotEdit = bot ? BotUpdate.from_bot(bot) : undefined }
  removeCurrentBot() {
    this.currentBot = undefined
  }
@@ -173,12 +173,13 @@ createStep: CreateFormStep | null = null
    }
  }
 
- async updateBotApi (): Promise<[boolean, string]> {
+ async updateBotApi (v?: BotUpdate): Promise<[boolean, string]> {
    try {
-    const id = this.currentBot?.id
+    const bot = v || this.currentBotEdit
+    if (!bot) { return [false, 'no bot'] }
+    const id = bot.id
     if (!id) { return [false, 'no current bot id']}
-     const resp: AxiosResponse =
-      await botsApi.updateBot(id, new BotUpdate(this.newBot))
+     const resp: AxiosResponse = await botsApi.updateBot(id, bot)
      return simpleProcessResponse(
        resp,
        "bot updated",

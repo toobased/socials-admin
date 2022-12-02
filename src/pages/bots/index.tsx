@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from 'react'
 import { BotContext } from '@/store/botsStore'
 import { Table as CTable, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { activeFilters, BotSearchQuery, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
+import { activeFilters, Bot, BotSearchQuery, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
 import { Button, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
 import { Icon } from '@iconify/react'
 import ServerCallLabel from '@/components/common/ServerCallLabel'
@@ -56,7 +56,17 @@ const BotsTableContent = observer(() => {
     "Дата создания", "Использовался", "Платформа", "Чил", "Чил по действиям", "Статус", "Действие"
   ]
 
-  const handleGoEditPage = (id: string) => router.push(`bots/edit/${id}`)
+    const handleEditBot = (_id: string, bot: Bot) => {
+        botStore.setCurrentBotEdit(bot)
+        appStore.modals.setEditBot(true)
+    }
+
+
+    // router.push(`bots/edit/${id}`)
+    const handleGoEditPage = (id: string, bot: Bot) => {
+        handleEditBot(id, bot)
+    }
+
   const handleGoDetailPage = (id: string) => router.push(`bots/${id}`)
 
   const handleCheckBanned = async (id: string) => {
@@ -71,8 +81,10 @@ const BotsTableContent = observer(() => {
   if (botStore.botsLoading) { return (<div>loading...</div>) }
   if (!bots) { return (<div>no bots</div>) }
 
-  const BotActionsBlock = ({ id }: { id: string }) => {
+  const BotActionsBlock = (p: { id: string, bot: Bot }) => {
+    const { id, bot } = p
     return (
+        <div>
       <Menu>
         <MenuButton>
           <Button variant="outline">
@@ -93,7 +105,7 @@ const BotsTableContent = observer(() => {
             </div>
           </MenuItem>
           <MenuItem
-            onClick={() => handleGoEditPage(id)}
+            onClick={() => handleGoEditPage(id, bot)}
           >
             <div className="flex gap-3 items-center">
               <Icon
@@ -123,6 +135,16 @@ const BotsTableContent = observer(() => {
           </MenuItem>
         </MenuList>
       </Menu>
+        <Button onClick={() => handleGoEditPage(id, bot) }>
+            <div className="flex gap-3 items-center">
+              <Icon
+                icon="bxs:message-square-edit"
+                width="25"
+                className="block"
+              />
+            </div>
+        </Button>
+      </div>
     )
   }
 
@@ -216,7 +238,7 @@ const BotsTableContent = observer(() => {
 
                 {/* bot action*/}
                 <Td className="">
-                    <BotActionsBlock id={v.id} />
+                    <BotActionsBlock id={v.id} bot={v} />
                 </Td>
                 {/* eof bot action */}
               </Tr>
