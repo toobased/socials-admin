@@ -106,7 +106,7 @@ export class LikeAction {
         placeholder: '7200',
         value: () => this.data.time_spread,
         setter: (v: any) => { this.data.time_spread = parseInt(v) }
-      }
+      },
     ]
     return new ActionFormConfig({ fields })
   }

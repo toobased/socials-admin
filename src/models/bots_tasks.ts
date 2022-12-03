@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { LikeAction } from "./actions/like";
 
 import { WatchAction } from "./actions/watch";
-import { ActionFormConfig } from "./action_form";
+import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "./action_form";
 import { CreateFormStep } from "./create_form_steps";
 import { PlatformEnum } from "./enums/bots";
 import { BotTaskStatusEnum, TaskDurationTypeEnum, TaskActionType, WorkLagEnum, TaskTarget } from "./enums/bot_tasks";
@@ -280,6 +280,9 @@ export class BotTask {
   social_source: SocialSource | null = null;
 
   // TODO? bots_used: string[] = [];
+    //
+    get is_testing () { return this.options.is_testing }
+    get is_browser () { return this.options.is_browser }
 
     constructor(p: Partial<BotTask>) {
         Object.assign(this, p)
@@ -350,8 +353,27 @@ export class CreateBotTask {
       return v
     }
 
-    assign (t: Partial<BotTask>) {
-      Object.assign(this, t)
+    assign (t: Partial<BotTask>) { Object.assign(this, t) }
+    setTesting (v: boolean) { this.is_testing = v; return this }
+
+    task_data_form_fields (): ActionFormField[] {
+        return [
+          {
+            field_type: ActionFormFieldType.BooleanPick,
+            label: 'Таск тестовый?',
+            placeholder: '',
+            value: () => this.is_testing,
+            setter: (v: any) => { this.setTesting(v) }
+          },
+        ]
+    }
+
+    form_config (): ActionFormConfig | undefined {
+        const actionConfig = this.action.form_config(this.action_type)
+        const taskFields = this.task_data_form_fields()
+        if (!actionConfig) { return undefined }
+        actionConfig.fields.push(...taskFields)
+        return actionConfig
     }
 
     reset () { Object.assign(this, new CreateBotTask()) }

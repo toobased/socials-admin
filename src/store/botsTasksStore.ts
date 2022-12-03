@@ -103,7 +103,7 @@ export class BotTasksStore {
   constructor () { makeAutoObservable(this) }
 
     createTaskDataStep(): CreateFormStep | null {
-        const def = ActionDataFormStep({ formConfig: () => this.newTask.action.form_config(this.newTask.action_type) })
+        const def = ActionDataFormStep({ formConfig: () => this.newTask.form_config() })
         if (!this.newTask) { return null }
         switch (this.newTask.action_type) {
             case TaskActionType.Like: {

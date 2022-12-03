@@ -1,6 +1,6 @@
 import { ActionFormConfig, ActionFormField, ActionFormFieldType } from "@/models/action_form"
 import { BaseDate } from "@/models/utils"
-import { Box, Input, NumberInput, NumberInputField, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "@chakra-ui/react"
+import { Box, Input, NumberInput, NumberInputField, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch } from "@chakra-ui/react"
 import { observer } from "mobx-react"
 import { useEffect } from "react"
 import InfoTooltip from "../common/InfoTooltip"
@@ -8,6 +8,19 @@ import InfoTooltip from "../common/InfoTooltip"
 export interface TaskActionFormProps {
   config: ActionFormConfig
 }
+
+const BooleanPickComponent = observer((props: {field: ActionFormField}) => {
+  const field = props.field
+  return (
+    <Switch
+      className="mt-1"
+            placeholder={field.placeholder}
+      isChecked={field.value()}
+      disabled={false}
+      onChange={(_e) => field.setter(!field.value())}
+    />
+  )
+})
 
 const InputNumberComponent = observer((props: {field: ActionFormField}) => {
   const field = props.field
@@ -178,6 +191,9 @@ export const TaskActionForm = observer((props: TaskActionFormProps) => {
             }
             { field.field_type == ActionFormFieldType.ProcessDurationPicker &&
               <ProcessDurationPickerComponent field={field} />
+            }
+            { field.field_type == ActionFormFieldType.BooleanPick &&
+              <BooleanPickComponent field={field} />
             }
           </div>
         </div>

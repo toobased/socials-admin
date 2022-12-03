@@ -12,6 +12,7 @@ import OptionDropdownFilter from "@/components/common/OptionDropdownFilter";
 import { platformFilters } from "@/models/bots";
 import { PlatformEnum } from "@/models/enums/bots";
 import { AppContext } from "@/store/appStore";
+import TestingBadge from "@/components/common/TestingBadge";
 
 const TasksTablePagination = observer(() => {
   const tasksStore = useContext(BotTasksContext)
@@ -136,7 +137,10 @@ const TasksTable = observer(() => {
                 <Td
                   onClick={() => handleGoTaskDetail(task.id)}
                   className="font-semibold cursor-pointer">
-                  { task.title }
+                    <div>
+                        <span>{ task.title }</span>
+                        {task.is_testing && <TestingBadge />}
+                    </div>
                 </Td>
                 {/* eof task title */}
                 {/* task status */}      
