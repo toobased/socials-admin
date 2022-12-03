@@ -4,7 +4,8 @@ export enum ActionFormFieldType {
     SliderNumber,
     DatePicker,
     ProcessTimePicker,
-    ProcessDurationPicker
+    ProcessDurationPicker,
+    BooleanPick
 }
 
 export class ActionFormField {
