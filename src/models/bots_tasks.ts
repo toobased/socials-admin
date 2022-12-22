@@ -281,6 +281,9 @@ export class BotTask {
 
   // TODO? bots_used: string[] = [];
     //
+    get isFinished () { return this.status == BotTaskStatusEnum.Finished }
+    get isError () { return this.status == BotTaskStatusEnum.Error }
+
     get is_testing () { return this.options.is_testing }
     get is_browser () { return this.options.is_browser }
 

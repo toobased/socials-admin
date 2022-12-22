@@ -86,6 +86,7 @@ export class Bot {
     }
 
     isConfigure () { return this.status == BotStatus.Configure }
+    get isError () { return this.status == BotStatus.Error }
 
     setReady () { this.status = BotStatus.Ready; return this }
 

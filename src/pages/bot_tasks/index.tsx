@@ -208,6 +208,7 @@ const TasksTable = observer(() => {
                 {/* eof task next_time_run */}
                 {/* action button */}
                 <Td>
+                    <div className="flex gap-2">
                   <Menu>
                     <MenuButton>
                       <Button variant="outline">
@@ -219,7 +220,7 @@ const TasksTable = observer(() => {
                           onClick={() => handleGoEditPage(task.id) }
                         >
                           <div className="flex gap-3 items-center">
-                            <Icon 
+                            <Icon
                               icon="bxs:message-square-edit" 
                               width="25"
                               className="block"
@@ -233,7 +234,7 @@ const TasksTable = observer(() => {
                           <div 
                             className="flex gap-3 items-center text-red-500">
                             <Icon 
-                              icon="fa6-solid:delete-left" 
+                              icon="fa6-solid:delete-left"
                               width="25"
                               className="block text-red-500"
                             />
@@ -242,6 +243,18 @@ const TasksTable = observer(() => {
                         </MenuItem>
                     </MenuList>
                   </Menu>
+                        {task.isFinished &&
+                        <div>
+                            <Button
+                                className="max-w-max"
+                                colorScheme="red"
+                                size="md"
+                                onClick={() => handleDeleteTask(task.id)}
+                                leftIcon={<Icon icon="material-symbols:delete-rounded" fontSize="25px" />}
+                            />
+                        </div>
+                        }
+                  </div>
                 </Td>
                 {/* eof action button */}
               </Tr>
