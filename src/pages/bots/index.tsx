@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import type { NextPage } from 'next'
 import React, { useContext, useEffect } from 'react'
 import { BotContext } from '@/store/botsStore'
-import { Table as CTable, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
+import { Badge, Table as CTable, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { activeFilters, Bot, BotSearchQuery, genderFilters, IFilterValue, inUseFilters, platformFilters } from '@/models/bots'
 import { Button, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
@@ -224,7 +224,7 @@ const BotsTableContent = observer(() => {
 
                 {/* active */}
                 <Td className="items-center gap-2">
-                    <div>{ v.status }</div>
+                    <Badge colorScheme={v.isError ? 'red' : 'default'} fontSize="lg">{ v.status }</Badge>
                     {/* launch btn */}
                     {v.isConfigure() &&
                         <Button onClick={async () => {
