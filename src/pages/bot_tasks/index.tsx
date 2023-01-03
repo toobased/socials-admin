@@ -1,11 +1,11 @@
 import { NextPage } from "next";
 import { observer } from 'mobx-react'
 import router, { useRouter } from "next/router";
-import { Button, Menu, MenuButton, MenuItem, MenuList, Skeleton, Stack, Switch, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Button, Menu, MenuButton, MenuItem, MenuList, Skeleton, Stack, Switch, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { BotTasksContext, BotTasksStore } from "@/store/botsTasksStore";
 import BooleanComponent from "@/components/common/BooleanComponent";
-import { errorMessageChakra, getFilterByLabel, stringToDate, successMessageChakra, sweetyDate } from "@/utils";
+import { errorMessageChakra, getFilterByLabel, shortStr, stringToDate, successMessageChakra, sweetyDate } from "@/utils";
 import { Pagination } from "antd";
 import { Icon } from "@iconify/react";
 import OptionDropdownFilter from "@/components/common/OptionDropdownFilter";
@@ -71,7 +71,7 @@ const TasksTable = observer(() => {
   const router = useRouter()
 
   const tableHeaderItems = [
-    "Название", "Статус", "Активный",
+    "Название", "Детали", "Статус", "Активный",
     "Есть ошибка", "Платформа", "Тип таска", "Метрика",
     "Дата создания", "Updated date", "Следующая итерация", "Действия"
   ]
@@ -127,7 +127,7 @@ const TasksTable = observer(() => {
             )}
           </Tr>
         </Thead>
-        <Tbody>
+        <Tbody className="relative">
           {/* tasks */}
             {tasks.map((task, index) =>
               <Tr
@@ -138,11 +138,30 @@ const TasksTable = observer(() => {
                   onClick={() => handleGoTaskDetail(task.id)}
                   className="font-semibold cursor-pointer">
                     <div>
-                        <span>{ task.title }</span>
-                        {task.is_testing && <TestingBadge />}
+                        {task.primaryImage &&
+                            <img src={task.primaryImage} />
+                        }
+                        {task.is_testing &&
+                            <div className="absolute top-0 left-0">
+                                <TestingBadge />
+                            </div>
+                        }
                     </div>
                 </Td>
                 {/* eof task title */}
+
+                {/* task details */}
+                <Td
+                  onClick={() => handleGoTaskDetail(task.id)}
+                  className="font-semibold cursor-pointer relative">
+                    <div>
+                        <Tooltip placement="top" label={task.details}>
+                            <span>{shortStr(task.details, 50)}</span>
+                        </Tooltip>
+                    </div>
+                </Td>
+                {/* eof task detials */}
+
                 {/* task status */}      
                 <Td className="font-semibold">
                   { task.status }

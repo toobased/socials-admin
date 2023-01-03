@@ -54,6 +54,9 @@ export class LikeAction {
         return `${d}/${n}`
     }
 
+    get primaryImage () { return this.extra.post?.attachments?.[0].SocialPhoto.sizes[0].url }
+    get details () { return this.extra.post?.text }
+
     getPostLinkStepParams (t: CreateBotTask): LinkPickerStepProps {
         return {
             title: 'Укажи ссылку на пост',
