@@ -139,7 +139,7 @@ const TasksTable = observer(() => {
                   className="font-semibold cursor-pointer">
                     <div>
                         {task.primaryImage &&
-                            <img src={task.primaryImage} />
+                            <img src={task.primaryImage} className="w-20 h-16" />
                         }
                         {task.is_testing &&
                             <div className="absolute top-0 left-0">
