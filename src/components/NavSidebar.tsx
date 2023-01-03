@@ -49,6 +49,13 @@ export const menuItems: MenuItem[] = [
     icon: "fluent:clipboard-task-list-ltr-24-filled",
     children: []
   },
+  {
+   key: "6",
+    name: "Playground",
+    path: "/playground",
+    icon: "fluent:clipboard-task-list-ltr-24-filled",
+    children: []
+  },
 ]
 
 const getCurrentMenuBlock = (item: any) => {

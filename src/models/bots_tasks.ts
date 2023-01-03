@@ -305,6 +305,22 @@ export class BotTask {
         default: return ''
     }
   }
+
+    get primaryImage (): string | undefined {
+        const T = TaskActionType
+        switch (this.action_type) {
+            case T.Like: return this.action.LikeAction?.primaryImage
+            default: return undefined
+        }
+    }
+
+    get details () {
+        const T = TaskActionType
+        switch (this.action_type) {
+            case T.Like: return this.action.LikeAction?.details || ''
+            default: return ''
+        }
+    }
 }
 
 
