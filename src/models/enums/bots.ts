@@ -4,7 +4,8 @@ export enum PlatformEnum {
   Ok = 'Ok',
   Instagram = 'Instagram',
   Youtube = 'Youtube',
-  Dzen = 'Dzen'
+  Dzen = 'Dzen',
+  Rutube = 'Rutube'
 }
 
 export enum CountryEnum {

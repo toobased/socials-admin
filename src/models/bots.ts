@@ -337,11 +337,11 @@ const c = {
 export const platformFilters: IFilterValue[] = [
   { label: "All", query_value: '', icon: 'bxs:select-multiple', iconColor: 'black'},
   { label: PlatformEnum.Vk, query_value: PlatformEnum.Vk, icon: 'cib:vk', iconColor: '#4C75A3' },
-  { label: PlatformEnum.Ok, query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', 
-      iconColor: '#ed812b' },
+  { label: PlatformEnum.Ok, query_value: PlatformEnum.Ok, icon: 'fa:odnoklassniki-square', iconColor: '#ed812b' },
   { label: PlatformEnum.Instagram, query_value: PlatformEnum.Instagram, icon: 'ant-design:instagram-filled', iconColor: '#8a3ab9'},
   { label: PlatformEnum.Youtube, query_value: PlatformEnum.Youtube, icon: 'ant-design:youtube-filled', iconColor: '#FF0000'},
   { label: PlatformEnum.Dzen, query_value: PlatformEnum.Dzen, icon: 'brandico:yandex-rect', iconColor: '#171717'},
+  { label: PlatformEnum.Rutube, query_value: PlatformEnum.Rutube, icon: 'brandico:yandex-rect', iconColor: '#171717'}
 ]
 
 export const actionFilters: IFilterValue[] = [
