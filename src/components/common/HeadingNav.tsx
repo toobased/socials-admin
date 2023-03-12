@@ -14,7 +14,7 @@ export const MainMenuItemCard: React.FC<{
     }
     return (
         <Link href={item.path} passHref>
-            <div 
+            <div
                 style={style}
                 className="py-1 px-4 cursor-pointer flex items-center rounded-lg hover:opacity-60 select-none gap-2"
             >
@@ -31,7 +31,7 @@ export const MainMenuItemCard: React.FC<{
 
 export const MainMenuItems = () => {
     return (
-        <div className="flex border-t py-2 flex-wrap justify-center gap-2 sticky top-0 z-10 flex-1">
+        <div className="flex border-t py-2 justify-center gap-2 sticky top-0 z-10 flex-1">
             {menuItems.map((item: MenuItem, index: number) =>
                 <MainMenuItemCard
                     key={index}
@@ -49,7 +49,7 @@ const HeadingNav = () => {
   }
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between overflow-x-scroll">
         <MainMenuItems />
         <ThemeSwitcher />
     </div>

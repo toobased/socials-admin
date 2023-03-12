@@ -6,7 +6,7 @@ import { AppContext } from "@/store/appStore"
 import { BotTasksContext } from "@/store/botsTasksStore"
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import { observer } from "mobx-react"
-import { useContext, useEffect } from "react"
+import { CSSProperties, useContext, useEffect } from "react"
 import { ChooseItem } from "../common/ChooseContainer"
 import { BotTaskAddButton } from "./create/base"
 import { SelectPlatformStep, SelectTargetStep, TaskActionStep } from "./create/steps/default"
@@ -16,6 +16,8 @@ export const CreateTaskModal = observer(() => {
     const tasksStore = useContext(BotTasksContext)
     const newTask = tasksStore.newTask
     const modals = appStore.modals
+
+    const isMobile = appStore.isMobile
 
       useEffect(() => {
         tasksStore.getTasksTypes()
@@ -94,10 +96,17 @@ export const CreateTaskModal = observer(() => {
 
     const CurrentStepBody = currentStep.Body
 
+    const modalStyleM: CSSProperties = {
+        position: 'absolute',
+        margin: '0px',
+        bottom: '0px'
+    }
+    let modalStyle = isMobile ? modalStyleM : {}
+
     return (
-      <Modal size="4xl" isOpen={modals.create_task} onClose={() => onClose()} closeOnEsc={true} isCentered={true}>
+      <Modal size="4xl" isOpen={modals.create_task} onClose={() => onClose()} closeOnEsc={true} isCentered={!isMobile}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent style={modalStyle}>
           <ModalHeader>{ l.addTask }</ModalHeader>
           <ModalCloseButton />
 

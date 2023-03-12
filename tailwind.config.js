@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 const colors = require('tailwindcss/colors')
 module.exports = {
     content: [
@@ -7,15 +8,10 @@ module.exports = {
     darkMode: 'class',
     theme: {
         colors: {
-            'back2': 'green',
+            back2: 'var(--back2)',
+            back3: 'var(--back3)',
             ...colors
         },
-        dark: {
-            colors: {
-                'back2': 'red',
-                ...colors
-            },
-        }
     },
     plugins: [],
 }

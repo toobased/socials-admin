@@ -9,7 +9,7 @@ import { UserContext } from '@/store/userStore'
 import { AppContext } from '@/store/appStore'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Heading } from '@chakra-ui/react'
+import { Button, Heading } from '@chakra-ui/react'
 import { isCurrentPage, MenuItem, menuItems } from '@/components/NavSidebar'
 import { Icon } from '@iconify/react'
 import ThemeSwitcher from '@/components/common/ThemeSwitcher'
@@ -21,23 +21,27 @@ export const MainMenuItemCard: React.FC<{
     const isCurrent = isCurrentPage(item, router)
     return (
         <Link href={item.path} passHref>
-            <div 
-                className="py-4 px-6 cursor-pointer flex gap-2 items-center rounded-lg hover:opacity-60 select-none"
+            {/*className="py-4 px-6 cursor-pointer flex gap-2 items-center rounded-lg hover:opacity-60 select-none" */ }
+            <Button
+                rounded="xl"
+                size="lg"
             >
-                {item.icon &&
-                    <Icon icon={item.icon} width="22px" height="100%"/>
-                }
-                <span className="text-lg">
-                    { item.name }
-                </span>
-            </div>
+                <div className="flex gap-2">
+                    {item.icon &&
+                        <Icon icon={item.icon} width="22px" height="100%"/>
+                    }
+                    <span className="text-lg">
+                        { item.name }
+                    </span>
+                </div>
+            </Button>
         </Link>
     )
 }
 
 export const MainMenuItems = () => {
     return (
-        <div className="flex border-t py-8 flex-wrap justify-center gap-4">
+        <div className="flex flex-col md:flex-row border-t py-8 flex-wrap justify-center gap-4 px-3">
             {menuItems.map((item: MenuItem, index: number) =>
                 <MainMenuItemCard
                     key={index}
@@ -55,7 +59,7 @@ const Home: NextPage = () => {
   return (
     <div className="max-w-screen-xl mx-auto">
         <Heading className="mb-2 text-center my-10 dark:text-white">
-            Куда тебе нужно?
+            🚀
         </Heading>
         <MainMenuItems />
     </div>
