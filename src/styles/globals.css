@@ -5,3 +5,15 @@
 #__next {
   height: 100%;
 }
+
+@layer base {
+    html {
+        --back2: #e0f2fe;
+        --back3: #f0f9ff;
+    }
+
+    html [class="dark"] {
+        --back2: #18181b;
+        --back3: #27272a;
+    }
+}

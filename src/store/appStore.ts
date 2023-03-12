@@ -24,7 +24,10 @@ class AppPrefs {
     theme = AppTheme.Dark
 
     constructor() { makeAutoObservable(this) }
-    init () { this.setTheme(this.currentTheme) }
+    init () {
+        const t = localStorage.getItem('chakra-ui-color-mode') as AppTheme || this.currentTheme
+        this.setTheme(t)
+    }
 
     get currentTheme() { return this.theme }
 
@@ -70,6 +73,8 @@ export class AppStore {
   setTestField(newInfo: string) {
       this.testField = newInfo
   }
+
+  get isMobile () { return window.innerWidth < 768 }
 
 }
 

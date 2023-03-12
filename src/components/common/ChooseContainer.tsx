@@ -40,7 +40,7 @@ export const ChooseContainer = (p: ChooseContainerProps) => {
                 </div>
             }
             {inline &&
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {items.map((item,indx) => {
                     return (
                         <Button

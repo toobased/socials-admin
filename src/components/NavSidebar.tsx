@@ -28,6 +28,7 @@ export const menuItems: MenuItem[] = [
     icon: "ant-design:home-filled",
     children: []
   },
+    /*
   {
    key: "3",
     name: "Таргеты",
@@ -35,6 +36,7 @@ export const menuItems: MenuItem[] = [
     icon: "bx:target-lock",
     children: []
   },
+*/
   {
    key: "4",
     name: "Боты",
@@ -49,6 +51,7 @@ export const menuItems: MenuItem[] = [
     icon: "fluent:clipboard-task-list-ltr-24-filled",
     children: []
   },
+    /*
   {
    key: "6",
     name: "Playground",
@@ -56,6 +59,7 @@ export const menuItems: MenuItem[] = [
     icon: "fluent:clipboard-task-list-ltr-24-filled",
     children: []
   },
+    */
 ]
 
 const getCurrentMenuBlock = (item: any) => {

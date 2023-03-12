@@ -11,10 +11,7 @@ const LoadingContainer = ({
 }: LoadingContainerProps) => {
   return (
     <div style={style}>
-      <div className="flex flex-col items-center border-8 h-screen gap-4 justify-center">
-        <div className="">
-          <img src="/pnd.svg" className="h-auto max-h-64" alt="pnd" />
-        </div>
+      <div className="flex flex-col items-center gap-4 justify-center">
         <Icon icon="line-md:loading-loop" width={loaderWidth} />
       </div>
     </div>

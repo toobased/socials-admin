@@ -13,6 +13,9 @@ import { platformFilters } from "@/models/bots";
 import { PlatformEnum } from "@/models/enums/bots";
 import { AppContext } from "@/store/appStore";
 import TestingBadge from "@/components/common/TestingBadge";
+import LoadingContainer from "@/components/common/LoadingContainer";
+import { BotTask } from "@/models/bots_tasks";
+import ErrorIcon from "@/components/common/ErrorIcon";
 
 const TasksTablePagination = observer(() => {
   const tasksStore = useContext(BotTasksContext)
@@ -42,22 +45,200 @@ const TasksTablePagination = observer(() => {
   )
 })
 
-const TasksTableSkeleton = observer(() => {
-  const tasksStore = useContext(BotTasksContext)
-  const limit = tasksStore.tasksSearchQuery.limit
-  return (
-    <div className="rounded-lg py-3 px-3 mt-4">
-      <Stack>
-        {[...Array(limit)].map((_item, index) =>
-          <Skeleton 
-            key={index}
-            height="40px"
-            rounded="xl"
-          />
-        )}
-      </Stack>
-    </div>
-  )
+const TaskActionsBtn = observer((props: {
+    task: BotTask,
+    handleGoEditPage: (id: string) => void,
+    handleDeleteTask: (id: string) => void
+}) => {
+    const { task, handleGoEditPage, handleDeleteTask } = props
+      const appStore = useContext(AppContext)
+    const isMobile = appStore.isMobile
+    const btnSize = isMobile ? 'md' : 'md'
+    return (
+        <div>
+            <div className="flex gap-2">
+          <Menu>
+            <MenuButton>
+              <Button variant="outline" size={btnSize}>
+                <Icon icon="charm:menu-meatball" />
+              </Button>
+            </MenuButton>
+            <MenuList className="text-lg">
+                <MenuItem
+                  onClick={() => handleGoEditPage(task.id) }
+                >
+                  <div className="flex gap-3 items-center">
+                    <Icon
+                      icon="bxs:message-square-edit"
+                      width="25"
+                      className="block"
+                    />
+                    Редактировать
+                  </div>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => handleDeleteTask(task.id) }
+                >
+                  <div
+                    className="flex gap-3 items-center text-red-500">
+                    <Icon
+                      icon="fa6-solid:delete-left"
+                      width="25"
+                      className="block text-red-500"
+                    />
+                    Удалить
+                  </div>
+                </MenuItem>
+            </MenuList>
+          </Menu>
+            {task.isFinished &&
+                <div>
+                    <Button
+                        className=""
+                        colorScheme="red"
+                        size={btnSize}
+                        onClick={() => handleDeleteTask(task.id)}
+                    >
+                        <Icon icon="material-symbols:delete-rounded" fontSize="18px" />
+                    </Button>
+                </div>
+            }
+          </div>
+        </div>
+    )
+})
+
+const TaskRow = observer((props: {
+    task: BotTask,
+    handleGoTaskDetail: (id: string) => void
+    handleGoEditPage: (id: string) => void,
+    handleDeleteTask: (id: string) => void
+}) => {
+    const { task, handleGoTaskDetail, handleDeleteTask, handleGoEditPage } = props
+  const appStore = useContext(AppContext)
+
+    return (
+        <div className="bg-back2 rounded-lg p-4 relative max-w-xl mx-auto w-auto flex-shrink flex-grow mx-0 flex flex-col">
+            <div className="flex-grow flex flex-col">
+
+                <div className="flex justify-between mb-1">
+                    <div className="flex flex-col">
+                        <div className="flex flex-row gap-2">
+                            {/* task status */}
+                            <div className="font-semibold">
+                              { task.status }
+                            </div>
+                            {/* eof task status */}
+
+                            {/* task platform */}      
+                            <div className="font-semibold">
+                              { task.platform }
+                            </div>
+                            {/* eof task platform */}
+                        </div>
+
+                        <div className="flex gap-1 items-center">
+                            {/* task type */}
+                            <div className="bg-cyan-500 p-1 px-2 rounded-lg">
+                              { task.action_type }
+                            </div>
+                            {/* eof task type */}
+
+                            {/* task metrics */}
+                            <div className="rounded-lg p-1 px-2 bg-indigo-400 font-bold text-sm max-w-max">
+                              <div dangerouslySetInnerHTML={{__html: task.metricsLabel}} />
+                            </div>
+                            {/* eof task metrics */}
+                        </div>
+                    </div>
+
+                    <div className="flex gap-1">
+                    {/* TODO task has_error */}
+                    { task.error != undefined &&
+                        <div> <ErrorIcon /> </div>
+                    }
+                    {/* eof task has_error */}
+
+                    <TaskActionsBtn
+                        task={task}
+                        handleDeleteTask={handleDeleteTask}
+                        handleGoEditPage={handleGoEditPage}
+                    />
+                    </div>
+                </div>
+
+                <div className="flex my-2 gap-2">
+                    {/* task title */}
+                    <div
+                      onClick={() => handleGoTaskDetail(task.id)}
+                      className="font-semibold cursor-pointer">
+                        <div>
+                            {task.primaryImage &&
+                                <img src={task.primaryImage} className="w-20 h-16 object-cover rounded-lg" />
+                            }
+                            {task.is_testing &&
+                                <div className="absolute -top-3 right-0">
+                                    <TestingBadge />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    {/* eof task title */}
+
+                    {/* task details */}
+                    <div
+                      onClick={() => handleGoTaskDetail(task.id)}
+                      className="font-medium cursor-pointer relative text-sm">
+                        <div>
+                            <div>{task.title || ''}</div>
+                            <Tooltip placement="top" label={task.details}>
+                                <span className="flex max-w-xs overflow-hidden">{shortStr(task.details, 50)}</span>
+                            </Tooltip>
+                        </div>
+                    </div>
+                    {/* eof task detials */}
+                </div>
+
+            </div>
+
+
+            <div className="text-xs md:text-sm bg-back3 rounded-md flex justify-between py-1 px-2 flex-col">
+                {/* task next_time_run */}      
+                <div>
+                  <div className="flex justify-between gap-3">
+                    <div>Next run: </div>
+                  {task.next_run_time &&
+                    <div>
+                      {task.next_run_time.cntdwn_sweety(appStore.timestamp_now)}
+                    </div>
+                  }
+                  {!task.next_run_time && <div> --- </div> }
+                  </div>
+                </div>
+                {/* eof task next_time_run */}
+                {/* task udated_date */}
+                    <div className="flex justify-between gap-3">
+
+                        <div>Last updated: </div>
+                      <div>{task.date_updated?.elapsed_sweety(appStore.timestamp_now)}</div>
+                    </div>
+                {/* eof task updated_date */}
+                {/* task created_date */}
+                <div className="flex justify-between gap-3">
+                    <div>Created elapsed: </div>
+                      <div>{task.date_created?.elapsed_sweety(appStore.timestamp_now)}</div>
+                </div>
+                {/* eof task created_date */}
+                {/* task created_date */}
+                <div className="flex justify-between gap-3">
+                    <div>Created normal: </div>
+                    <div>{task.date_created?.normal } </div>
+                </div>
+                {/* eof task created_date */}
+            </div>
+
+        </div>
+    )
 })
 
 const TasksTable = observer(() => {
@@ -69,12 +250,6 @@ const TasksTable = observer(() => {
   const tasksLoadingError = tasksStore.errors.tasksLoadingError
 
   const router = useRouter()
-
-  const tableHeaderItems = [
-    "Название", "Детали", "Статус", "Активный",
-    "Есть ошибка", "Платформа", "Тип таска", "Метрика",
-    "Дата создания", "Updated date", "Следующая итерация", "Действия"
-  ]
 
   const handleDeleteTask = async (id: string) => {
     const [isSuccess, msg] = await tasksStore.deleteBotTaskApi(id)
@@ -100,187 +275,28 @@ const TasksTable = observer(() => {
     return (
       <div>
         error while loading tasks
-        {JSON.stringify(tasksLoadingError)} 
+        {JSON.stringify(tasksLoadingError)}
       </div>
     )
   }
 
-  if (tasksLoading) {
-    return (
-      <TasksTableSkeleton />
-    )
-  }
+  if (tasksLoading) { return ( <LoadingContainer style={ { minHeight: '200px' } } /> ) }
 
   return (
-    <div 
-      className="mt-4"
-    >
-      <Table
-        className="rounded-lg"
-      >
-        <Thead>
-          <Tr>
-            { tableHeaderItems.map((item, index) =>
-              <Th key={index}>
-                { item }
-              </Th>
-            )}
-          </Tr>
-        </Thead>
-        <Tbody className="relative">
-          {/* tasks */}
-            {tasks.map((task, index) =>
-              <Tr
-                key={index}
-              >
-                {/* task title */}      
-                <Td
-                  onClick={() => handleGoTaskDetail(task.id)}
-                  className="font-semibold cursor-pointer">
-                    <div>
-                        {task.primaryImage &&
-                            <img src={task.primaryImage} className="w-20 h-16" />
-                        }
-                        {task.is_testing &&
-                            <div className="absolute top-0 left-0">
-                                <TestingBadge />
-                            </div>
-                        }
-                    </div>
-                </Td>
-                {/* eof task title */}
-
-                {/* task details */}
-                <Td
-                  onClick={() => handleGoTaskDetail(task.id)}
-                  className="font-semibold cursor-pointer relative">
-                    <div>
-                        <Tooltip placement="top" label={task.details}>
-                            <span>{shortStr(task.details, 50)}</span>
-                        </Tooltip>
-                    </div>
-                </Td>
-                {/* eof task detials */}
-
-                {/* task status */}      
-                <Td className="font-semibold">
-                  { task.status }
-                </Td>
-                {/* eof task status */}
-                {/* task is_active */}      
-                <Td>
-                  <BooleanComponent
-                    value={task.is_active}
-                    reverseEffect={false}
-                  />
-                </Td>
-                {/* eof task is_active */}
-                {/* task has_error */}      
-                <Td>
-                  <BooleanComponent
-                    value={task.error != undefined}
-                    reverseEffect={true}
-                  />
-                </Td>
-                {/* eof task has_error */}
-                {/* task platform */}      
-                <Td className="font-semibold">
-                  { task.platform }
-                </Td>
-                {/* eof task platform */}
-                {/* task type */}      
-                <Td>
-                  { task.action_type }
-                </Td>
-                {/* eof task type */}
-                {/* task type */}      
-                <Td>
-                  <div dangerouslySetInnerHTML={{__html: task.metricsLabel}} />
-                </Td>
-                {/* eof task type */}
-                {/* task created_date */}      
-                <Td className="min-w-max">
-                    <div> {task.date_created?.normal } </div>
-                  <div>({task.date_created?.elapsed_sweety(appStore.timestamp_now)})</div>
-                </Td>
-                {/* eof task created_date */}
-                {/* task udated_date */}
-                <Td>
-                  <div>{task.date_updated?.elapsed_sweety(appStore.timestamp_now)}</div>
-                </Td>
-                {/* eof task updated_date */}
-                {/* task next_time_run */}      
-                <Td>
-                  <div>
-                  {task.next_run_time &&
-                    <div>
-                      {task.next_run_time.cntdwn_sweety(appStore.timestamp_now)}
-                    </div>
-                  }
-                  {!task.next_run_time &&
-                    <div>
-                      ---
-                    </div>
-                  }
-                  </div>
-                </Td>
-                {/* eof task next_time_run */}
-                {/* action button */}
-                <Td>
-                    <div className="flex gap-2">
-                  <Menu>
-                    <MenuButton>
-                      <Button variant="outline">
-                        <Icon icon="charm:menu-meatball" />
-                      </Button>
-                    </MenuButton>
-                    <MenuList className="text-lg">
-                        <MenuItem
-                          onClick={() => handleGoEditPage(task.id) }
-                        >
-                          <div className="flex gap-3 items-center">
-                            <Icon
-                              icon="bxs:message-square-edit" 
-                              width="25"
-                              className="block"
-                            />
-                            Редактировать
-                          </div>
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => handleDeleteTask(task.id) }
-                        >
-                          <div 
-                            className="flex gap-3 items-center text-red-500">
-                            <Icon 
-                              icon="fa6-solid:delete-left"
-                              width="25"
-                              className="block text-red-500"
-                            />
-                            Удалить
-                          </div>
-                        </MenuItem>
-                    </MenuList>
-                  </Menu>
-                        {task.isFinished &&
-                        <div>
-                            <Button
-                                className="max-w-max"
-                                colorScheme="red"
-                                size="md"
-                                onClick={() => handleDeleteTask(task.id)}
-                                leftIcon={<Icon icon="material-symbols:delete-rounded" fontSize="25px" />}
-                            />
-                        </div>
-                        }
-                  </div>
-                </Td>
-                {/* eof action button */}
-              </Tr>
-            )}
-          {/* eof tasks */}
-        </Tbody>
-      </Table>
+    <div className="mt-4">
+        <div className="flex flex-col md:flex-row flex-wrap gap-2">
+            { tasks.map((task, i) => {
+                return (
+                    <TaskRow
+                        key={i}
+                        task={task}
+                        handleGoTaskDetail={handleGoTaskDetail}
+                        handleGoEditPage={handleGoEditPage}
+                        handleDeleteTask={handleDeleteTask}
+                    />
+                )
+            })}
+        </div>
     </div>
   )
 })
@@ -385,7 +401,7 @@ const BotTasks: NextPage = observer(() => {
 
   return (
     <>
-      <main className="mx-11 my-7">
+      <main className="mx-4 md:mx-11 my-7">
         <div className="flex flex-wrap gap-3">
           <AddNewTaskButton />
           <ReloadTasksButton />
