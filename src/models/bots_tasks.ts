@@ -41,9 +41,16 @@ export class WatchVideoResultMetrics {
     }
 }
 
+export class TaskTargetPlatformConfig {
+    platform!: PlatformEnum
+    count_limit?: number
+    bot_limit?: number
+    device_limit?: number
+}
+
 export class BotTaskTypeTarget {
   target!: TaskTarget
-  platforms: Array<PlatformEnum> = []
+  platforms: Array<TaskTargetPlatformConfig> = []
 
   construct (p: Partial<BotTaskType>) {
     Object.assign(this, p)

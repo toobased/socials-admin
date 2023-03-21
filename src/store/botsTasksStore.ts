@@ -132,7 +132,7 @@ export class BotTasksStore {
         if (this.taskTypes.length == 0) { return [] }
         const ac: any[] = []
         this.taskTypes.forEach(t => t.targets.forEach(v =>
-            v.platforms.includes(p) && ac.push(t.action_type)
+            v.platforms.find(plat => plat.platform == p) && ac.push(t.action_type)
         ))
         return ac
     }
@@ -142,7 +142,7 @@ export class BotTasksStore {
         const t: TaskTarget[] = []
         const tt = this.taskTypes.find(t => t.action_type == a)
         if (!tt) { return [] }
-        tt.targets.forEach(v => v.platforms.includes(p) && t.push(v.target))
+        tt.targets.forEach(v => v.platforms.find(v => v.platform == p) && t.push(v.target))
         return t
     }
 

@@ -60,7 +60,7 @@ export const CreateTaskModal = observer(() => {
             platformFilters
                 .filter(p => tasksStore.taskTypes
                     .find(t => t.targets
-                        .find(v => v.platforms.includes(p.query_value as PlatformEnum))
+                        .find(v => v.platforms.find(v => v.platform == p.query_value as PlatformEnum) != undefined) != undefined
                     )
                 )
         )

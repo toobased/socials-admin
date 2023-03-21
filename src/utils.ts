@@ -71,6 +71,11 @@ export function simpleProcessResponse(
   successMsg: string = "its okey",
   errorMsg: string = "smth fucked up"
 ): [boolean, string] {
+    if (resp.data?.Err) {
+        const e = resp.data?.Err
+        const s = `Error: ${e.kind} ${e.msg} ${e.detail_msg}`
+        return [false, s]
+    }
   if (resp.status == 200) {
     return [true, successMsg]
   }

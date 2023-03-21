@@ -179,8 +179,8 @@ export const BotTaskCreationForm = observer(() => {
 
     function currentTaskTypes () {
       return taskTypes.filter((item) =>
-        item.targets.filter(i => i.platforms.includes(
-          task.platform
+        item.targets.filter(i => i.platforms.find(plat =>
+          plat.platform == task.platform
         )).length > 0
       )
     }
@@ -222,8 +222,8 @@ export const BotTaskCreationForm = observer(() => {
     function currentTaskTargets (): TaskTarget[] {
       return taskTypes.find((item) =>
         item.action_type == task.action_type &&
-        item.targets.filter(i => i.platforms.includes(
-          task.platform
+        item.targets.filter(i => i.platforms.find(plat =>
+          plat.platform == task.platform
         )).length > 0
       )?.targets.map(t => t.target) || []
     }
